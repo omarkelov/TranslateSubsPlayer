@@ -8,7 +8,7 @@ import ru.nsu.fit.markelov.util.validation.IllegalInputException;
 import static ru.nsu.fit.markelov.javafxutil.AlertBuilder.buildErrorAlert;
 
 /**
- * SnakeGame is a classic snake game made with JavaFX.
+ * PlayerApplication is a player with special features made with JavaFX.
  *
  * @author Oleg Markelov
  */

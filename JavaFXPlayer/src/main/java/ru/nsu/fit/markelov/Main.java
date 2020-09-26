@@ -1,7 +1,7 @@
 package ru.nsu.fit.markelov;
 
 /**
- * Main class is used for launching SnakeGame inside a .jar file.
+ * Main class is used for launching PlayerApplication inside a .jar file.
  *
  * In case main class extends javafx.application.Application, Java launcher requires the JavaFX
  * runtime available as modules (not as jars).
@@ -10,7 +10,7 @@ package ru.nsu.fit.markelov;
  */
 public class Main {
     /**
-     * Launches SnakeGame calling its main() method.
+     * Launches PlayerApplication calling its main() method.
      *
      * @param args command-line options.
      */
