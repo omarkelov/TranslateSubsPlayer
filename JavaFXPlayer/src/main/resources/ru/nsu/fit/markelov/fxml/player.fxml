@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
+<?import java.net.URL?>
+<StackPane fx:id="root"
+           styleClass="root"
+           xmlns="http://javafx.com/javafx/11.0.1"
+           xmlns:fx="http://javafx.com/fxml/1">
+   <stylesheets>
+      <URL value="@../css/main.css" />
+      <URL value="@../css/player.css" />
+   </stylesheets>
+   <children>
+      <ImageView fx:id="videoImageView" preserveRatio="true" />
+      <TextFlow>
+         <Text fx:id="firstText">123</Text>
+         <Text> </Text>
+         <Text fx:id="secondText">456</Text>
+      </TextFlow>
+   </children>
+</StackPane>
