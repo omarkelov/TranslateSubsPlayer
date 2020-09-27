@@ -3,6 +3,7 @@
     -fx-pref-height: 720px;
     -fx-min-width: 720px;
     -fx-font-size: 20px;
+    -fx-background-color: black;
 }
 
 .invisible {
