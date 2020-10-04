@@ -15,13 +15,13 @@ import static ru.nsu.fit.markelov.javafxutil.AlertBuilder.buildErrorAlert;
 import static ru.nsu.fit.markelov.util.validation.IllegalInputException.requireNonNull;
 
 /**
- * SceneManager class is used for switching the scenes of JavaFX stage.
+ * SceneManager class is used for switching the scenes of JavaFX stage and setting its title.
  *
  * @author Oleg Markelov
  */
 public class SceneManager implements AutoCloseable {
 
-    private static final String GAME_TITLE = "Translate Subs Player";
+    private static final String DEFAULT_TITLE = "Translate Subs Player";
     private static final String FXML_DIRECTORY = "/ru/nsu/fit/markelov/fxml/";
 
     private final Stage stage;
@@ -35,6 +35,22 @@ public class SceneManager implements AutoCloseable {
      */
     public SceneManager(Stage stage) throws IllegalInputException {
         this.stage = requireNonNull(stage);
+    }
+
+    /**
+     * Sets a new title for the stage.
+     *
+     * @param title a new title.
+     */
+    public void setTitle(String title) {
+        stage.setTitle(title);
+    }
+
+    /**
+     * Sets a default title for the stage.
+     */
+    public void setDefaultTitle() {
+        stage.setTitle(DEFAULT_TITLE);
     }
 
     /**
@@ -81,7 +97,7 @@ public class SceneManager implements AutoCloseable {
             this.controller = controller;
 
             if (stage.getScene() == null) {
-                stage.setTitle(GAME_TITLE);
+                stage.setTitle(DEFAULT_TITLE);
                 stage.setScene(new Scene(root, stage.getWidth(), stage.getHeight()));
             } else {
                 stage.getScene().setRoot(root);
