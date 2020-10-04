@@ -1,30 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.URL?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.TextFlow?>
-<?import java.net.URL?>
+
 <StackPane fx:id="root" styleClass="root" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
-   <stylesheets>
-      <URL value="@../css/main.css" />
-      <URL value="@../css/player.css" />
-   </stylesheets>
-   <children>
-      <ImageView fx:id="videoImageView" preserveRatio="true" />
-      <GridPane fx:id="gridPane">
-        <columnConstraints>
-          <ColumnConstraints hgrow="ALWAYS" halignment="CENTER" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints vgrow="ALWAYS" />
-          <RowConstraints vgrow="NEVER" />
-        </rowConstraints>
-         <children>
-            <TextFlow fx:id="textFlow" styleClass="subtitles" GridPane.rowIndex="1" />
-         </children>
-      </GridPane>
-   </children>
+    <stylesheets>
+        <URL value="@../css/main.css" />
+        <URL value="@../css/player.css" />
+    </stylesheets>
+    <children>
+        <ImageView fx:id="videoImageView" preserveRatio="true" />
+        <GridPane fx:id="gridPane">
+            <columnConstraints>
+                <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints vgrow="ALWAYS" />
+                <RowConstraints vgrow="NEVER" />
+            </rowConstraints>
+            <children>
+                <TextFlow fx:id="textFlow" styleClass="subtitles" GridPane.rowIndex="1" />
+            </children>
+        </GridPane>
+        <MenuBar fx:id="menuBar" StackPane.alignment="TOP_CENTER">
+            <menus>
+                <Menu text="File">
+                    <items>
+                        <MenuItem fx:id="fileOpenItem" text="Open" />
+                        <MenuItem fx:id="fileCloseItem" text="Close" />
+                    </items>
+                </Menu>
+                <Menu fx:id="audioMenu" disable="true" text="Audio" />
+                <Menu fx:id="subtitlesMenu" disable="true" text="Subtitles">
+                    <items>
+                        <MenuItem fx:id="subtitlesAddItem" text="Add" />
+                    </items>
+                </Menu>
+                <Menu text="Help">
+                    <items>
+                        <MenuItem fx:id="helpAboutItem" text="About" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+    </children>
 </StackPane>

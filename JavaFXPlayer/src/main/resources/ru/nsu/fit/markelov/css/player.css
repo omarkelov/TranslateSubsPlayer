@@ -1,3 +1,15 @@
+.menu-bar, .context-menu {
+    -fx-background-color: rgba(0, 0, 0, 0.75);
+}
+
+.menu .label {
+    -fx-text-fill: white;
+}
+
+.italic {
+    -fx-font-style: italic;
+}
+
 .subtitles {
     -fx-text-alignment: center;
     -fx-background-color: rgba(0, 0, 0, 0.75);
