@@ -2,6 +2,7 @@ package ru.nsu.fit.markelov;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import ru.nsu.fit.markelov.managers.FileChooserManager;
 import ru.nsu.fit.markelov.managers.SceneManager;
 import ru.nsu.fit.markelov.util.validation.IllegalInputException;
 
@@ -26,7 +27,7 @@ public class PlayerApplication extends Application {
     }
 
     /**
-     * Creates a new SceneManager and shows a menu window.
+     * Creates a new SceneManager with FileChooserManager and shows a menu window.
      *
      * Called when JavaFX starts the application.
      *
@@ -35,7 +36,7 @@ public class PlayerApplication extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            sceneManager = new SceneManager(primaryStage);
+            sceneManager = new SceneManager(primaryStage, new FileChooserManager(primaryStage));
             sceneManager.switchToMenu();
             primaryStage.show();
         } catch (IllegalInputException e) {

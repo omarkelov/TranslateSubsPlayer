@@ -25,16 +25,20 @@ public class SceneManager implements AutoCloseable {
     private static final String FXML_DIRECTORY = "/ru/nsu/fit/markelov/fxml/";
 
     private final Stage stage;
+    private final FileChooserManager fileChooserManager;
     private Controller controller;
 
     /**
-     * Creates new SceneManager with specified JavaFX stage and level manager.
+     * Creates new SceneManager with specified JavaFX stage and file chooser manager.
      *
-     * @param stage JavaFX stage.
+     * @param stage              JavaFX stage.
+     * @param fileChooserManager file chooser manager.
      * @throws IllegalInputException if one of the input parameters is null.
      */
-    public SceneManager(Stage stage) throws IllegalInputException {
+    public SceneManager(Stage stage,
+                        FileChooserManager fileChooserManager) throws IllegalInputException {
         this.stage = requireNonNull(stage);
+        this.fileChooserManager = requireNonNull(fileChooserManager);
     }
 
     /**
@@ -69,7 +73,7 @@ public class SceneManager implements AutoCloseable {
      */
     public void switchToPlayer() {
         try {
-            switchScene(new PlayerController(this));
+            switchScene(new PlayerController(this, fileChooserManager));
         } catch (IllegalInputException e) {
             buildErrorAlert("scene switching").showAndWait();
         }
