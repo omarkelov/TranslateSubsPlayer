@@ -19,11 +19,11 @@ The dictionary is stored on a remote server (for the further possibility of addi
 # Possible technologies:
 
 ###### Desktop video player:
-* Qt + libVLC (+ ffmpeg?) – seems too *complicated*;
-* JavaFX + vlcj (+ ffmpeg?) – seems too *heavy*.
+* Qt + libVLC (+ ffmpeg?) – seems too *time-consuming*;
+* JavaFX + vlcj (+ ffmpeg?) – seems too *resource-consuming*.
 
 ###### Server application:
-* Java's embedded HttpServer – seems too *old*;
+* Java's embedded HttpServer – seems too *outdated*;
 * Java Spring framework – seems too *heavy*.
 
 ###### Client application:
@@ -31,13 +31,12 @@ The dictionary is stored on a remote server (for the further possibility of addi
 
 # MVP release dates
 
-* **14.11.2020** – *Player* with basic functional.
-* **14.11.2020** – *Client-Server app* with basic functional.
-* **21.12.2020** – *Player* and *Client-Server app* bundled together.
+* **21.12.2020** – *Player* with basic functional.
+* **21.12.2020** – *Client-Server app* with basic functional.
+* **01.03.2021** – *Player* and *Client-Server app* bundled together.
 
 # Release dates
 
-* **01.03.2021** – beta.
 * **29.03.2021** – release candidate.
 * **24.05.2021** – production release.
 
@@ -45,4 +44,4 @@ The dictionary is stored on a remote server (for the further possibility of addi
 
 * Oleg Markelov
 * Polina Karaseva
-* Ivan Shatalov
+* ~~Ivan Shatalov~~ – took a study leave
