@@ -14,7 +14,92 @@
     -fx-font-style: italic;
 }
 
+.grid-pane {
+    -fx-vgap: 20;
+}
+
 .subtitles {
     -fx-text-alignment: center;
     -fx-background-color: rgba(0, 0, 0, 0.75);
+}
+
+.controls {
+    -fx-padding: 8;
+    -fx-background-color: rgba(0, 0, 0, 0.75);
+}
+
+.controls > Group > HBox {
+    -fx-spacing: 8;
+}
+
+.controls Label {
+    -fx-text-fill: rgba(255, 255, 255, 0.75);
+}
+
+.controls Button {
+    -fx-min-width: 32;
+    -fx-min-height: 32;
+    -fx-max-width: 32;
+    -fx-max-height: 32;
+    -fx-background-color: transparent;
+    -fx-background-size: 24;
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+    -fx-opacity: 0.75;
+    -fx-cursor: hand;
+    -fx-effect: innershadow(gaussian, rgba(255, 255, 255, 0.75), 1, 0, 0, 0);
+}
+
+.controls Button:hover {
+    -fx-background-color: -fx-accent;
+    -fx-opacity: 1;
+}
+
+.controls Button:pressed {
+    -fx-background-size: 22;
+    -fx-effect: innershadow(gaussian, black, 8, 0, 0, 0);
+}
+
+.control-button-play {
+    -fx-background-image: url('../icons/play.png');
+}
+
+.control-button-pause {
+    -fx-background-image: url('../icons/pause.png');
+}
+
+.control-button-stop {
+    -fx-background-image: url('../icons/stop.png');
+}
+
+.control-button-expand {
+    -fx-background-image: url('../icons/expand.png');
+}
+
+.control-button-collapse {
+    -fx-background-image: url('../icons/collapse.png');
+}
+
+.control-button-skip-left {
+    -fx-background-image: url('../icons/skip-left.png');
+}
+
+.control-button-skip-right {
+    -fx-background-image: url('../icons/skip-right.png');
+}
+
+.control-button-sound-high {
+    -fx-background-image: url('../icons/sound-high.png');
+}
+
+.control-button-sound-medium {
+    -fx-background-image: url('../icons/sound-medium.png');
+}
+
+.control-button-sound-low {
+    -fx-background-image: url('../icons/sound-low.png');
+}
+
+.control-button-sound-mute {
+    -fx-background-image: url('../icons/sound-mute.png');
 }

@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.Group?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.TextFlow?>
-
+<?import java.net.URL?>
 <StackPane fx:id="root" styleClass="root" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <stylesheets>
         <URL value="@../css/main.css" />
@@ -18,16 +21,58 @@
     </stylesheets>
     <children>
         <ImageView fx:id="videoImageView" preserveRatio="true" />
-        <GridPane fx:id="gridPane">
+        <GridPane fx:id="gridPane" styleClass="grid-pane">
             <columnConstraints>
                 <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" />
             </columnConstraints>
             <rowConstraints>
                 <RowConstraints vgrow="ALWAYS" />
                 <RowConstraints vgrow="NEVER" />
+                <RowConstraints vgrow="NEVER" />
             </rowConstraints>
             <children>
                 <TextFlow fx:id="textFlow" styleClass="subtitles" GridPane.rowIndex="1" />
+                <StackPane styleClass="controls" GridPane.rowIndex="2">
+                    <Group StackPane.alignment="CENTER_LEFT">
+                        <HBox>
+                            <children>
+                                <Button fx:id="stopButton" styleClass="control-button-stop" />
+                                <HBox>
+                                    <Label fx:id="currentHoursLabel" text="00" />
+                                    <Label text=":" />
+                                    <Label fx:id="currentMinutesLabel" text="00" />
+                                    <Label text=":" />
+                                    <Label fx:id="currentSecondsLabel" text="00" />
+                                </HBox>
+                                <Label text="/" />
+                                <HBox>
+                                    <Label fx:id="entireHoursLabel" text="00" />
+                                    <Label text=":" />
+                                    <Label fx:id="entireMinutesLabel" text="00" />
+                                    <Label text=":" />
+                                    <Label fx:id="entireSecondsLabel" text="00" />
+                                </HBox>
+                            </children>
+                        </HBox>
+                    </Group>
+                    <Group StackPane.alignment="CENTER">
+                        <HBox>
+                            <children>
+                                <Button fx:id="skipLeftButton" styleClass="control-button-skip-left" />
+                                <Button fx:id="playButton" styleClass="control-button-play" />
+                                <Button fx:id="skipRightButton" styleClass="control-button-skip-right" />
+                            </children>
+                        </HBox>
+                    </Group>
+                    <Group StackPane.alignment="CENTER_RIGHT">
+                        <HBox>
+                            <children>
+                                <Button fx:id="soundButton" styleClass="control-button-sound-high" />
+                                <Button fx:id="expandButton" styleClass="control-button-expand" />
+                            </children>
+                        </HBox>
+                    </Group>
+                </StackPane>
             </children>
         </GridPane>
         <MenuBar fx:id="menuBar" StackPane.alignment="TOP_CENTER">
