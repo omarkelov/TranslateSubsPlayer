@@ -35,8 +35,11 @@ public class FileChooserManager {
 
         videoFileChooser = new FileChooser();
         videoFileChooser.setTitle("Choose Video");
+
         subtitlesFileChooser = new FileChooser();
         subtitlesFileChooser.setTitle("Choose Subtitles");
+        subtitlesFileChooser.getExtensionFilters().add(
+            new FileChooser.ExtensionFilter("SRT", "*.srt"));
 
         lastVideoDirectory = new File("F:\\Multimedia\\Series\\Westworld\\1\\"); // TODO -hardcode
     }
@@ -63,7 +66,7 @@ public class FileChooserManager {
      *
      * @return chosen subtitles file.
      */
-    public File chooseSubtitlesFile() { // TODO only .str
+    public File chooseSubtitlesFile() {
         validateLastVideoDirectory();
         subtitlesFileChooser.setInitialDirectory(lastVideoDirectory);
 
