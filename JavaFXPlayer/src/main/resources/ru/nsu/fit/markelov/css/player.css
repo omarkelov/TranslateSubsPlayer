@@ -2,6 +2,10 @@
     -fx-background-color: rgba(0, 0, 0, 0.75);
 }
 
+.menu, .menu-item {
+    -fx-cursor: hand;
+}
+
 .menu .label {
     -fx-text-fill: white;
 }
