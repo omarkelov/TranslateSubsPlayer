@@ -15,6 +15,8 @@ import static ru.nsu.fit.markelov.util.validation.IllegalInputException.requireN
  */
 public class FileChooserManager {
 
+    private static final File HOME_DIRECTORY = new File(System.getProperty("user.home"));
+
     private final Stage stage;
 
     private final FileChooser videoFileChooser;
@@ -45,6 +47,7 @@ public class FileChooserManager {
      * @return chosen video file.
      */
     public File chooseVideoFile() { // TODO only video
+        validateLastVideoDirectory();
         videoFileChooser.setInitialDirectory(lastVideoDirectory);
 
         File file = videoFileChooser.showOpenDialog(stage);
@@ -61,8 +64,15 @@ public class FileChooserManager {
      * @return chosen subtitles file.
      */
     public File chooseSubtitlesFile() { // TODO only .str
+        validateLastVideoDirectory();
         subtitlesFileChooser.setInitialDirectory(lastVideoDirectory);
 
         return subtitlesFileChooser.showOpenDialog(stage);
+    }
+
+    private void validateLastVideoDirectory() {
+        if (!lastVideoDirectory.exists()) {
+            lastVideoDirectory = HOME_DIRECTORY;
+        }
     }
 }
