@@ -3,6 +3,7 @@ package ru.nsu.fit.markelov.managers;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 import ru.nsu.fit.markelov.controllers.Controller;
 import ru.nsu.fit.markelov.controllers.MenuController;
@@ -15,7 +16,7 @@ import static ru.nsu.fit.markelov.javafxutil.AlertBuilder.buildErrorAlert;
 import static ru.nsu.fit.markelov.util.validation.IllegalInputException.requireNonNull;
 
 /**
- * SceneManager class is used for switching the scenes of JavaFX stage and setting its title.
+ * SceneManager class is used for managing JavaFX stage.
  *
  * @author Oleg Markelov
  */
@@ -39,6 +40,13 @@ public class SceneManager implements AutoCloseable {
                         FileChooserManager fileChooserManager) throws IllegalInputException {
         this.stage = requireNonNull(stage);
         this.fileChooserManager = requireNonNull(fileChooserManager);
+
+        initStage();
+    }
+
+    private void initStage() {
+        stage.setTitle(DEFAULT_TITLE);
+        stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
     }
 
     /**
@@ -55,6 +63,22 @@ public class SceneManager implements AutoCloseable {
      */
     public void setDefaultTitle() {
         stage.setTitle(DEFAULT_TITLE);
+    }
+
+    /**
+     * Toggles current stage fullscreen state.
+     */
+    public void toggleFullScreen() {
+        stage.setFullScreen(!isFullScreen());
+    }
+
+    /**
+     * Returns whether current stage is fullscreen.
+     *
+     * @return whether current stage is fullscreen.
+     */
+    public boolean isFullScreen() {
+        return stage.isFullScreen();
     }
 
     /**
@@ -101,7 +125,6 @@ public class SceneManager implements AutoCloseable {
             this.controller = controller;
 
             if (stage.getScene() == null) {
-                stage.setTitle(DEFAULT_TITLE);
                 stage.setScene(new Scene(root, stage.getWidth(), stage.getHeight()));
             } else {
                 stage.getScene().setRoot(root);
