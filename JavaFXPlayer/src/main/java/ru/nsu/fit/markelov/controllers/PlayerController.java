@@ -2,6 +2,8 @@ package ru.nsu.fit.markelov.controllers;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
@@ -51,6 +53,20 @@ public class PlayerController implements Controller {
     @FXML private MenuItem fileCloseItem;
     @FXML private MenuItem subtitlesAddItem;
     @FXML private MenuItem helpAboutItem;
+
+    @FXML private Button playButton;
+    @FXML private Button stopButton;
+    @FXML private Button skipLeftButton;
+    @FXML private Button skipRightButton;
+    @FXML private Button soundButton;
+    @FXML private Button expandButton;
+
+    @FXML private Label currentHoursLabel;
+    @FXML private Label currentMinutesLabel;
+    @FXML private Label currentSecondsLabel;
+    @FXML private Label entireHoursLabel;
+    @FXML private Label entireMinutesLabel;
+    @FXML private Label entireSecondsLabel;
 
     private final ToggleGroup audioToggleGroup = new ToggleGroup();
     private final ToggleGroup subtitlesToggleGroup = new ToggleGroup();
