@@ -2,6 +2,7 @@ package ru.nsu.fit.markelov.controllers;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -9,6 +10,8 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.TextFlow;
@@ -30,6 +33,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import static javafx.scene.input.KeyCode.ENTER;
+import static javafx.scene.input.KeyCode.ESCAPE;
+import static javafx.scene.input.KeyCombination.ALT_DOWN;
 import static ru.nsu.fit.markelov.util.validation.IllegalInputException.requireNonNull;
 import static uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurfaceFactory.videoSurfaceForImageView;
 
@@ -41,6 +47,11 @@ import static uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurfaceFactor
 public class PlayerController implements Controller {
 
     private static final String FXML_FILE_NAME = "player.fxml";
+
+    private static final String COLLAPSE_CLASSNAME = "control-button-collapse";
+    private static final String EXPAND_CLASSNAME = "control-button-expand";
+
+    private static final KeyCodeCombination ON_EXPAND_KEYS = new KeyCodeCombination(ENTER, ALT_DOWN);
 
     @FXML private StackPane root;
     @FXML private ImageView videoImageView;
@@ -140,6 +151,8 @@ public class PlayerController implements Controller {
         });
 
         fileCloseItem.setOnAction(actionEvent -> disposePlaying());
+
+        expandButton.setOnAction(actionEvent -> onExpandPressed());
     }
 
     private void initPlayingIfNot(MediaPlayer mediaPlayer) {
@@ -261,12 +274,39 @@ public class PlayerController implements Controller {
         textFlow.getChildren().clear();
     }
 
+    private void onExpandPressed() {
+        sceneManager.toggleFullScreen();
+        expandButton.getStyleClass().clear();
+        expandButton.getStyleClass().add(
+            sceneManager.isFullScreen() ? COLLAPSE_CLASSNAME : EXPAND_CLASSNAME);
+    }
+
+    private void onKeyReleased(KeyEvent keyEvent) {
+        if (ON_EXPAND_KEYS.match(keyEvent) ||
+            keyEvent.getCode() == ESCAPE && sceneManager.isFullScreen()
+        ) {
+            onExpandPressed();
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     public String getFXMLFileName() {
         return FXML_FILE_NAME;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void runAfterSceneSet(Parent root) throws IllegalInputException {
+        requireNonNull(root);
+
+        root.setOnKeyReleased(this::onKeyReleased);
+
+        root.requestFocus();
     }
 
     /**
