@@ -38,19 +38,11 @@
                             <children>
                                 <Button fx:id="stopButton" styleClass="control-button-stop" />
                                 <HBox>
-                                    <Label fx:id="currentHoursLabel" text="00" />
-                                    <Label text=":" />
-                                    <Label fx:id="currentMinutesLabel" text="00" />
-                                    <Label text=":" />
-                                    <Label fx:id="currentSecondsLabel" text="00" />
+                                    <Label fx:id="currentTimeLabel" text="00:00:00" />
                                 </HBox>
                                 <Label text="/" />
                                 <HBox>
-                                    <Label fx:id="entireHoursLabel" text="00" />
-                                    <Label text=":" />
-                                    <Label fx:id="entireMinutesLabel" text="00" />
-                                    <Label text=":" />
-                                    <Label fx:id="entireSecondsLabel" text="00" />
+                                    <Label fx:id="entireTimeLabel" text="00:00:00" />
                                 </HBox>
                             </children>
                         </HBox>

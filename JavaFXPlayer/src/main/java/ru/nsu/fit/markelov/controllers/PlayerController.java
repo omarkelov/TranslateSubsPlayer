@@ -47,6 +47,7 @@ import static uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurfaceFactor
 public class PlayerController implements Controller {
 
     private static final String FXML_FILE_NAME = "player.fxml";
+    private static final String INITIAL_TIME = "00:00:00";
 
     private static final String COLLAPSE_CLASSNAME = "control-button-collapse";
     private static final String EXPAND_CLASSNAME = "control-button-expand";
@@ -72,12 +73,8 @@ public class PlayerController implements Controller {
     @FXML private Button soundButton;
     @FXML private Button expandButton;
 
-    @FXML private Label currentHoursLabel;
-    @FXML private Label currentMinutesLabel;
-    @FXML private Label currentSecondsLabel;
-    @FXML private Label entireHoursLabel;
-    @FXML private Label entireMinutesLabel;
-    @FXML private Label entireSecondsLabel;
+    @FXML private Label currentTimeLabel;
+    @FXML private Label entireTimeLabel;
 
     private final ToggleGroup audioToggleGroup = new ToggleGroup();
     private final ToggleGroup subtitlesToggleGroup = new ToggleGroup();
@@ -119,6 +116,8 @@ public class PlayerController implements Controller {
                 if (subtitlesHandler != null) {
                     subtitlesHandler.setTime(newTime);
                 }
+
+                Platform.runLater(() -> currentTimeLabel.setText(formatTime(newTime)));
             }
 
             @Override
@@ -159,6 +158,8 @@ public class PlayerController implements Controller {
         if (!initialized) {
             initAudioMenu(mediaPlayer);
             initSubtitlesMenu(mediaPlayer);
+            initTimeLabels(mediaPlayer);
+
             Platform.runLater(() -> sceneManager.setTitle(videoFile.getName()));
 
             initialized = true;
@@ -177,6 +178,7 @@ public class PlayerController implements Controller {
         disposeAudioMenu();
         disposeSubtitlesMenu();
         disposeSubtitles();
+        disposeTimeLabels();
 
         sceneManager.setDefaultTitle();
         videoFile = null;
@@ -249,6 +251,15 @@ public class PlayerController implements Controller {
         subtitlesToggleGroup.getToggles().clear();
     }
 
+    private void initTimeLabels(MediaPlayer mediaPlayer) {
+        Platform.runLater(() -> entireTimeLabel.setText(formatTime(mediaPlayer.status().length())));
+    }
+
+    private void disposeTimeLabels() {
+        entireTimeLabel.setText(INITIAL_TIME);
+        currentTimeLabel.setText(INITIAL_TIME);
+    }
+
     private void initSubtitles(String fileName) {
         try (FileReader fileReader = new FileReader(fileName)) {
             Spus subtitleUnits = new BOMSrtParser().parse(fileReader);
@@ -317,5 +328,10 @@ public class PlayerController implements Controller {
         embeddedMediaPlayer.controls().stop();
         embeddedMediaPlayer.release();
         mediaPlayerFactory.release();
+    }
+
+    private String formatTime(long milliseconds) {
+        return String.format("%02d:%02d:%02d",
+            milliseconds / 3600000, (milliseconds / 60000) % 60, (milliseconds / 1000) % 60);
     }
 }
