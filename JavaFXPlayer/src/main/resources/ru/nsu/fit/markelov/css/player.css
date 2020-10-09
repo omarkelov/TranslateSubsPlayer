@@ -28,7 +28,7 @@
     -fx-background-color: rgba(0, 0, 0, 0.75);
 }
 
-.controls > Group > HBox {
+.controls > HBox {
     -fx-spacing: 8;
 }
 
