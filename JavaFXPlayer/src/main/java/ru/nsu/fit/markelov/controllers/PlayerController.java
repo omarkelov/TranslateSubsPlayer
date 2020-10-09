@@ -33,6 +33,8 @@ import uk.co.caprica.vlcj.subs.parser.SpuParseException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static javafx.scene.input.KeyCode.ENTER;
 import static javafx.scene.input.KeyCode.ESCAPE;
@@ -248,7 +250,7 @@ public class PlayerController implements Controller {
                 radioMenuItem.setOnAction(fileActionEvent -> initSubtitles(file.getAbsolutePath()));
                 subtitlesMenu.getItems().add(subtitlesMenu.getItems().size() - 1, radioMenuItem);
 
-                initSubtitles(file.getAbsolutePath()); // todo setTime for subHandler if paused
+                initSubtitles(file.getAbsolutePath());
             }
 
             if (isPlaying) {
@@ -257,10 +259,26 @@ public class PlayerController implements Controller {
         });
         subtitlesMenu.getItems().add(subtitlesOpenItem);
 
-        // todo walk directory for subtitles
-        /*for (TrackDescription trackDescription : mediaPlayer.subpictures().trackDescriptions()) { // todo delete
-            System.out.println(trackDescription.toString());
-        }*/
+        try {
+            String videoFileName = videoFile.getName().replaceFirst("[.][^.]+$", "");
+            Path videoFilePath = Path.of(videoFile.getParent());
+            Files
+                .walk(videoFilePath)
+                .filter(path -> {
+                    String fileName = path.getFileName().toString();
+                    return fileName.startsWith(videoFileName) && fileName.endsWith(".srt");
+                })
+                .forEach(subtitlesPath -> {
+                    RadioMenuItem radioMenuItem = new RadioMenuItem(videoFilePath.relativize(subtitlesPath).toString());
+                    radioMenuItem.setToggleGroup(subtitlesToggleGroup);
+                    radioMenuItem.setSelected(false);
+                    radioMenuItem.setOnAction(fileActionEvent -> initSubtitles(subtitlesPath.toString()));
+                    subtitlesMenu.getItems().add(subtitlesMenu.getItems().size() - 1, radioMenuItem);
+                });
+        } catch (IOException e) { // TODO show message
+            System.out.println("Could not walk current video file directory.");
+            e.printStackTrace();
+        }
 
         subtitlesMenu.setDisable(false);
     }
