@@ -51,7 +51,7 @@
                         <HBox>
                             <children>
                                 <Button fx:id="skipLeftButton" styleClass="control-button-skip-left" />
-                                <Button fx:id="playButton" styleClass="control-button-play" />
+                                <Button fx:id="pauseButton" styleClass="control-button-play" />
                                 <Button fx:id="skipRightButton" styleClass="control-button-skip-right" />
                             </children>
                         </HBox>

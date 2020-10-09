@@ -35,6 +35,7 @@ import java.io.IOException;
 
 import static javafx.scene.input.KeyCode.ENTER;
 import static javafx.scene.input.KeyCode.ESCAPE;
+import static javafx.scene.input.KeyCode.P;
 import static javafx.scene.input.KeyCombination.ALT_DOWN;
 import static ru.nsu.fit.markelov.util.validation.IllegalInputException.requireNonNull;
 import static uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurfaceFactory.videoSurfaceForImageView;
@@ -49,9 +50,12 @@ public class PlayerController implements Controller {
     private static final String FXML_FILE_NAME = "player.fxml";
     private static final String INITIAL_TIME = "00:00:00";
 
+    private static final String PLAY_CLASSNAME = "control-button-play";
+    private static final String PAUSE_CLASSNAME = "control-button-pause";
     private static final String COLLAPSE_CLASSNAME = "control-button-collapse";
     private static final String EXPAND_CLASSNAME = "control-button-expand";
 
+    private static final KeyCodeCombination ON_STOP_KEYS = new KeyCodeCombination(P, ALT_DOWN);
     private static final KeyCodeCombination ON_EXPAND_KEYS = new KeyCodeCombination(ENTER, ALT_DOWN);
 
     @FXML private StackPane root;
@@ -66,7 +70,7 @@ public class PlayerController implements Controller {
     @FXML private MenuItem subtitlesAddItem;
     @FXML private MenuItem helpAboutItem;
 
-    @FXML private Button playButton;
+    @FXML private Button pauseButton;
     @FXML private Button stopButton;
     @FXML private Button skipLeftButton;
     @FXML private Button skipRightButton;
@@ -135,7 +139,10 @@ public class PlayerController implements Controller {
         videoImageView.fitHeightProperty().bind(root.heightProperty());
 
         fileOpenItem.setOnAction(actionEvent -> {
-            embeddedMediaPlayer.controls().setPause(true);
+            boolean isPlaying = embeddedMediaPlayer.status().isPlaying();
+            if (isPlaying) {
+                onPausePressed(true);
+            }
 
             File file = fileChooserManager.chooseVideoFile();
             if (file != null) {
@@ -146,11 +153,15 @@ public class PlayerController implements Controller {
                 videoFile = file;
             }
 
-            embeddedMediaPlayer.controls().setPause(false);
+            if (isPlaying) {
+                onPausePressed(false);
+            }
         });
 
         fileCloseItem.setOnAction(actionEvent -> disposePlaying());
 
+        pauseButton.setOnAction(actionEvent -> onPausePressed());
+        stopButton.setOnAction(actionEvent -> onStopPressed());
         expandButton.setOnAction(actionEvent -> onExpandPressed());
     }
 
@@ -160,7 +171,10 @@ public class PlayerController implements Controller {
             initSubtitlesMenu(mediaPlayer);
             initTimeLabels(mediaPlayer);
 
-            Platform.runLater(() -> sceneManager.setTitle(videoFile.getName()));
+            Platform.runLater(() -> {
+                sceneManager.setTitle(videoFile.getName());
+                onPausePressed(false);
+            });
 
             initialized = true;
 
@@ -220,7 +234,10 @@ public class PlayerController implements Controller {
         MenuItem subtitlesOpenItem = new MenuItem("Open .srt-file");
         subtitlesOpenItem.getStyleClass().add("italic");
         subtitlesOpenItem.setOnAction(actionEvent -> {
-            embeddedMediaPlayer.controls().setPause(true);
+            boolean isPlaying = embeddedMediaPlayer.status().isPlaying();
+            if (isPlaying) {
+                onPausePressed(true);
+            }
 
             File file = fileChooserManager.chooseSubtitlesFile();
             if (file != null) {
@@ -230,10 +247,12 @@ public class PlayerController implements Controller {
                 radioMenuItem.setOnAction(fileActionEvent -> initSubtitles(file.getAbsolutePath()));
                 subtitlesMenu.getItems().add(subtitlesMenu.getItems().size() - 1, radioMenuItem);
 
-                initSubtitles(file.getAbsolutePath());
+                initSubtitles(file.getAbsolutePath()); // todo setTime for subHandler if paused
             }
 
-            embeddedMediaPlayer.controls().setPause(false);
+            if (isPlaying) {
+                onPausePressed(false);
+            }
         });
         subtitlesMenu.getItems().add(subtitlesOpenItem);
 
@@ -285,6 +304,36 @@ public class PlayerController implements Controller {
         textFlow.getChildren().clear();
     }
 
+    private void onPausePressed() {
+        onPausePressed(embeddedMediaPlayer.status().isPlaying());
+    }
+
+    private void onPausePressed(boolean pause) {
+        if (!initialized) {
+            return;
+        }
+
+        pauseButton.getStyleClass().clear(); // todo don't clear default classes!
+        pauseButton.getStyleClass().add(pause ? PLAY_CLASSNAME : PAUSE_CLASSNAME);
+
+        embeddedMediaPlayer.controls().setPause(pause);
+    }
+
+    private void onStopPressed() {
+        if (!initialized) {
+            return;
+        }
+
+        if (embeddedMediaPlayer.status().isPlaying()) {
+            onPausePressed(true);
+        }
+        embeddedMediaPlayer.controls().setTime(0);
+        currentTimeLabel.setText(INITIAL_TIME);
+        if (subtitlesHandler != null) {
+            subtitlesHandler.setTime(0);
+        }
+    }
+
     private void onExpandPressed() {
         sceneManager.toggleFullScreen();
         expandButton.getStyleClass().clear();
@@ -293,7 +342,11 @@ public class PlayerController implements Controller {
     }
 
     private void onKeyReleased(KeyEvent keyEvent) {
-        if (ON_EXPAND_KEYS.match(keyEvent) ||
+        if (keyEvent.getCode() == P) {
+            onPausePressed();
+        } else if (ON_STOP_KEYS.match(keyEvent)) {
+            onStopPressed();
+        } else if (ON_EXPAND_KEYS.match(keyEvent) ||
             keyEvent.getCode() == ESCAPE && sceneManager.isFullScreen()
         ) {
             onExpandPressed();
