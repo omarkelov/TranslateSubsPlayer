@@ -294,6 +294,7 @@ public class PlayerController implements Controller {
                     Platform.runLater(() -> textFlow.getChildren().clear());
                 }
             });
+            subtitlesHandler.setTime(embeddedMediaPlayer.status().time());
         } catch (IOException|SpuParseException|RuntimeException e) { // TODO show message
             System.out.println("Could not find any subtitles in the provided file.");
             e.printStackTrace();
