@@ -371,14 +371,14 @@ public class PlayerController implements Controller {
     }
 
     private void onKeyReleased(KeyEvent keyEvent) {
-        if (keyEvent.getCode() == P) {
-            onPausePressed();
-        } else if (ON_STOP_KEYS.match(keyEvent)) {
+        if (ON_STOP_KEYS.match(keyEvent)) {
             onStopPressed();
         } else if (ON_EXPAND_KEYS.match(keyEvent) ||
             keyEvent.getCode() == ESCAPE && sceneManager.isFullScreen()
         ) {
             onExpandPressed();
+        } else if (keyEvent.getCode() == P) {
+            onPausePressed();
         }
     }
 
