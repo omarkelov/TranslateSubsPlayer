@@ -39,6 +39,7 @@ import java.nio.file.Path;
 import static javafx.scene.input.KeyCode.ENTER;
 import static javafx.scene.input.KeyCode.ESCAPE;
 import static javafx.scene.input.KeyCode.P;
+import static javafx.scene.input.KeyCode.SPACE;
 import static javafx.scene.input.KeyCombination.ALT_DOWN;
 import static ru.nsu.fit.markelov.util.validation.IllegalInputException.requireNonNull;
 import static uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurfaceFactory.videoSurfaceForImageView;
@@ -378,7 +379,7 @@ public class PlayerController implements Controller {
             keyEvent.getCode() == ESCAPE && sceneManager.isFullScreen()
         ) {
             onExpandPressed();
-        } else if (keyEvent.getCode() == P) {
+        } else if (keyEvent.getCode() == SPACE) {
             onPausePressed();
         }
     }
