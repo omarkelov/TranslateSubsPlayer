@@ -189,6 +189,7 @@ public class PlayerController implements Controller {
     }
 
     private void disposePlaying() {
+        onPausePressed(true);
         embeddedMediaPlayer.controls().stop();
         videoImageView.setImage(null);
 
