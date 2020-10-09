@@ -1,6 +1,7 @@
 package ru.nsu.fit.markelov.controllers;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -313,8 +314,7 @@ public class PlayerController implements Controller {
             return;
         }
 
-        pauseButton.getStyleClass().clear(); // todo don't clear default classes!
-        pauseButton.getStyleClass().add(pause ? PLAY_CLASSNAME : PAUSE_CLASSNAME);
+        replaceClassName(pauseButton.getStyleClass(), pause, PAUSE_CLASSNAME, PLAY_CLASSNAME);
 
         embeddedMediaPlayer.controls().setPause(pause);
     }
@@ -335,10 +335,16 @@ public class PlayerController implements Controller {
     }
 
     private void onExpandPressed() {
+        replaceClassName(expandButton.getStyleClass(),
+            sceneManager.isFullScreen(), COLLAPSE_CLASSNAME, EXPAND_CLASSNAME);
+
         sceneManager.toggleFullScreen();
-        expandButton.getStyleClass().clear();
-        expandButton.getStyleClass().add(
-            sceneManager.isFullScreen() ? COLLAPSE_CLASSNAME : EXPAND_CLASSNAME);
+    }
+
+    private void replaceClassName(ObservableList<String> classNames, boolean cond,
+                                  String removeClassName, String addClassName) {
+        classNames.removeIf(className -> className.equals(cond ? removeClassName : addClassName));
+        classNames.add(!cond ? removeClassName : addClassName);
     }
 
     private void onKeyReleased(KeyEvent keyEvent) {
