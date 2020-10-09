@@ -213,6 +213,7 @@ public class PlayerController implements Controller {
             radioItem.setToggleGroup(audioToggleGroup);
             radioItem.setSelected(trackDescription.id() == mediaPlayer.audio().track());
             radioItem.setOnAction(actionEvent -> mediaPlayer.audio().setTrack(trackDescription.id()));
+            radioItem.setMnemonicParsing(false);
             audioMenu.getItems().add(radioItem);
         }
 
@@ -232,6 +233,7 @@ public class PlayerController implements Controller {
         disabledRadioItem.setToggleGroup(subtitlesToggleGroup);
         disabledRadioItem.setSelected(true);
         disabledRadioItem.setOnAction(actionEvent -> disposeSubtitles());
+        disabledRadioItem.setMnemonicParsing(false);
         subtitlesMenu.getItems().add(disabledRadioItem);
 
         MenuItem subtitlesOpenItem = new MenuItem("Open .srt-file");
@@ -248,6 +250,7 @@ public class PlayerController implements Controller {
                 radioMenuItem.setToggleGroup(subtitlesToggleGroup);
                 radioMenuItem.setSelected(true);
                 radioMenuItem.setOnAction(fileActionEvent -> initSubtitles(file.getAbsolutePath()));
+                radioMenuItem.setMnemonicParsing(false);
                 subtitlesMenu.getItems().add(subtitlesMenu.getItems().size() - 1, radioMenuItem);
 
                 initSubtitles(file.getAbsolutePath());
@@ -273,6 +276,7 @@ public class PlayerController implements Controller {
                     radioMenuItem.setToggleGroup(subtitlesToggleGroup);
                     radioMenuItem.setSelected(false);
                     radioMenuItem.setOnAction(fileActionEvent -> initSubtitles(subtitlesPath.toString()));
+                    radioMenuItem.setMnemonicParsing(false);
                     subtitlesMenu.getItems().add(subtitlesMenu.getItems().size() - 1, radioMenuItem);
                 });
         } catch (IOException e) { // TODO show message
