@@ -43,7 +43,7 @@
                     <children>
                         <HBox GridPane.columnIndex="0" alignment="CENTER_LEFT">
                             <children>
-                                <Button fx:id="stopButton" styleClass="control-button-stop" />
+                                <Button fx:id="stopButton" styleClass="control-button-stop" focusTraversable="false" />
                                 <HBox>
                                     <Label fx:id="currentTimeLabel" text="00:00:00" />
                                 </HBox>
@@ -55,15 +55,15 @@
                         </HBox>
                         <HBox GridPane.columnIndex="1" alignment="CENTER">
                             <children>
-                                <Button fx:id="skipLeftButton" styleClass="control-button-skip-left" />
-                                <Button fx:id="pauseButton" styleClass="control-button-play" />
-                                <Button fx:id="skipRightButton" styleClass="control-button-skip-right" />
+                                <Button fx:id="skipLeftButton" styleClass="control-button-skip-left" focusTraversable="false" />
+                                <Button fx:id="pauseButton" styleClass="control-button-play" focusTraversable="false" />
+                                <Button fx:id="skipRightButton" styleClass="control-button-skip-right" focusTraversable="false" />
                             </children>
                         </HBox>
                         <HBox GridPane.columnIndex="2" alignment="CENTER_RIGHT">
                             <children>
-                                <Button fx:id="soundButton" styleClass="control-button-sound-high" />
-                                <Button fx:id="expandButton" styleClass="control-button-expand" />
+                                <Button fx:id="soundButton" styleClass="control-button-sound-high" focusTraversable="false" />
+                                <Button fx:id="expandButton" styleClass="control-button-expand" focusTraversable="false" />
                             </children>
                         </HBox>
                     </children>
