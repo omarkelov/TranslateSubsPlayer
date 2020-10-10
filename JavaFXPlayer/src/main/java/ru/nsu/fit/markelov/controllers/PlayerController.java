@@ -119,7 +119,7 @@ public class PlayerController implements Controller {
         embeddedMediaPlayer.events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
             @Override
             public void playing(MediaPlayer mediaPlayer) {
-                initPlayingIfNot(mediaPlayer);
+                Platform.runLater(() -> initPlayingIfNot(mediaPlayer));
             }
 
             @Override
@@ -179,16 +179,14 @@ public class PlayerController implements Controller {
 
     private void initPlayingIfNot(MediaPlayer mediaPlayer) {
         if (!initialized) {
+            initialized = true;
+
+            sceneManager.setTitle(videoFile.getName());
+            onPausePressed(false);
+
             initAudioMenu(mediaPlayer);
             initSubtitlesMenu(mediaPlayer);
             initTimeLabels(mediaPlayer);
-
-            Platform.runLater(() -> {
-                sceneManager.setTitle(videoFile.getName());
-                onPausePressed(false);
-            });
-
-            initialized = true;
 
             mediaPlayer.submit(() -> { // TODO -hardcode
                 mediaPlayer.controls().setPosition(0.042569723f);
@@ -310,7 +308,7 @@ public class PlayerController implements Controller {
     }
 
     private void initTimeLabels(MediaPlayer mediaPlayer) {
-        Platform.runLater(() -> entireTimeLabel.setText(formatTime(mediaPlayer.status().length())));
+        entireTimeLabel.setText(formatTime(mediaPlayer.status().length()));
     }
 
     private void disposeTimeLabels() {
@@ -332,6 +330,7 @@ public class PlayerController implements Controller {
                     Platform.runLater(() -> textFlow.getChildren().clear());
                 }
             });
+            textFlow.getChildren().clear();
             subtitlesHandler.setTime(embeddedMediaPlayer.status().time());
         } catch (IOException|SpuParseException|RuntimeException e) { // TODO show message
             System.out.println("Could not find any subtitles in the provided file.");
