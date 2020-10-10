@@ -274,12 +274,18 @@ public class PlayerController implements Controller {
                     return fileName.startsWith(videoFileName) && fileName.endsWith(".srt");
                 })
                 .forEach(subtitlesPath -> {
+                    boolean disabled = ((RadioMenuItem) subtitlesToggleGroup.getSelectedToggle()).getText().equals("Disabled");
+
                     RadioMenuItem radioMenuItem = new RadioMenuItem(videoFilePath.relativize(subtitlesPath).toString());
                     radioMenuItem.setToggleGroup(subtitlesToggleGroup);
-                    radioMenuItem.setSelected(false);
+                    radioMenuItem.setSelected(disabled);
                     radioMenuItem.setOnAction(fileActionEvent -> initSubtitles(subtitlesPath.toString()));
                     radioMenuItem.setMnemonicParsing(false);
                     subtitlesMenu.getItems().add(subtitlesMenu.getItems().size() - 1, radioMenuItem);
+
+                    if (disabled) {
+                        initSubtitles(subtitlesPath.toString());
+                    }
                 });
         } catch (IOException e) { // TODO show message
             System.out.println("Could not walk current video file directory.");
