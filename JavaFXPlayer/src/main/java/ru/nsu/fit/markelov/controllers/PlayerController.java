@@ -152,6 +152,10 @@ public class PlayerController implements Controller {
             if (file != null) {
                 disposePlaying();
 
+                if (!sceneManager.isFullScreen()) {
+                    onExpandPressed();
+                }
+
                 embeddedMediaPlayer.media().play(file.getAbsolutePath());
 
                 videoFile = file;
