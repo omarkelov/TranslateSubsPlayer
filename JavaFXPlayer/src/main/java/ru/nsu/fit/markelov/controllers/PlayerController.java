@@ -38,9 +38,11 @@ import java.nio.file.Path;
 
 import static javafx.scene.input.KeyCode.ENTER;
 import static javafx.scene.input.KeyCode.ESCAPE;
+import static javafx.scene.input.KeyCode.O;
 import static javafx.scene.input.KeyCode.P;
 import static javafx.scene.input.KeyCode.SPACE;
 import static javafx.scene.input.KeyCombination.ALT_DOWN;
+import static javafx.scene.input.KeyCombination.CONTROL_DOWN;
 import static ru.nsu.fit.markelov.util.validation.IllegalInputException.requireNonNull;
 import static uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurfaceFactory.videoSurfaceForImageView;
 
@@ -59,6 +61,7 @@ public class PlayerController implements Controller {
     private static final String COLLAPSE_CLASSNAME = "control-button-collapse";
     private static final String EXPAND_CLASSNAME = "control-button-expand";
 
+    private static final KeyCodeCombination ON_OPEN_KEYS = new KeyCodeCombination(O, CONTROL_DOWN);
     private static final KeyCodeCombination ON_STOP_KEYS = new KeyCodeCombination(P, ALT_DOWN);
     private static final KeyCodeCombination ON_EXPAND_KEYS = new KeyCodeCombination(ENTER, ALT_DOWN);
 
@@ -142,35 +145,36 @@ public class PlayerController implements Controller {
         videoImageView.fitWidthProperty().bind(root.widthProperty());
         videoImageView.fitHeightProperty().bind(root.heightProperty());
 
-        fileOpenItem.setOnAction(actionEvent -> {
-            boolean isPlaying = embeddedMediaPlayer.status().isPlaying();
-            if (isPlaying) {
-                onPausePressed(true);
-            }
-
-            File file = fileChooserManager.chooseVideoFile();
-            if (file != null) {
-                disposePlaying();
-
-                if (!sceneManager.isFullScreen()) {
-                    onExpandPressed();
-                }
-
-                embeddedMediaPlayer.media().play(file.getAbsolutePath());
-
-                videoFile = file;
-            }
-
-            if (isPlaying) {
-                onPausePressed(false);
-            }
-        });
-
+        fileOpenItem.setOnAction(actionEvent -> chooseFileAndPlay());
         fileCloseItem.setOnAction(actionEvent -> disposePlaying());
 
         pauseButton.setOnAction(actionEvent -> onPausePressed());
         stopButton.setOnAction(actionEvent -> onStopPressed());
         expandButton.setOnAction(actionEvent -> onExpandPressed());
+    }
+
+    private void chooseFileAndPlay() {
+        boolean isPlaying = embeddedMediaPlayer.status().isPlaying();
+        if (isPlaying) {
+            onPausePressed(true);
+        }
+
+        File file = fileChooserManager.chooseVideoFile();
+        if (file != null) {
+            disposePlaying();
+
+            if (!sceneManager.isFullScreen()) {
+                onExpandPressed();
+            }
+
+            embeddedMediaPlayer.media().play(file.getAbsolutePath());
+
+            videoFile = file;
+        }
+
+        if (isPlaying) {
+            onPausePressed(false);
+        }
     }
 
     private void initPlayingIfNot(MediaPlayer mediaPlayer) {
@@ -383,7 +387,9 @@ public class PlayerController implements Controller {
     }
 
     private void onKeyReleased(KeyEvent keyEvent) {
-        if (ON_STOP_KEYS.match(keyEvent)) {
+        if (ON_OPEN_KEYS.match(keyEvent)) {
+            chooseFileAndPlay();
+        } else if (ON_STOP_KEYS.match(keyEvent)) {
             onStopPressed();
         } else if (ON_EXPAND_KEYS.match(keyEvent) ||
             keyEvent.getCode() == ESCAPE && sceneManager.isFullScreen()
