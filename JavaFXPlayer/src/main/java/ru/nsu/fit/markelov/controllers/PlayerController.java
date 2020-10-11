@@ -169,7 +169,7 @@ public class PlayerController implements Controller {
 
             @Override
             public void error(MediaPlayer mediaPlayer) {
-                System.out.println("----- ERROR -----"); // todo show message
+                Platform.runLater(() -> sceneManager.showDefaultError());
             }
         });
     }
