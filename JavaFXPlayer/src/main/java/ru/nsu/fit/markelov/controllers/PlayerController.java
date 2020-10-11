@@ -57,7 +57,6 @@ import static uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurfaceFactor
 public class PlayerController implements Controller {
 
     private static final String FXML_FILE_NAME = "player.fxml";
-    private static final String INITIAL_TIME = "00:00:00";
 
     private static final String PLAY_CLASSNAME = "control-button-play";
     private static final String PAUSE_CLASSNAME = "control-button-pause";
