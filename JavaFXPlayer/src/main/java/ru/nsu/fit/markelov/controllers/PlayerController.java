@@ -115,11 +115,25 @@ public class PlayerController implements Controller {
 
         mediaPlayerFactory = new MediaPlayerFactory();
         embeddedMediaPlayer = mediaPlayerFactory.mediaPlayers().newEmbeddedMediaPlayer();
+        embeddedMediaPlayer.controls().setRepeat(true);
 
         embeddedMediaPlayer.events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
+
+            private boolean finished = false;
+
             @Override
             public void playing(MediaPlayer mediaPlayer) {
-                Platform.runLater(() -> initPlayingIfNot(mediaPlayer));
+                if (finished) {
+                    finished = false;
+                    Platform.runLater(() -> onStopPressed());
+                } else {
+                    Platform.runLater(() -> initPlayingIfNot(mediaPlayer));
+                }
+            }
+
+            @Override
+            public void finished(MediaPlayer mediaPlayer) {
+                finished = true;
             }
 
             @Override
