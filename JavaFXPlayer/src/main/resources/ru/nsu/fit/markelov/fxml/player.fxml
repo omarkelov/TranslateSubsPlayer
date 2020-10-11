@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -38,12 +39,14 @@
                         <ColumnConstraints percentWidth="33.33" />
                     </columnConstraints>
                     <rowConstraints>
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints />
+                        <RowConstraints />
                     </rowConstraints>
                     <children>
-                        <HBox GridPane.columnIndex="0" alignment="CENTER_LEFT">
+                        <Slider fx:id="slider" disable="true" focusTraversable="false" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="0" />
+                        <HBox alignment="CENTER_LEFT" GridPane.columnIndex="0" GridPane.rowIndex="1">
                             <children>
-                                <Button fx:id="stopButton" styleClass="control-button-stop" focusTraversable="false" />
+                                <Button fx:id="stopButton" focusTraversable="false" styleClass="control-button-stop" />
                                 <HBox>
                                     <Label fx:id="currentTimeLabel" text="00:00:00" />
                                 </HBox>
@@ -53,17 +56,17 @@
                                 </HBox>
                             </children>
                         </HBox>
-                        <HBox GridPane.columnIndex="1" alignment="CENTER">
+                        <HBox alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="1">
                             <children>
-                                <Button fx:id="skipLeftButton" styleClass="control-button-skip-left" focusTraversable="false" />
-                                <Button fx:id="pauseButton" styleClass="control-button-play" focusTraversable="false" />
-                                <Button fx:id="skipRightButton" styleClass="control-button-skip-right" focusTraversable="false" />
+                                <Button fx:id="skipLeftButton" focusTraversable="false" styleClass="control-button-skip-left" />
+                                <Button fx:id="pauseButton" focusTraversable="false" styleClass="control-button-play" />
+                                <Button fx:id="skipRightButton" focusTraversable="false" styleClass="control-button-skip-right" />
                             </children>
                         </HBox>
-                        <HBox GridPane.columnIndex="2" alignment="CENTER_RIGHT">
+                        <HBox alignment="CENTER_RIGHT" GridPane.columnIndex="2" GridPane.rowIndex="1">
                             <children>
-                                <Button fx:id="soundButton" styleClass="control-button-sound-high" focusTraversable="false" />
-                                <Button fx:id="expandButton" styleClass="control-button-expand" focusTraversable="false" />
+                                <Button fx:id="soundButton" focusTraversable="false" styleClass="control-button-sound-high" />
+                                <Button fx:id="expandButton" focusTraversable="false" styleClass="control-button-expand" />
                             </children>
                         </HBox>
                     </children>
