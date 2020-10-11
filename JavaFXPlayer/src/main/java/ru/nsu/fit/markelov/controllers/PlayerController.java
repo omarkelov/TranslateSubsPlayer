@@ -138,7 +138,12 @@ public class PlayerController implements Controller {
             public void playing(MediaPlayer mediaPlayer) {
                 if (finished) {
                     finished = false;
-                    Platform.runLater(() -> onStopPressed());
+                    Platform.runLater(() -> {
+                        onStopPressed();
+                        mediaPlayer.subpictures().setTrack(-1);
+                        mediaPlayer.audio().setTrack(
+                            (Integer) audioToggleGroup.getSelectedToggle().getUserData());
+                    });
                 } else {
                     Platform.runLater(() -> initPlayingIfNot(mediaPlayer));
                 }
@@ -262,6 +267,7 @@ public class PlayerController implements Controller {
             RadioMenuItem radioItem = new RadioMenuItem(trackDescription.description());
             radioItem.setToggleGroup(audioToggleGroup);
             radioItem.setSelected(trackDescription.id() == mediaPlayer.audio().track());
+            radioItem.setUserData(trackDescription.id());
             radioItem.setOnAction(actionEvent -> mediaPlayer.audio().setTrack(trackDescription.id()));
             radioItem.setMnemonicParsing(false);
             audioMenu.getItems().add(radioItem);
