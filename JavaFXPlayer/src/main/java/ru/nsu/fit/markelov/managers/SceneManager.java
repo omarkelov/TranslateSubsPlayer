@@ -3,7 +3,9 @@ package ru.nsu.fit.markelov.managers;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import ru.nsu.fit.markelov.controllers.Controller;
 import ru.nsu.fit.markelov.controllers.MenuController;
@@ -24,6 +26,10 @@ public class SceneManager implements AutoCloseable {
 
     private static final String DEFAULT_TITLE = "Translate Subs Player";
     private static final String FXML_DIRECTORY = "/ru/nsu/fit/markelov/fxml/";
+
+    private static final String DEFAULT_ERROR_HEADER = "Unknown error";
+    private static final String DEFAULT_ERROR_CONTENT =
+        "Unknown error has occurred. Please contact the developer.";
 
     private final Stage stage;
     private final FileChooserManager fileChooserManager;
@@ -79,6 +85,30 @@ public class SceneManager implements AutoCloseable {
      */
     public boolean isFullScreen() {
         return stage.isFullScreen();
+    }
+
+    /**
+     * Shows an error dialog pane with default header and content text.
+     */
+    public void showDefaultError() {
+        showError(null, null);
+    }
+
+    /**
+     * Shows an error dialog pane with specified header and content text.
+     *
+     * @param header  the header of this dialog pane.
+     * @param content the content text of this dialog pane.
+     */
+    public void showError(String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+
+        alert.setHeaderText(header == null || header.isEmpty() ? DEFAULT_ERROR_HEADER : header);
+        alert.setContentText(content == null || content.isEmpty() ? DEFAULT_ERROR_CONTENT : content);
+        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+        alert.initOwner(stage);
+
+        alert.showAndWait();
     }
 
     /**
