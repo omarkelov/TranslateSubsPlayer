@@ -19,6 +19,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.TextFlow;
+import ru.nsu.fit.markelov.javafxutil.AlertUtils;
 import ru.nsu.fit.markelov.managers.FileChooserManager;
 import ru.nsu.fit.markelov.managers.SceneManager;
 import ru.nsu.fit.markelov.subtitles.BOMSrtParser;
@@ -31,7 +32,6 @@ import uk.co.caprica.vlcj.player.base.TrackDescription;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 import uk.co.caprica.vlcj.subs.Spus;
 import uk.co.caprica.vlcj.subs.handler.SpuHandler;
-import uk.co.caprica.vlcj.subs.parser.SpuParseException;
 
 import java.io.File;
 import java.io.FileReader;
@@ -111,6 +111,8 @@ public class PlayerController implements Controller {
     private SpuHandler subtitlesHandler;
     private final MediaPlayerFactory mediaPlayerFactory;
     private final EmbeddedMediaPlayer embeddedMediaPlayer;
+
+    private RadioMenuItem currentSubtitlesMenuItem;
 
     private boolean initialized = false;
 
@@ -288,7 +290,11 @@ public class PlayerController implements Controller {
         RadioMenuItem disabledRadioItem = new RadioMenuItem("Disabled");
         disabledRadioItem.setToggleGroup(subtitlesToggleGroup);
         disabledRadioItem.setSelected(true);
-        disabledRadioItem.setOnAction(actionEvent -> disposeSubtitles());
+        currentSubtitlesMenuItem = disabledRadioItem;
+        disabledRadioItem.setOnAction(actionEvent -> {
+            disposeSubtitles();
+            currentSubtitlesMenuItem = disabledRadioItem;
+        });
         disabledRadioItem.setMnemonicParsing(false);
         subtitlesMenu.getItems().add(disabledRadioItem);
 
@@ -305,11 +311,11 @@ public class PlayerController implements Controller {
                 RadioMenuItem radioMenuItem = new RadioMenuItem(file.getName());
                 radioMenuItem.setToggleGroup(subtitlesToggleGroup);
                 radioMenuItem.setSelected(true);
-                radioMenuItem.setOnAction(fileActionEvent -> initSubtitles(file.getAbsolutePath()));
+                radioMenuItem.setOnAction(fileActionEvent -> initSubtitles(file.getAbsolutePath(), radioMenuItem));
                 radioMenuItem.setMnemonicParsing(false);
                 subtitlesMenu.getItems().add(subtitlesMenu.getItems().size() - 1, radioMenuItem);
 
-                initSubtitles(file.getAbsolutePath());
+                initSubtitles(file.getAbsolutePath(), radioMenuItem);
             }
 
             if (isPlaying) {
@@ -333,12 +339,12 @@ public class PlayerController implements Controller {
                     RadioMenuItem radioMenuItem = new RadioMenuItem(videoFilePath.relativize(subtitlesPath).toString());
                     radioMenuItem.setToggleGroup(subtitlesToggleGroup);
                     radioMenuItem.setSelected(disabled);
-                    radioMenuItem.setOnAction(fileActionEvent -> initSubtitles(subtitlesPath.toString()));
+                    radioMenuItem.setOnAction(fileActionEvent -> initSubtitles(subtitlesPath.toString(), radioMenuItem));
                     radioMenuItem.setMnemonicParsing(false);
                     subtitlesMenu.getItems().add(subtitlesMenu.getItems().size() - 1, radioMenuItem);
 
                     if (disabled) {
-                        initSubtitles(subtitlesPath.toString());
+                        initSubtitles(subtitlesPath.toString(), radioMenuItem);
                     }
                 });
         } catch (IOException e) { // TODO show message
@@ -384,7 +390,7 @@ public class PlayerController implements Controller {
         currentTimeLabel.setText(INITIAL_TIME);
     }
 
-    private void initSubtitles(String fileName) {
+    private void initSubtitles(String fileName, RadioMenuItem newRadioMenuItem) {
         try (FileReader fileReader = new FileReader(fileName)) {
             Spus subtitleUnits = new BOMSrtParser().parse(fileReader);
 
@@ -399,10 +405,16 @@ public class PlayerController implements Controller {
                 }
             });
             textFlow.getChildren().clear();
+            currentSubtitlesMenuItem = newRadioMenuItem;
             subtitlesHandler.setTime(embeddedMediaPlayer.status().time());
-        } catch (IOException|SpuParseException|RuntimeException e) { // TODO show message
-            System.out.println("Could not find any subtitles in the provided file.");
-            e.printStackTrace();
+        } catch (IOException e) {
+            currentSubtitlesMenuItem.setSelected(true);
+            AlertUtils.showError("File cannot be opened",
+                "The next file cannot be opened: " + fileName);
+        } catch (Exception e) {
+            currentSubtitlesMenuItem.setSelected(true);
+            AlertUtils.showError("Subtitles cannot be parsed",
+                "The next file cannot be parsed: " + fileName);
         }
     }
 
