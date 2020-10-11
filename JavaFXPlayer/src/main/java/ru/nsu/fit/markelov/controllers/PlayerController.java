@@ -248,6 +248,8 @@ public class PlayerController implements Controller {
         sceneManager.setDefaultTitle();
         videoFile = null;
 
+        root.requestFocus();
+
         initialized = false;
     }
 
