@@ -409,11 +409,11 @@ public class PlayerController implements Controller {
             subtitlesHandler.setTime(embeddedMediaPlayer.status().time());
         } catch (IOException e) {
             currentSubtitlesMenuItem.setSelected(true);
-            AlertUtils.showError("File cannot be opened",
+            sceneManager.showError("File cannot be opened",
                 "The next file cannot be opened: " + fileName);
         } catch (Exception e) {
             currentSubtitlesMenuItem.setSelected(true);
-            AlertUtils.showError("Subtitles cannot be parsed",
+            sceneManager.showError("Subtitles cannot be parsed",
                 "The next file cannot be parsed: " + fileName);
         }
     }
