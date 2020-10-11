@@ -37,7 +37,7 @@ public class PlayerApplication extends Application {
     public void start(Stage primaryStage) {
         try {
             sceneManager = new SceneManager(primaryStage, new FileChooserManager(primaryStage));
-            sceneManager.switchToMenu();
+            sceneManager.switchToPlayer();
             primaryStage.show();
         } catch (IllegalInputException e) {
             buildErrorAlert("game launching").showAndWait();
