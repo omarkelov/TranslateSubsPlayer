@@ -1,6 +1,7 @@
 package ru.nsu.fit.markelov.controllers;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -9,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCodeCombination;
@@ -35,6 +37,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 
 import static javafx.scene.input.KeyCode.ENTER;
 import static javafx.scene.input.KeyCode.ESCAPE;
@@ -61,6 +64,10 @@ public class PlayerController implements Controller {
     private static final String COLLAPSE_CLASSNAME = "control-button-collapse";
     private static final String EXPAND_CLASSNAME = "control-button-expand";
 
+    private static final String SLIDER_STYLE_FORMAT =
+        "-slider-track-color: linear-gradient(to right, -slider-filled-track-color 0%%, "
+            + "-slider-filled-track-color %1$f%%, -fx-base %1$f%%, -fx-base 100%%);";
+
     private static final KeyCodeCombination ON_OPEN_KEYS = new KeyCodeCombination(O, CONTROL_DOWN);
     private static final KeyCodeCombination ON_STOP_KEYS = new KeyCodeCombination(P, ALT_DOWN);
     private static final KeyCodeCombination ON_EXPAND_KEYS = new KeyCodeCombination(ENTER, ALT_DOWN);
@@ -86,6 +93,8 @@ public class PlayerController implements Controller {
 
     @FXML private Label currentTimeLabel;
     @FXML private Label entireTimeLabel;
+
+    @FXML private Slider slider;
 
     private final ToggleGroup audioToggleGroup = new ToggleGroup();
     private final ToggleGroup subtitlesToggleGroup = new ToggleGroup();
@@ -142,7 +151,10 @@ public class PlayerController implements Controller {
                     subtitlesHandler.setTime(newTime);
                 }
 
-                Platform.runLater(() -> currentTimeLabel.setText(formatTime(newTime)));
+                Platform.runLater(() -> {
+                    slider.setValue(newTime);
+                    currentTimeLabel.setText(formatTime(newTime));
+                });
             }
 
             @Override
@@ -165,6 +177,15 @@ public class PlayerController implements Controller {
         pauseButton.setOnAction(actionEvent -> onPausePressed());
         stopButton.setOnAction(actionEvent -> onStopPressed());
         expandButton.setOnAction(actionEvent -> onExpandPressed());
+
+        slider.setOnMousePressed(mouseEvent ->
+            embeddedMediaPlayer.controls().setTime((long) slider.getValue()));
+        slider.setOnMouseDragged(mouseEvent ->
+            embeddedMediaPlayer.controls().setTime((long) slider.getValue()));
+        slider.styleProperty().bind(Bindings.createStringBinding(() -> {
+            double percentage = (slider.getValue() - slider.getMin()) / (slider.getMax() - slider.getMin()) * 100.0;
+            return String.format(Locale.US, SLIDER_STYLE_FORMAT, percentage);
+        }, slider.valueProperty(), slider.minProperty(), slider.maxProperty()));
     }
 
     private void chooseFileAndPlay() {
@@ -200,12 +221,8 @@ public class PlayerController implements Controller {
 
             initAudioMenu(mediaPlayer);
             initSubtitlesMenu(mediaPlayer);
+            initSlider(mediaPlayer);
             initTimeLabels(mediaPlayer);
-
-            mediaPlayer.submit(() -> { // TODO -hardcode
-                mediaPlayer.controls().setPosition(0.042569723f);
-                //mediaPlayer.controls().setTime(2 * 60 * 1000 + 47 * 1000);
-            });
         }
     }
 
@@ -217,6 +234,7 @@ public class PlayerController implements Controller {
         disposeAudioMenu();
         disposeSubtitlesMenu();
         disposeSubtitles();
+        disposeSlider();
         disposeTimeLabels();
 
         sceneManager.setDefaultTitle();
@@ -321,6 +339,16 @@ public class PlayerController implements Controller {
         subtitlesToggleGroup.getToggles().clear();
     }
 
+    private void initSlider(MediaPlayer mediaPlayer) {
+        slider.setMax(mediaPlayer.status().length() - 1);
+        slider.setDisable(false);
+    }
+
+    private void disposeSlider() {
+        slider.setDisable(true);
+        slider.setValue(0);
+    }
+
     private void initTimeLabels(MediaPlayer mediaPlayer) {
         entireTimeLabel.setText(formatTime(mediaPlayer.status().length()));
     }
@@ -380,6 +408,7 @@ public class PlayerController implements Controller {
             onPausePressed(true);
         }
         embeddedMediaPlayer.controls().setTime(0);
+        slider.setValue(slider.getMin());
         currentTimeLabel.setText(INITIAL_TIME);
         if (subtitlesHandler != null) {
             subtitlesHandler.setTime(0);
