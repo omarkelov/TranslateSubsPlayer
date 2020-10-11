@@ -188,10 +188,8 @@ public class PlayerController implements Controller {
         stopButton.setOnAction(actionEvent -> onStopPressed());
         expandButton.setOnAction(actionEvent -> onExpandPressed());
 
-        slider.setOnMousePressed(mouseEvent ->
-            embeddedMediaPlayer.controls().setTime((long) slider.getValue()));
-        slider.setOnMouseDragged(mouseEvent ->
-            embeddedMediaPlayer.controls().setTime((long) slider.getValue()));
+        slider.setOnMousePressed(mouseEvent -> onSliderPressedOrDragged());
+        slider.setOnMouseDragged(mouseEvent -> onSliderPressedOrDragged());
         slider.styleProperty().bind(Bindings.createStringBinding(() -> {
             double percentage = (slider.getValue() - slider.getMin()) / (slider.getMax() - slider.getMin()) * 100.0;
             return String.format(Locale.US, SLIDER_STYLE_FORMAT, percentage);
@@ -419,6 +417,10 @@ public class PlayerController implements Controller {
     private void disposeSubtitles() {
         subtitlesHandler = null;
         textFlow.getChildren().clear();
+    }
+
+    private void onSliderPressedOrDragged() {
+        embeddedMediaPlayer.controls().setTime((long) slider.getValue());
     }
 
     private void onPausePressed() {
