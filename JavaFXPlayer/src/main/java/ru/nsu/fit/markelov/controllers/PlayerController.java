@@ -346,9 +346,8 @@ public class PlayerController implements Controller {
                         initSubtitles(subtitlesPath.toString(), radioMenuItem);
                     }
                 });
-        } catch (IOException e) { // TODO show message
-            System.out.println("Could not walk current video file directory.");
-            e.printStackTrace();
+        } catch (Exception e) {
+            System.out.println("Could not walk current video file directory: " + e.getMessage());
         }
 
         subtitlesMenu.setDisable(false);
