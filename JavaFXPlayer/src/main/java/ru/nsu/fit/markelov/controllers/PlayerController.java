@@ -19,7 +19,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.TextFlow;
-import ru.nsu.fit.markelov.javafxutil.AlertUtils;
 import ru.nsu.fit.markelov.managers.FileChooserManager;
 import ru.nsu.fit.markelov.managers.SceneManager;
 import ru.nsu.fit.markelov.subtitles.BOMSrtParser;
