@@ -416,20 +416,12 @@ public class PlayerController implements Controller {
     }
 
     private void onPausePressed(boolean pause) {
-        if (!initialized) {
-            return;
-        }
-
         replaceClassName(pauseButton.getStyleClass(), pause, PAUSE_CLASSNAME, PLAY_CLASSNAME);
 
         embeddedMediaPlayer.controls().setPause(pause);
     }
 
     private void onStopPressed() {
-        if (!initialized) {
-            return;
-        }
-
         if (embeddedMediaPlayer.status().isPlaying()) {
             onPausePressed(true);
         }
