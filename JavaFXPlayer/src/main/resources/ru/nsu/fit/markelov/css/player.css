@@ -56,6 +56,10 @@
     -fx-opacity: 1;
 }
 
+.controls Button:disabled {
+    -fx-opacity: 0.4;
+}
+
 .controls Button:pressed {
     -fx-background-size: 22;
     -fx-effect: innershadow(gaussian, black, 8, 0, 0, 0);

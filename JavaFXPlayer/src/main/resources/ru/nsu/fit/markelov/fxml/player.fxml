@@ -44,7 +44,7 @@
                     </rowConstraints>
                     <children>
                         <Slider fx:id="slider" disable="true" focusTraversable="false" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="0" />
-                        <HBox alignment="CENTER_LEFT" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                        <HBox fx:id="leftControlBox" disable="true" alignment="CENTER_LEFT" GridPane.columnIndex="0" GridPane.rowIndex="1">
                             <children>
                                 <Button fx:id="stopButton" focusTraversable="false" styleClass="control-button-stop" />
                                 <HBox>
@@ -56,7 +56,7 @@
                                 </HBox>
                             </children>
                         </HBox>
-                        <HBox alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <HBox fx:id="centerControlBox" disable="true" alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="1">
                             <children>
                                 <Button fx:id="skipLeftButton" focusTraversable="false" styleClass="control-button-skip-left" />
                                 <Button fx:id="pauseButton" focusTraversable="false" styleClass="control-button-play" />

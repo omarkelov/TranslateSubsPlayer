@@ -16,6 +16,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.TextFlow;
 import ru.nsu.fit.markelov.managers.FileChooserManager;
@@ -83,6 +84,9 @@ public class PlayerController implements Controller {
     @FXML private MenuItem fileCloseItem;
     @FXML private MenuItem subtitlesAddItem;
     @FXML private MenuItem helpAboutItem;
+
+    @FXML private HBox leftControlBox;
+    @FXML private HBox centerControlBox;
 
     @FXML private Button pauseButton;
     @FXML private Button stopButton;
@@ -221,6 +225,8 @@ public class PlayerController implements Controller {
 
             initAudioMenu(mediaPlayer);
             initSubtitlesMenu(mediaPlayer);
+
+            initControlBoxes();
             initSlider(mediaPlayer);
             initTimeLabels(mediaPlayer);
         }
@@ -234,6 +240,8 @@ public class PlayerController implements Controller {
         disposeAudioMenu();
         disposeSubtitlesMenu();
         disposeSubtitles();
+
+        disposeControlBoxes();
         disposeSlider();
         disposeTimeLabels();
 
@@ -337,6 +345,16 @@ public class PlayerController implements Controller {
         subtitlesMenu.setDisable(true);
         subtitlesMenu.getItems().clear();
         subtitlesToggleGroup.getToggles().clear();
+    }
+
+    private void initControlBoxes() {
+        leftControlBox.setDisable(false);
+        centerControlBox.setDisable(false);
+    }
+
+    private void disposeControlBoxes() {
+        leftControlBox.setDisable(true);
+        centerControlBox.setDisable(true);
     }
 
     private void initSlider(MediaPlayer mediaPlayer) {
