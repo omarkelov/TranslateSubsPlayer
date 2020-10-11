@@ -161,10 +161,7 @@ public class PlayerController implements Controller {
                     subtitlesHandler.setTime(newTime);
                 }
 
-                Platform.runLater(() -> {
-                    slider.setValue(newTime);
-                    currentTimeLabel.setText(formatTime(newTime));
-                });
+                Platform.runLater(() -> slider.setValue(newTime));
             }
 
             @Override
@@ -194,6 +191,12 @@ public class PlayerController implements Controller {
             double percentage = (slider.getValue() - slider.getMin()) / (slider.getMax() - slider.getMin()) * 100.0;
             return String.format(Locale.US, SLIDER_STYLE_FORMAT, percentage);
         }, slider.valueProperty(), slider.minProperty(), slider.maxProperty()));
+
+        currentTimeLabel.textProperty().bind(Bindings.createStringBinding(() ->
+            formatTime((long) slider.getValue()), slider.valueProperty()));
+
+        entireTimeLabel.textProperty().bind(Bindings.createStringBinding(() ->
+            formatTime((long) slider.getMax()), slider.maxProperty()));
     }
 
     private void chooseFileAndPlay() {
@@ -232,7 +235,6 @@ public class PlayerController implements Controller {
 
             initControlBoxes();
             initSlider(mediaPlayer);
-            initTimeLabels(mediaPlayer);
         }
     }
 
@@ -247,7 +249,6 @@ public class PlayerController implements Controller {
 
         disposeControlBoxes();
         disposeSlider();
-        disposeTimeLabels();
 
         sceneManager.setDefaultTitle();
         videoFile = null;
@@ -375,15 +376,7 @@ public class PlayerController implements Controller {
     private void disposeSlider() {
         slider.setDisable(true);
         slider.setValue(0);
-    }
-
-    private void initTimeLabels(MediaPlayer mediaPlayer) {
-        entireTimeLabel.setText(formatTime(mediaPlayer.status().length()));
-    }
-
-    private void disposeTimeLabels() {
-        entireTimeLabel.setText(INITIAL_TIME);
-        currentTimeLabel.setText(INITIAL_TIME);
+        slider.setMax(1);
     }
 
     private void initSubtitles(String fileName, RadioMenuItem newRadioMenuItem) {
@@ -439,7 +432,6 @@ public class PlayerController implements Controller {
         }
         embeddedMediaPlayer.controls().setTime(0);
         slider.setValue(slider.getMin());
-        currentTimeLabel.setText(INITIAL_TIME);
         if (subtitlesHandler != null) {
             subtitlesHandler.setTime(0);
         }
