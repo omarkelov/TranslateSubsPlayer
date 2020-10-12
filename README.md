@@ -42,6 +42,6 @@ The dictionary is stored on a remote server (for the further possibility of addi
 
 # Team members
 
-* Oleg Markelov
+* Oleg Markelov (the leader)
 * Polina Karaseva
 * ~~Ivan Shatalov~~ – took a study leave
