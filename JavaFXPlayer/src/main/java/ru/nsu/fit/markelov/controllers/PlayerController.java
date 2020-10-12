@@ -23,6 +23,7 @@ import ru.nsu.fit.markelov.managers.FileChooserManager;
 import ru.nsu.fit.markelov.managers.SceneManager;
 import ru.nsu.fit.markelov.subtitles.BOMSrtParser;
 import ru.nsu.fit.markelov.subtitles.JavaFxSubtitles;
+import ru.nsu.fit.markelov.subtitles.SubtitlesObserver;
 import ru.nsu.fit.markelov.util.validation.IllegalInputException;
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
@@ -54,7 +55,7 @@ import static uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurfaceFactor
  *
  * @author Oleg Markelov
  */
-public class PlayerController implements Controller {
+public class PlayerController implements Controller, SubtitlesObserver {
 
     private static final String FXML_FILE_NAME = "player.fxml";
 
@@ -385,7 +386,9 @@ public class PlayerController implements Controller {
             subtitlesHandler = new SpuHandler(subtitleUnits);
             subtitlesHandler.addSpuEventListener(subtitleUnit -> {
                 if (subtitleUnit != null) {
-                    JavaFxSubtitles javaFxSubtitles = new JavaFxSubtitles(subtitleUnit.value().toString());
+                    JavaFxSubtitles javaFxSubtitles =
+                        new JavaFxSubtitles(this, subtitleUnit.value().toString());
+
                     Platform.runLater(() -> {
                         subtitlesTextFlow.getChildren().clear();
                         subtitlesTextFlow.getChildren().addAll(javaFxSubtitles.getTextList());
@@ -411,6 +414,11 @@ public class PlayerController implements Controller {
             sceneManager.showError("Subtitles cannot be parsed",
                 "The next file cannot be parsed: " + fileName);
         }
+    }
+
+    @Override
+    public void onWordClicked(String text) {
+        System.out.println(text);
     }
 
     private void disposeSubtitles() {
