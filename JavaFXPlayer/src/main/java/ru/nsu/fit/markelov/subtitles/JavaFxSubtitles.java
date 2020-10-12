@@ -3,7 +3,6 @@ package ru.nsu.fit.markelov.subtitles;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,11 +13,10 @@ public class JavaFxSubtitles {
     private static final String SPACE = " ";
     private static final String NEW_LINE = System.lineSeparator();
 
-    private final List<Text> subtitles;
-    private double textFlowWidth;
+    private final List<Text> textList;
 
     public JavaFxSubtitles(String str) {
-        subtitles = new ArrayList<>();
+        textList = new ArrayList<>();
 
         populateSubtitles(str);
     }
@@ -30,27 +28,19 @@ public class JavaFxSubtitles {
                 continue;
             }
 
-            double lineWidth = 0;
-
             String[] words = lines[i].split("\\s+");
             for (int j = 0; j < words.length; j++) {
                 Text word = createText(words[j]);
-                subtitles.add(word);
-                lineWidth += word.getBoundsInLocal().getWidth();
+                textList.add(word);
 
                 if (j < words.length - 1) {
                     Text delimiter = createText(SPACE);
-                    subtitles.add(delimiter);
-                    lineWidth += delimiter.getBoundsInLocal().getWidth();
+                    textList.add(delimiter);
                 }
             }
 
             if (i < lines.length - 1) {
-                subtitles.add(createText(NEW_LINE));
-            }
-
-            if (lineWidth > textFlowWidth) {
-                textFlowWidth = lineWidth;
+                textList.add(createText(NEW_LINE));
             }
         }
     }
@@ -67,12 +57,12 @@ public class JavaFxSubtitles {
         return text;
     }
 
-    public void updateTextFlow(TextFlow textFlow) {
-        textFlow.getChildren().clear();
-
-        textFlow.setMinWidth(textFlowWidth + SUBTITLES_FONT.getSize());
-        textFlow.setMaxWidth(textFlowWidth + SUBTITLES_FONT.getSize());
-
-        textFlow.getChildren().addAll(subtitles);
+    /**
+     * Returns subtitles.
+     *
+     * @return subtitles.
+     */
+    public List<Text> getTextList() {
+        return textList;
     }
 }

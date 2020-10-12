@@ -14,6 +14,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.TextFlow?>
 <?import java.net.URL?>
+<?import javafx.scene.Group?>
 <StackPane fx:id="root" styleClass="root" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <stylesheets>
         <URL value="@../css/main.css" />
@@ -31,7 +32,11 @@
                 <RowConstraints vgrow="NEVER" />
             </rowConstraints>
             <children>
-                <TextFlow fx:id="textFlow" styleClass="subtitles" GridPane.rowIndex="1" />
+                <Group GridPane.rowIndex="1">
+                    <children>
+                        <TextFlow fx:id="subtitlesTextFlow" styleClass="subtitles" />
+                    </children>
+                </Group>
                 <GridPane styleClass="controls" GridPane.rowIndex="2">
                     <columnConstraints>
                         <ColumnConstraints percentWidth="33.33" />

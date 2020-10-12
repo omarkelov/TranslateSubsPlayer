@@ -20,7 +20,9 @@
 
 .subtitles {
     -fx-text-alignment: center;
+    -fx-padding: 6 24;
     -fx-background-color: rgba(0, 0, 0, 0.75);
+    visibility: hidden;
 }
 
 .controls {

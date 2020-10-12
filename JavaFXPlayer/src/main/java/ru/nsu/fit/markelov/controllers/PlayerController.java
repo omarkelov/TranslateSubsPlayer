@@ -74,7 +74,7 @@ public class PlayerController implements Controller {
     @FXML private StackPane root;
     @FXML private ImageView videoImageView;
     @FXML private GridPane gridPane;
-    @FXML private TextFlow textFlow;
+    @FXML private TextFlow subtitlesTextFlow;
 
     @FXML private Menu audioMenu;
     @FXML private Menu subtitlesMenu;
@@ -383,16 +383,23 @@ public class PlayerController implements Controller {
             Spus subtitleUnits = new BOMSrtParser().parse(fileReader);
 
             subtitlesHandler = new SpuHandler(subtitleUnits);
-            //subtitlesHandler.setOffset(50);
             subtitlesHandler.addSpuEventListener(subtitleUnit -> {
                 if (subtitleUnit != null) {
                     JavaFxSubtitles javaFxSubtitles = new JavaFxSubtitles(subtitleUnit.value().toString());
-                    Platform.runLater(() -> javaFxSubtitles.updateTextFlow(textFlow));
+                    Platform.runLater(() -> {
+                        subtitlesTextFlow.getChildren().clear();
+                        subtitlesTextFlow.getChildren().addAll(javaFxSubtitles.getTextList());
+                        subtitlesTextFlow.setVisible(true);
+                    });
                 } else {
-                    Platform.runLater(() -> textFlow.getChildren().clear());
+                    Platform.runLater(() -> {
+                        subtitlesTextFlow.setVisible(false);
+                        subtitlesTextFlow.getChildren().clear();
+                    });
                 }
             });
-            textFlow.getChildren().clear();
+            subtitlesTextFlow.setVisible(false);
+            subtitlesTextFlow.getChildren().clear();
             currentSubtitlesMenuItem = newRadioMenuItem;
             subtitlesHandler.setTime(embeddedMediaPlayer.status().time());
         } catch (IOException e) {
@@ -408,7 +415,8 @@ public class PlayerController implements Controller {
 
     private void disposeSubtitles() {
         subtitlesHandler = null;
-        textFlow.getChildren().clear();
+        subtitlesTextFlow.setVisible(false);
+        subtitlesTextFlow.getChildren().clear();
     }
 
     private void onSliderPressedOrDragged() {
