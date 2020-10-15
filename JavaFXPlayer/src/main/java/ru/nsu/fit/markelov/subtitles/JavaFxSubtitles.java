@@ -53,8 +53,7 @@ public class JavaFxSubtitles {
         text.setFill(Color.WHITE);
 
         if (!str.equals(SPACE) && !str.equals(NEW_LINE)) {
-            text.setOnMouseClicked(actionEvent ->
-                subtitlesObserver.onWordClicked(((Text) actionEvent.getSource()).getText()));
+            text.setOnMouseClicked(mouseEvent -> subtitlesObserver.onWordClicked(mouseEvent, text));
         }
 
         return text;

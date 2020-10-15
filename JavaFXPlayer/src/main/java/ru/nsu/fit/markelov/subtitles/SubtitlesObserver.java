@@ -1,5 +1,8 @@
 package ru.nsu.fit.markelov.subtitles;
 
+import javafx.scene.input.MouseEvent;
+import javafx.scene.text.Text;
+
 public interface SubtitlesObserver {
-    void onWordClicked(String text);
+    void onWordClicked(MouseEvent actionEvent, Text clickedText);
 }

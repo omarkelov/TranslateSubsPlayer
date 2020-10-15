@@ -4,6 +4,8 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Bounds;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -15,9 +17,13 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import ru.nsu.fit.markelov.managers.FileChooserManager;
 import ru.nsu.fit.markelov.managers.SceneManager;
@@ -72,10 +78,17 @@ public class PlayerController implements Controller, SubtitlesObserver {
     private static final KeyCodeCombination ON_STOP_KEYS = new KeyCodeCombination(P, ALT_DOWN);
     private static final KeyCodeCombination ON_EXPAND_KEYS = new KeyCodeCombination(ENTER, ALT_DOWN);
 
+    private static final int TRANSLATION_BAR_Y_OFFSET = 15;
+
     @FXML private StackPane root;
     @FXML private ImageView videoImageView;
     @FXML private GridPane gridPane;
+    @FXML private Group subtitlesGroup;
     @FXML private TextFlow subtitlesTextFlow;
+
+    @FXML private Pane translationPane;
+    @FXML private Group translationGroup;
+    @FXML private TextFlow translationTextFlow;
 
     @FXML private Menu audioMenu;
     @FXML private Menu subtitlesMenu;
@@ -197,6 +210,20 @@ public class PlayerController implements Controller, SubtitlesObserver {
 
         entireTimeLabel.textProperty().bind(Bindings.createStringBinding(() ->
             formatTime((long) slider.getMax()), slider.maxProperty()));
+
+        videoImageView.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> hideTranslationPane());
+
+        subtitlesTextFlow.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
+            if (mouseEvent.getPickResult().getIntersectedNode() == subtitlesTextFlow) {
+                hideTranslationPane();
+            }
+        });
+    }
+
+    private void hideTranslationPane() {
+        translationGroup.layoutXProperty().unbind();
+        translationGroup.layoutYProperty().unbind();
+        translationPane.setVisible(false);
     }
 
     private void chooseFileAndPlay() {
@@ -390,6 +417,7 @@ public class PlayerController implements Controller, SubtitlesObserver {
                         new JavaFxSubtitles(this, subtitleUnit.value().toString());
 
                     Platform.runLater(() -> {
+                        hideTranslationPane();
                         subtitlesTextFlow.getChildren().clear();
                         subtitlesTextFlow.getChildren().addAll(javaFxSubtitles.getTextList());
                         subtitlesTextFlow.setVisible(true);
@@ -398,6 +426,7 @@ public class PlayerController implements Controller, SubtitlesObserver {
                     Platform.runLater(() -> {
                         subtitlesTextFlow.setVisible(false);
                         subtitlesTextFlow.getChildren().clear();
+                        hideTranslationPane();
                     });
                 }
             });
@@ -417,14 +446,43 @@ public class PlayerController implements Controller, SubtitlesObserver {
     }
 
     @Override
-    public void onWordClicked(String text) {
-        System.out.println(text);
+    public void onWordClicked(MouseEvent mouseEvent, Text clickedText) {
+        Text text = new Text(clickedText.getText());
+        text.setFill(Color.WHITE);
+
+        translationTextFlow.getChildren().clear();
+        translationTextFlow.getChildren().add(text);
+
+        translationGroup.layoutXProperty().bind(Bindings.createDoubleBinding(() -> {
+            Bounds bounds = clickedText.localToScene(clickedText.getBoundsInLocal());
+
+            double clickedTextCenterX = 0.5d * (bounds.getMinX() + bounds.getMaxX());
+            double shiftX = 0.5d * translationGroup.getBoundsInLocal().getWidth();
+
+            return clickedTextCenterX - shiftX;
+        }, subtitlesGroup.layoutXProperty(), translationGroup.boundsInLocalProperty()));
+
+        translationGroup.layoutYProperty().bind(Bindings.createDoubleBinding(() -> {
+            Bounds bounds = clickedText.localToScene(clickedText.getBoundsInLocal());
+
+            double clickedTextCenterY = 0.5d * (bounds.getMinY() + bounds.getMaxY());
+            double shiftY = translationGroup.getBoundsInLocal().getHeight();
+
+            return clickedTextCenterY - shiftY - TRANSLATION_BAR_Y_OFFSET;
+        }, subtitlesGroup.layoutYProperty(), translationGroup.boundsInLocalProperty()));
+
+        if (embeddedMediaPlayer.status().isPlaying()) {
+            onPausePressed(true);
+        }
+
+        translationPane.setVisible(true);
     }
 
     private void disposeSubtitles() {
         subtitlesHandler = null;
         subtitlesTextFlow.setVisible(false);
         subtitlesTextFlow.getChildren().clear();
+        hideTranslationPane();
     }
 
     private void onSliderPressedOrDragged() {
@@ -436,6 +494,10 @@ public class PlayerController implements Controller, SubtitlesObserver {
     }
 
     private void onPausePressed(boolean pause) {
+        if (!pause) {
+            hideTranslationPane();
+        }
+
         replaceClassName(pauseButton.getStyleClass(), pause, PAUSE_CLASSNAME, PLAY_CLASSNAME);
 
         embeddedMediaPlayer.controls().setPause(pause);
