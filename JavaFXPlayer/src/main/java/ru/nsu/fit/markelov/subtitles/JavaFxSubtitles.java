@@ -13,11 +13,9 @@ public class JavaFxSubtitles {
     private static final String SPACE = " ";
     private static final String NEW_LINE = System.lineSeparator();
 
-    private final SubtitlesObserver subtitlesObserver;
     private final List<Text> textList;
 
-    public JavaFxSubtitles(SubtitlesObserver subtitlesObserver, String str) {
-        this.subtitlesObserver = subtitlesObserver;
+    public JavaFxSubtitles(String str) {
         textList = new ArrayList<>();
 
         populateSubtitles(str);
@@ -51,10 +49,6 @@ public class JavaFxSubtitles {
         Text text = new Text(str);
         text.setFont(SUBTITLES_FONT);
         text.setFill(Color.WHITE);
-
-        if (!str.equals(SPACE) && !str.equals(NEW_LINE)) {
-            text.setOnMouseClicked(mouseEvent -> subtitlesObserver.onWordClicked(mouseEvent, text));
-        }
 
         return text;
     }

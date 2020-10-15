@@ -29,7 +29,6 @@ import ru.nsu.fit.markelov.managers.FileChooserManager;
 import ru.nsu.fit.markelov.managers.SceneManager;
 import ru.nsu.fit.markelov.subtitles.BOMSrtParser;
 import ru.nsu.fit.markelov.subtitles.JavaFxSubtitles;
-import ru.nsu.fit.markelov.subtitles.SubtitlesObserver;
 import ru.nsu.fit.markelov.util.validation.IllegalInputException;
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
@@ -61,7 +60,7 @@ import static uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurfaceFactor
  *
  * @author Oleg Markelov
  */
-public class PlayerController implements Controller, SubtitlesObserver {
+public class PlayerController implements Controller {
 
     private static final String FXML_FILE_NAME = "player.fxml";
 
@@ -77,8 +76,6 @@ public class PlayerController implements Controller, SubtitlesObserver {
     private static final KeyCodeCombination ON_OPEN_KEYS = new KeyCodeCombination(O, CONTROL_DOWN);
     private static final KeyCodeCombination ON_STOP_KEYS = new KeyCodeCombination(P, ALT_DOWN);
     private static final KeyCodeCombination ON_EXPAND_KEYS = new KeyCodeCombination(ENTER, ALT_DOWN);
-
-    private static final int TRANSLATION_BAR_Y_OFFSET = 15;
 
     @FXML private StackPane root;
     @FXML private ImageView videoImageView;
@@ -414,7 +411,7 @@ public class PlayerController implements Controller, SubtitlesObserver {
             subtitlesHandler.addSpuEventListener(subtitleUnit -> {
                 if (subtitleUnit != null && !subtitleUnit.value().toString().isEmpty()) {
                     JavaFxSubtitles javaFxSubtitles =
-                        new JavaFxSubtitles(this, subtitleUnit.value().toString());
+                        new JavaFxSubtitles(subtitleUnit.value().toString());
 
                     Platform.runLater(() -> {
                         hideTranslationPane();
@@ -443,39 +440,6 @@ public class PlayerController implements Controller, SubtitlesObserver {
             sceneManager.showError("Subtitles cannot be parsed",
                 "The next file cannot be parsed: " + fileName);
         }
-    }
-
-    @Override
-    public void onWordClicked(MouseEvent mouseEvent, Text clickedText) {
-        Text text = new Text(clickedText.getText());
-        text.setFill(Color.WHITE);
-
-        translationTextFlow.getChildren().clear();
-        translationTextFlow.getChildren().add(text);
-
-        translationGroup.layoutXProperty().bind(Bindings.createDoubleBinding(() -> {
-            Bounds bounds = clickedText.localToScene(clickedText.getBoundsInLocal());
-
-            double clickedTextCenterX = 0.5d * (bounds.getMinX() + bounds.getMaxX());
-            double shiftX = 0.5d * translationGroup.getBoundsInLocal().getWidth();
-
-            return clickedTextCenterX - shiftX;
-        }, subtitlesGroup.layoutXProperty(), translationGroup.boundsInLocalProperty()));
-
-        translationGroup.layoutYProperty().bind(Bindings.createDoubleBinding(() -> {
-            Bounds bounds = clickedText.localToScene(clickedText.getBoundsInLocal());
-
-            double clickedTextCenterY = 0.5d * (bounds.getMinY() + bounds.getMaxY());
-            double shiftY = translationGroup.getBoundsInLocal().getHeight();
-
-            return clickedTextCenterY - shiftY - TRANSLATION_BAR_Y_OFFSET;
-        }, subtitlesGroup.layoutYProperty(), translationGroup.boundsInLocalProperty()));
-
-        if (embeddedMediaPlayer.status().isPlaying()) {
-            onPausePressed(true);
-        }
-
-        translationPane.setVisible(true);
     }
 
     private void disposeSubtitles() {
