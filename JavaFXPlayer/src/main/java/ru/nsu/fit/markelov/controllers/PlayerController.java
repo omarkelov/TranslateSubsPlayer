@@ -6,6 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -123,6 +124,11 @@ public class PlayerController implements Controller {
 
     private RadioMenuItem currentSubtitlesMenuItem;
 
+    private Text firstSelectedText;
+    private Text lastSelectedText;
+    private Text leftSelectedText;
+    private Text rightSelectedText;
+
     private boolean initialized = false;
 
     /**
@@ -210,16 +216,156 @@ public class PlayerController implements Controller {
 
         videoImageView.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> hideTranslationPane());
 
-        subtitlesTextFlow.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
-            if (mouseEvent.getPickResult().getIntersectedNode() == subtitlesTextFlow) {
-                hideTranslationPane();
+        subtitlesTextFlow.setOnMousePressed(mouseEvent -> {
+            hideTranslationPane();
+
+            Node intersectedNode = mouseEvent.getPickResult().getIntersectedNode();
+            if (intersectedNode != null && intersectedNode.getParent() == subtitlesTextFlow) {
+                if (embeddedMediaPlayer.status().isPlaying()) {
+                    onPausePressed(true);
+                }
+
+                firstSelectedText = lastSelectedText = (Text) intersectedNode;
+                firstSelectedText.setFill(Color.YELLOW);
+                for (Node child : subtitlesTextFlow.getChildren()) {
+                    if (child != firstSelectedText) {
+                        ((Text) child).setFill(Color.WHITE);
+                    }
+                }
             }
+        });
+
+        subtitlesTextFlow.setOnMouseDragged(mouseEvent -> {
+            Node intersectedNode = mouseEvent.getPickResult().getIntersectedNode();
+            if (intersectedNode != null && intersectedNode.getParent() == subtitlesTextFlow) {
+                lastSelectedText = (Text) intersectedNode;
+
+                if (firstSelectedText == lastSelectedText) {
+                    return;
+                }
+
+                boolean filling = false;
+                for (Node child : subtitlesTextFlow.getChildren()) {
+                    Text currentText = (Text) child;
+                    if (filling) {
+                        if (currentText == firstSelectedText || currentText == lastSelectedText) {
+                            filling = false;
+                        }
+
+                        currentText.setFill(Color.YELLOW);
+                    } else {
+                        if (currentText == firstSelectedText || currentText == lastSelectedText) {
+                            currentText.setFill(Color.YELLOW);
+                            filling = true;
+                            continue;
+                        }
+
+                        currentText.setFill(Color.WHITE);
+                    }
+                }
+            }
+        });
+
+        subtitlesTextFlow.setOnMouseReleased(mouseEvent -> {
+            for (Node child : subtitlesTextFlow.getChildren()) {
+                if (child == firstSelectedText) {
+                    leftSelectedText = firstSelectedText;
+                    rightSelectedText = lastSelectedText;
+                    break;
+                } else if (child == lastSelectedText) {
+                    leftSelectedText = lastSelectedText;
+                    rightSelectedText = firstSelectedText;
+                    break;
+                }
+            }
+
+            boolean containsLineSeparator = false;
+            StringBuilder stringBuilder = new StringBuilder();
+            if (firstSelectedText == lastSelectedText) {
+                stringBuilder.append(firstSelectedText.getText());
+            } else {
+                boolean adding = false;
+                for (Node child : subtitlesTextFlow.getChildren()) {
+                    Text currentText = (Text) child;
+                    if (adding) {
+                        if (currentText.getText().equals(System.lineSeparator())) { // todo move to constants
+                            containsLineSeparator = true;
+                            stringBuilder.append(" ");
+                        } else {
+                            stringBuilder.append(currentText.getText());
+                        }
+
+                        if (currentText == rightSelectedText) {
+                            break;
+                        }
+                    } else {
+                        if (currentText == leftSelectedText) {
+                            if (currentText.getText().equals(System.lineSeparator())) { // todo move to constants
+                                containsLineSeparator = true;
+                                stringBuilder.append(" ");
+                            } else {
+                                stringBuilder.append(currentText.getText());
+                            }
+
+                            adding = true;
+                        }
+                    }
+                }
+            }
+
+            Text text = new Text(stringBuilder.toString().trim());
+            text.setFill(Color.WHITE);
+
+            translationTextFlow.getChildren().clear();
+            translationTextFlow.getChildren().add(text);
+
+            if (containsLineSeparator) {
+                translationGroup.layoutXProperty().bind(Bindings.createDoubleBinding(() -> {
+                    Bounds bounds = subtitlesGroup.localToScene(subtitlesGroup.getBoundsInLocal());
+
+                    double clickedTextCenterX = 0.5d * (bounds.getMinX() + bounds.getMaxX());
+                    double shiftX = 0.5d * translationGroup.getBoundsInLocal().getWidth();
+
+                    return clickedTextCenterX - shiftX;
+                }, subtitlesGroup.layoutXProperty(), translationGroup.boundsInLocalProperty()));
+            } else {
+                translationGroup.layoutXProperty().bind(Bindings.createDoubleBinding(() -> {
+                    Bounds leftBounds = leftSelectedText.localToScene(leftSelectedText.getBoundsInLocal());
+                    Bounds rightBounds = rightSelectedText.localToScene(rightSelectedText.getBoundsInLocal());
+
+                    double clickedTextCenterX = 0.5d * (leftBounds.getMinX() + rightBounds.getMaxX());
+                    double shiftX = 0.5d * translationGroup.getBoundsInLocal().getWidth();
+
+                    return clickedTextCenterX - shiftX;
+                }, subtitlesGroup.layoutXProperty(), translationGroup.boundsInLocalProperty()));
+            }
+
+            translationGroup.layoutYProperty().bind(Bindings.createDoubleBinding(() -> {
+                Bounds bounds = leftSelectedText.localToScene(leftSelectedText.getBoundsInLocal());
+
+                double clickedTextCenterY = 0.5d * (bounds.getMinY() + bounds.getMaxY());
+                double shiftY = 1.25d * translationGroup.getBoundsInLocal().getHeight();
+
+                return clickedTextCenterY - shiftY;
+            }, subtitlesGroup.layoutYProperty(), translationGroup.boundsInLocalProperty()));
+
+            translationPane.setVisible(true);
         });
     }
 
     private void hideTranslationPane() {
+        for (Node child : subtitlesTextFlow.getChildren()) {
+            ((Text) child).setFill(Color.WHITE);
+        }
+
         translationGroup.layoutXProperty().unbind();
         translationGroup.layoutYProperty().unbind();
+
+        firstSelectedText = null;
+        lastSelectedText = null;
+        leftSelectedText = null;
+        rightSelectedText = null;
+
         translationPane.setVisible(false);
     }
 
