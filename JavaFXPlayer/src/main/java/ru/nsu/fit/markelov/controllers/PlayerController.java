@@ -412,7 +412,7 @@ public class PlayerController implements Controller, SubtitlesObserver {
 
             subtitlesHandler = new SpuHandler(subtitleUnits);
             subtitlesHandler.addSpuEventListener(subtitleUnit -> {
-                if (subtitleUnit != null) {
+                if (subtitleUnit != null && !subtitleUnit.value().toString().isEmpty()) {
                     JavaFxSubtitles javaFxSubtitles =
                         new JavaFxSubtitles(this, subtitleUnit.value().toString());
 
