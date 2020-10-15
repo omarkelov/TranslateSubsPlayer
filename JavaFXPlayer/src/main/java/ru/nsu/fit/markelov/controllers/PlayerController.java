@@ -532,10 +532,14 @@ public class PlayerController implements Controller, SubtitlesObserver {
             chooseFileAndPlay();
         } else if (ON_STOP_KEYS.match(keyEvent)) {
             onStopPressed();
-        } else if (ON_EXPAND_KEYS.match(keyEvent) ||
-            keyEvent.getCode() == ESCAPE && sceneManager.isFullScreen()
-        ) {
+        } else if (ON_EXPAND_KEYS.match(keyEvent)) {
             onExpandPressed();
+        } else if (keyEvent.getCode() == ESCAPE) {
+            if (translationPane.isVisible()) {
+                hideTranslationPane();
+            } else if (sceneManager.isFullScreen()) {
+                onExpandPressed();
+            }
         } else if (keyEvent.getCode() == SPACE) {
             onPausePressed();
         }
