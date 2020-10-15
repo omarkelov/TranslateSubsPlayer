@@ -25,6 +25,21 @@
     visibility: hidden;
 }
 
+.translation {
+    -fx-text-alignment: center;
+    -fx-padding: 6 12;
+    -fx-background-color: rgba(0, 0, 0, 0.75);
+    -fx-background-radius: 8;
+    -fx-border-width: 2;
+    -fx-border-color: rgba(255, 255, 255, 0.75);
+    -fx-border-radius: 8;
+}
+
+.arrow-down {
+    -fx-image: url('../icons/arrow-down-flat.png');
+    -fx-opacity: 0.75;
+}
+
 .controls {
     -fx-vgap: 8;
     -fx-padding: 8;

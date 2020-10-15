@@ -6,15 +6,16 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Slider?>
+<?import javafx.scene.Group?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.TextFlow?>
 <?import java.net.URL?>
-<?import javafx.scene.Group?>
 <StackPane fx:id="root" styleClass="root" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <stylesheets>
         <URL value="@../css/main.css" />
@@ -22,7 +23,7 @@
     </stylesheets>
     <children>
         <ImageView fx:id="videoImageView" preserveRatio="true" />
-        <GridPane fx:id="gridPane" styleClass="grid-pane">
+        <GridPane fx:id="gridPane" styleClass="grid-pane" pickOnBounds="false">
             <columnConstraints>
                 <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" />
             </columnConstraints>
@@ -32,7 +33,7 @@
                 <RowConstraints vgrow="NEVER" />
             </rowConstraints>
             <children>
-                <Group GridPane.rowIndex="1">
+                <Group fx:id="subtitlesGroup" GridPane.rowIndex="1">
                     <children>
                         <TextFlow fx:id="subtitlesTextFlow" styleClass="subtitles" />
                     </children>
@@ -99,5 +100,26 @@
                 </Menu>
             </menus>
         </MenuBar>
+        <Pane fx:id="translationPane" visible="false" pickOnBounds="false">
+            <children>
+                <Group fx:id="translationGroup">
+                    <children>
+                        <GridPane>
+                            <columnConstraints>
+                                <ColumnConstraints />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints />
+                                <RowConstraints />
+                            </rowConstraints>
+                            <children>
+                                <TextFlow fx:id="translationTextFlow" styleClass="translation" GridPane.halignment="CENTER" />
+                                <ImageView fitHeight="10.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" styleClass="arrow-down" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP" />
+                            </children>
+                        </GridPane>
+                    </children>
+                </Group>
+            </children>
+        </Pane>
     </children>
 </StackPane>
