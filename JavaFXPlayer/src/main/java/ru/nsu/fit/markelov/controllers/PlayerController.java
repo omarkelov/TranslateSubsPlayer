@@ -433,7 +433,7 @@ public class PlayerController implements Controller, SubtitlesObserver {
             subtitlesTextFlow.setVisible(false);
             subtitlesTextFlow.getChildren().clear();
             currentSubtitlesMenuItem = newRadioMenuItem;
-            subtitlesHandler.setTime(embeddedMediaPlayer.status().time());
+            subtitlesHandler.setTime((long) slider.getValue());
         } catch (IOException e) {
             currentSubtitlesMenuItem.setSelected(true);
             sceneManager.showError("File cannot be opened",
@@ -486,7 +486,13 @@ public class PlayerController implements Controller, SubtitlesObserver {
     }
 
     private void onSliderPressedOrDragged() {
-        embeddedMediaPlayer.controls().setTime((long) slider.getValue());
+        long newTime = (long) slider.getValue();
+
+        if (subtitlesHandler != null) {
+            subtitlesHandler.setTime(newTime);
+        }
+
+        embeddedMediaPlayer.controls().setTime(newTime);
     }
 
     private void onPausePressed() {
