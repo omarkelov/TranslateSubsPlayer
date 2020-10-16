@@ -4,9 +4,7 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.geometry.Bounds;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -23,25 +21,19 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import ru.nsu.fit.markelov.controllers.player.SubtitlesControl;
+import ru.nsu.fit.markelov.controllers.player.SubtitlesObserver;
 import ru.nsu.fit.markelov.managers.FileChooserManager;
 import ru.nsu.fit.markelov.managers.SceneManager;
-import ru.nsu.fit.markelov.subtitles.BOMSrtParser;
-import ru.nsu.fit.markelov.subtitles.JavaFxSubtitles;
 import ru.nsu.fit.markelov.util.validation.IllegalInputException;
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.base.TrackDescription;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
-import uk.co.caprica.vlcj.subs.Spus;
-import uk.co.caprica.vlcj.subs.handler.SpuHandler;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
@@ -61,7 +53,7 @@ import static uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurfaceFactor
  *
  * @author Oleg Markelov
  */
-public class PlayerController implements Controller {
+public class PlayerController implements Controller, SubtitlesObserver {
 
     private static final String FXML_FILE_NAME = "player.fxml";
 
@@ -81,6 +73,7 @@ public class PlayerController implements Controller {
     @FXML private StackPane root;
     @FXML private ImageView videoImageView;
     @FXML private GridPane gridPane;
+
     @FXML private Group subtitlesGroup;
     @FXML private TextFlow subtitlesTextFlow;
 
@@ -118,18 +111,12 @@ public class PlayerController implements Controller {
 
     private File videoFile;
 
-    private SpuHandler subtitlesHandler;
     private final MediaPlayerFactory mediaPlayerFactory;
     private final EmbeddedMediaPlayer embeddedMediaPlayer;
 
-    private RadioMenuItem currentSubtitlesMenuItem;
-
-    private Text firstSelectedText;
-    private Text lastSelectedText;
-    private Text leftSelectedText;
-    private Text rightSelectedText;
-
     private boolean initialized = false;
+
+    private SubtitlesControl subtitlesControl;
 
     /**
      * Creates new PlayerController with specified SceneManager.
@@ -173,9 +160,7 @@ public class PlayerController implements Controller {
 
             @Override
             public void timeChanged(MediaPlayer mediaPlayer, long newTime) {
-                if (subtitlesHandler != null) {
-                    subtitlesHandler.setTime(newTime);
-                }
+                subtitlesControl.setTime(newTime);
 
                 Platform.runLater(() -> slider.setValue(newTime));
             }
@@ -214,163 +199,17 @@ public class PlayerController implements Controller {
         entireTimeLabel.textProperty().bind(Bindings.createStringBinding(() ->
             formatTime((long) slider.getMax()), slider.maxProperty()));
 
-        videoImageView.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> hideTranslationPane());
+        videoImageView.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> subtitlesControl.hideTranslationBar());
 
-        subtitlesTextFlow.setOnMousePressed(mouseEvent -> {
-            hideTranslationPane();
-
-            Node intersectedNode = mouseEvent.getPickResult().getIntersectedNode();
-            if (intersectedNode != null && intersectedNode.getParent() == subtitlesTextFlow) {
-                if (embeddedMediaPlayer.status().isPlaying()) {
-                    onPausePressed(true);
-                }
-
-                firstSelectedText = lastSelectedText = (Text) intersectedNode;
-                firstSelectedText.setFill(Color.YELLOW);
-                for (Node child : subtitlesTextFlow.getChildren()) {
-                    if (child != firstSelectedText) {
-                        ((Text) child).setFill(Color.WHITE);
-                    }
-                }
-            }
-        });
-
-        subtitlesTextFlow.setOnMouseDragged(mouseEvent -> {
-            Node intersectedNode = mouseEvent.getPickResult().getIntersectedNode();
-            if (intersectedNode != null && intersectedNode.getParent() == subtitlesTextFlow) {
-                lastSelectedText = (Text) intersectedNode;
-
-                if (firstSelectedText == lastSelectedText) {
-                    return;
-                }
-
-                boolean filling = false;
-                for (Node child : subtitlesTextFlow.getChildren()) {
-                    Text currentText = (Text) child;
-                    if (filling) {
-                        if (currentText == firstSelectedText || currentText == lastSelectedText) {
-                            filling = false;
-                        }
-
-                        currentText.setFill(Color.YELLOW);
-                    } else {
-                        if (currentText == firstSelectedText || currentText == lastSelectedText) {
-                            currentText.setFill(Color.YELLOW);
-                            filling = true;
-                            continue;
-                        }
-
-                        currentText.setFill(Color.WHITE);
-                    }
-                }
-            }
-        });
-
-        subtitlesTextFlow.setOnMouseReleased(mouseEvent -> {
-            if (firstSelectedText == null) {
-                return;
-            }
-
-            for (Node child : subtitlesTextFlow.getChildren()) {
-                if (child == firstSelectedText) {
-                    leftSelectedText = firstSelectedText;
-                    rightSelectedText = lastSelectedText;
-                    break;
-                } else if (child == lastSelectedText) {
-                    leftSelectedText = lastSelectedText;
-                    rightSelectedText = firstSelectedText;
-                    break;
-                }
-            }
-
-            boolean containsLineSeparator = false;
-            StringBuilder stringBuilder = new StringBuilder();
-            if (firstSelectedText == lastSelectedText) {
-                stringBuilder.append(firstSelectedText.getText());
-            } else {
-                boolean adding = false;
-                for (Node child : subtitlesTextFlow.getChildren()) {
-                    Text currentText = (Text) child;
-                    if (adding) {
-                        if (currentText.getText().equals(System.lineSeparator())) { // todo move to constants
-                            containsLineSeparator = true;
-                            stringBuilder.append(" ");
-                        } else {
-                            stringBuilder.append(currentText.getText());
-                        }
-
-                        if (currentText == rightSelectedText) {
-                            break;
-                        }
-                    } else {
-                        if (currentText == leftSelectedText) {
-                            if (currentText.getText().equals(System.lineSeparator())) { // todo move to constants
-                                containsLineSeparator = true;
-                                stringBuilder.append(" ");
-                            } else {
-                                stringBuilder.append(currentText.getText());
-                            }
-
-                            adding = true;
-                        }
-                    }
-                }
-            }
-
-            Text text = new Text(stringBuilder.toString().trim());
-            text.setFill(Color.WHITE);
-
-            translationTextFlow.getChildren().clear();
-            translationTextFlow.getChildren().add(text);
-
-            if (containsLineSeparator) {
-                translationGroup.layoutXProperty().bind(Bindings.createDoubleBinding(() -> {
-                    Bounds bounds = subtitlesGroup.localToScene(subtitlesGroup.getBoundsInLocal());
-
-                    double clickedTextCenterX = 0.5d * (bounds.getMinX() + bounds.getMaxX());
-                    double shiftX = 0.5d * translationGroup.getBoundsInLocal().getWidth();
-
-                    return clickedTextCenterX - shiftX;
-                }, subtitlesGroup.layoutXProperty(), translationGroup.boundsInLocalProperty()));
-            } else {
-                translationGroup.layoutXProperty().bind(Bindings.createDoubleBinding(() -> {
-                    Bounds leftBounds = leftSelectedText.localToScene(leftSelectedText.getBoundsInLocal());
-                    Bounds rightBounds = rightSelectedText.localToScene(rightSelectedText.getBoundsInLocal());
-
-                    double clickedTextCenterX = 0.5d * (leftBounds.getMinX() + rightBounds.getMaxX());
-                    double shiftX = 0.5d * translationGroup.getBoundsInLocal().getWidth();
-
-                    return clickedTextCenterX - shiftX;
-                }, subtitlesGroup.layoutXProperty(), translationGroup.boundsInLocalProperty()));
-            }
-
-            translationGroup.layoutYProperty().bind(Bindings.createDoubleBinding(() -> {
-                Bounds bounds = leftSelectedText.localToScene(leftSelectedText.getBoundsInLocal());
-
-                double clickedTextCenterY = 0.5d * (bounds.getMinY() + bounds.getMaxY());
-                double shiftY = 1.25d * translationGroup.getBoundsInLocal().getHeight();
-
-                return clickedTextCenterY - shiftY;
-            }, subtitlesGroup.layoutYProperty(), translationGroup.boundsInLocalProperty()));
-
-            translationPane.setVisible(true);
-        });
+        subtitlesControl = new SubtitlesControl(sceneManager, this, subtitlesGroup,
+            subtitlesTextFlow, translationPane, translationGroup, translationTextFlow);
     }
 
-    private void hideTranslationPane() {
-        for (Node child : subtitlesTextFlow.getChildren()) {
-            ((Text) child).setFill(Color.WHITE);
+    @Override
+    public void onSubtitlesTextPressed() {
+        if (embeddedMediaPlayer.status().isPlaying()) {
+            onPausePressed(true);
         }
-
-        translationGroup.layoutXProperty().unbind();
-        translationGroup.layoutYProperty().unbind();
-
-        firstSelectedText = null;
-        lastSelectedText = null;
-        leftSelectedText = null;
-        rightSelectedText = null;
-
-        translationPane.setVisible(false);
     }
 
     private void chooseFileAndPlay() {
@@ -419,7 +258,7 @@ public class PlayerController implements Controller {
 
         disposeAudioMenu();
         disposeSubtitlesMenu();
-        disposeSubtitles();
+        subtitlesControl.disposeSubtitles();
 
         disposeControlBoxes();
         disposeSlider();
@@ -462,10 +301,10 @@ public class PlayerController implements Controller {
         RadioMenuItem disabledRadioItem = new RadioMenuItem("Disabled");
         disabledRadioItem.setToggleGroup(subtitlesToggleGroup);
         disabledRadioItem.setSelected(true);
-        currentSubtitlesMenuItem = disabledRadioItem;
+        subtitlesControl.setCurrentSubtitlesMenuItem(disabledRadioItem);
         disabledRadioItem.setOnAction(actionEvent -> {
-            disposeSubtitles();
-            currentSubtitlesMenuItem = disabledRadioItem;
+            subtitlesControl.disposeSubtitles();
+            subtitlesControl.setCurrentSubtitlesMenuItem(disabledRadioItem);
         });
         disabledRadioItem.setMnemonicParsing(false);
         subtitlesMenu.getItems().add(disabledRadioItem);
@@ -483,11 +322,11 @@ public class PlayerController implements Controller {
                 RadioMenuItem radioMenuItem = new RadioMenuItem(file.getName());
                 radioMenuItem.setToggleGroup(subtitlesToggleGroup);
                 radioMenuItem.setSelected(true);
-                radioMenuItem.setOnAction(fileActionEvent -> initSubtitles(file.getAbsolutePath(), radioMenuItem));
+                radioMenuItem.setOnAction(fileActionEvent -> subtitlesControl.initSubtitles(file.getAbsolutePath(), radioMenuItem, (long) slider.getValue()));
                 radioMenuItem.setMnemonicParsing(false);
                 subtitlesMenu.getItems().add(subtitlesMenu.getItems().size() - 1, radioMenuItem);
 
-                initSubtitles(file.getAbsolutePath(), radioMenuItem);
+                subtitlesControl.initSubtitles(file.getAbsolutePath(), radioMenuItem, (long) slider.getValue());
             }
 
             if (isPlaying) {
@@ -511,12 +350,14 @@ public class PlayerController implements Controller {
                     RadioMenuItem radioMenuItem = new RadioMenuItem(videoFilePath.relativize(subtitlesPath).toString());
                     radioMenuItem.setToggleGroup(subtitlesToggleGroup);
                     radioMenuItem.setSelected(disabled);
-                    radioMenuItem.setOnAction(fileActionEvent -> initSubtitles(subtitlesPath.toString(), radioMenuItem));
+                    radioMenuItem.setOnAction(fileActionEvent -> subtitlesControl.initSubtitles(
+                        subtitlesPath.toString(), radioMenuItem, (long) slider.getValue()));
                     radioMenuItem.setMnemonicParsing(false);
                     subtitlesMenu.getItems().add(subtitlesMenu.getItems().size() - 1, radioMenuItem);
 
                     if (disabled) {
-                        initSubtitles(subtitlesPath.toString(), radioMenuItem);
+                        subtitlesControl.initSubtitles(
+                            subtitlesPath.toString(), radioMenuItem, (long) slider.getValue());
                     }
                 });
         } catch (Exception e) {
@@ -553,59 +394,10 @@ public class PlayerController implements Controller {
         slider.setMax(1);
     }
 
-    private void initSubtitles(String fileName, RadioMenuItem newRadioMenuItem) {
-        try (FileReader fileReader = new FileReader(fileName)) {
-            Spus subtitleUnits = new BOMSrtParser().parse(fileReader);
-
-            subtitlesHandler = new SpuHandler(subtitleUnits);
-            subtitlesHandler.addSpuEventListener(subtitleUnit -> {
-                if (subtitleUnit != null && !subtitleUnit.value().toString().isEmpty()) {
-                    JavaFxSubtitles javaFxSubtitles =
-                        new JavaFxSubtitles(subtitleUnit.value().toString());
-
-                    Platform.runLater(() -> {
-                        hideTranslationPane();
-                        subtitlesTextFlow.getChildren().clear();
-                        subtitlesTextFlow.getChildren().addAll(javaFxSubtitles.getTextList());
-                        subtitlesTextFlow.setVisible(true);
-                    });
-                } else {
-                    Platform.runLater(() -> {
-                        subtitlesTextFlow.setVisible(false);
-                        subtitlesTextFlow.getChildren().clear();
-                        hideTranslationPane();
-                    });
-                }
-            });
-            subtitlesTextFlow.setVisible(false);
-            subtitlesTextFlow.getChildren().clear();
-            currentSubtitlesMenuItem = newRadioMenuItem;
-            subtitlesHandler.setTime((long) slider.getValue());
-        } catch (IOException e) {
-            currentSubtitlesMenuItem.setSelected(true);
-            sceneManager.showError("File cannot be opened",
-                "The next file cannot be opened: " + fileName);
-        } catch (Exception e) {
-            currentSubtitlesMenuItem.setSelected(true);
-            sceneManager.showError("Subtitles cannot be parsed",
-                "The next file cannot be parsed: " + fileName);
-        }
-    }
-
-    private void disposeSubtitles() {
-        subtitlesHandler = null;
-        subtitlesTextFlow.setVisible(false);
-        subtitlesTextFlow.getChildren().clear();
-        hideTranslationPane();
-    }
-
     private void onSliderPressedOrDragged() {
         long newTime = (long) slider.getValue();
 
-        if (subtitlesHandler != null) {
-            subtitlesHandler.setTime(newTime);
-        }
-
+        subtitlesControl.setTime(newTime);
         embeddedMediaPlayer.controls().setTime(newTime);
     }
 
@@ -615,7 +407,7 @@ public class PlayerController implements Controller {
 
     private void onPausePressed(boolean pause) {
         if (!pause) {
-            hideTranslationPane();
+            subtitlesControl.hideTranslationBar();
         }
 
         replaceClassName(pauseButton.getStyleClass(), pause, PAUSE_CLASSNAME, PLAY_CLASSNAME);
@@ -629,9 +421,7 @@ public class PlayerController implements Controller {
         }
         embeddedMediaPlayer.controls().setTime(0);
         slider.setValue(slider.getMin());
-        if (subtitlesHandler != null) {
-            subtitlesHandler.setTime(0);
-        }
+        subtitlesControl.setTime(0);
     }
 
     private void onExpandPressed() {
@@ -655,8 +445,8 @@ public class PlayerController implements Controller {
         } else if (ON_EXPAND_KEYS.match(keyEvent)) {
             onExpandPressed();
         } else if (keyEvent.getCode() == ESCAPE) {
-            if (translationPane.isVisible()) {
-                hideTranslationPane();
+            if (subtitlesControl.isTranslationBarVisible()) {
+                subtitlesControl.hideTranslationBar();
             } else if (sceneManager.isFullScreen()) {
                 onExpandPressed();
             }
