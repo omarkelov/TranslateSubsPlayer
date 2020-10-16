@@ -88,11 +88,7 @@
                     </items>
                 </Menu>
                 <Menu fx:id="audioMenu" disable="true" text="Audio" />
-                <Menu fx:id="subtitlesMenu" disable="true" text="Subtitles">
-                    <items>
-                        <MenuItem fx:id="subtitlesAddItem" text="Add" />
-                    </items>
-                </Menu>
+                <Menu fx:id="subtitlesMenu" disable="true" text="Subtitles" />
                 <Menu text="Help">
                     <items>
                         <MenuItem fx:id="helpAboutItem" text="About" />
