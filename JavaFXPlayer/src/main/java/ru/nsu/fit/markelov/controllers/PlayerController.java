@@ -58,7 +58,6 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
 
     @FXML private StackPane root;
     @FXML private ImageView videoImageView;
-    @FXML private GridPane gridPane;
 
     @FXML private Group subtitlesGroup;
     @FXML private TextFlow subtitlesTextFlow;
@@ -153,6 +152,18 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
         });
     }
 
+    private void initPlayingIfNot() {
+        if (!initialized) {
+            initialized = true;
+
+            sceneManager.setTitle(menuBarControl.getVideoFile().getName());
+            controlBarControl.onPausePressed(false);
+
+            controlBarControl.init();
+            menuBarControl.init();
+        }
+    }
+
     @FXML
     private void initialize() {
         embeddedMediaPlayer.videoSurface().set(videoSurfaceForImageView(videoImageView));
@@ -170,94 +181,6 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
 
         menuBarControl = new MenuBarControl(this, fileChooserManager, embeddedMediaPlayer,
             subtitlesControl, controlBarControl, audioMenu, subtitlesMenu, fileOpenItem, fileCloseItem);
-    }
-
-    @Override
-    public void onSubtitlesTextPressed() {
-        if (embeddedMediaPlayer.status().isPlaying()) {
-            controlBarControl.onPausePressed(true);
-        }
-    }
-
-    @Override
-    public void onFileClicked() {
-        chooseFileAndPlay();
-    }
-
-    @Override
-    public void onClosedClicked() {
-        disposePlaying();
-    }
-
-    private void chooseFileAndPlay() {
-        boolean isPlaying = embeddedMediaPlayer.status().isPlaying();
-        if (isPlaying) {
-            controlBarControl.onPausePressed(true);
-        }
-
-        File file = fileChooserManager.chooseVideoFile();
-        if (file != null) {
-            disposePlaying();
-
-            if (!sceneManager.isFullScreen()) {
-                controlBarControl.onExpandPressed();
-            }
-
-            embeddedMediaPlayer.media().play(file.getAbsolutePath());
-
-            menuBarControl.setVideoFile(file);
-        }
-
-        if (isPlaying) {
-            controlBarControl.onPausePressed(false);
-        }
-    }
-
-    private void initPlayingIfNot() {
-        if (!initialized) {
-            initialized = true;
-
-            sceneManager.setTitle(menuBarControl.getVideoFile().getName());
-            controlBarControl.onPausePressed(false);
-
-            controlBarControl.init();
-            menuBarControl.init();
-        }
-    }
-
-    private void disposePlaying() {
-        controlBarControl.onPausePressed(true);
-        embeddedMediaPlayer.controls().stop();
-        videoImageView.setImage(null);
-
-        subtitlesControl.disposeSubtitles();
-        controlBarControl.dispose();
-        menuBarControl.dispose();
-
-        sceneManager.setDefaultTitle();
-        menuBarControl.setVideoFile(null);
-
-        root.requestFocus();
-
-        initialized = false;
-    }
-
-    private void onKeyReleased(KeyEvent keyEvent) {
-        if (ON_OPEN_KEYS.match(keyEvent)) {
-            chooseFileAndPlay();
-        } else if (ON_STOP_KEYS.match(keyEvent)) {
-            controlBarControl.onStopPressed();
-        } else if (ON_EXPAND_KEYS.match(keyEvent)) {
-            controlBarControl.onExpandPressed();
-        } else if (keyEvent.getCode() == ESCAPE) {
-            if (subtitlesControl.isTranslationBarVisible()) {
-                subtitlesControl.hideTranslationBar();
-            } else if (sceneManager.isFullScreen()) {
-                controlBarControl.onExpandPressed();
-            }
-        } else if (keyEvent.getCode() == SPACE) {
-            controlBarControl.onPausePressed();
-        }
     }
 
     /**
@@ -288,5 +211,81 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
         embeddedMediaPlayer.controls().stop();
         embeddedMediaPlayer.release();
         mediaPlayerFactory.release();
+    }
+
+    @Override
+    public void onSubtitlesTextPressed() {
+        if (embeddedMediaPlayer.status().isPlaying()) {
+            controlBarControl.onPausePressed(true);
+        }
+    }
+
+    @Override
+    public void onFileClicked() {
+        chooseFileAndPlay();
+    }
+
+    @Override
+    public void onClosedClicked() {
+        disposePlaying();
+    }
+
+    private void onKeyReleased(KeyEvent keyEvent) {
+        if (ON_OPEN_KEYS.match(keyEvent)) {
+            chooseFileAndPlay();
+        } else if (ON_STOP_KEYS.match(keyEvent)) {
+            controlBarControl.onStopPressed();
+        } else if (ON_EXPAND_KEYS.match(keyEvent)) {
+            controlBarControl.onExpandPressed();
+        } else if (keyEvent.getCode() == ESCAPE) {
+            if (subtitlesControl.isTranslationBarVisible()) {
+                subtitlesControl.hideTranslationBar();
+            } else if (sceneManager.isFullScreen()) {
+                controlBarControl.onExpandPressed();
+            }
+        } else if (keyEvent.getCode() == SPACE) {
+            controlBarControl.onPausePressed();
+        }
+    }
+
+    private void chooseFileAndPlay() {
+        boolean isPlaying = embeddedMediaPlayer.status().isPlaying();
+        if (isPlaying) {
+            controlBarControl.onPausePressed(true);
+        }
+
+        File file = fileChooserManager.chooseVideoFile();
+        if (file != null) {
+            disposePlaying();
+
+            if (!sceneManager.isFullScreen()) {
+                controlBarControl.onExpandPressed();
+            }
+
+            embeddedMediaPlayer.media().play(file.getAbsolutePath());
+
+            menuBarControl.setVideoFile(file);
+        }
+
+        if (isPlaying) {
+            controlBarControl.onPausePressed(false);
+        }
+    }
+
+    private void disposePlaying() {
+        controlBarControl.onPausePressed(true);
+        embeddedMediaPlayer.controls().stop();
+        videoImageView.setImage(null);
+
+        subtitlesControl.disposeSubtitles();
+        controlBarControl.dispose();
+        menuBarControl.dispose();
+
+        sceneManager.setDefaultTitle();
+        menuBarControl.setVideoFile(null);
+
+        root.requestFocus();
+
+        initialized = false;
     }
 }

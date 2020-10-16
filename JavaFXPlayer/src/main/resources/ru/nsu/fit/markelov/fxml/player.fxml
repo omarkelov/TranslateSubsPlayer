@@ -23,7 +23,7 @@
     </stylesheets>
     <children>
         <ImageView fx:id="videoImageView" preserveRatio="true" />
-        <GridPane fx:id="gridPane" styleClass="grid-pane" pickOnBounds="false">
+        <GridPane styleClass="grid-pane" pickOnBounds="false">
             <columnConstraints>
                 <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" />
             </columnConstraints>
