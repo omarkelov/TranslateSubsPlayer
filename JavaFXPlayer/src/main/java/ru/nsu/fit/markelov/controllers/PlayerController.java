@@ -167,7 +167,7 @@ public class PlayerController implements Controller, SubtitlesObserver {
 
             @Override
             public void error(MediaPlayer mediaPlayer) {
-                Platform.runLater(() -> sceneManager.showDefaultError());
+                Platform.runLater(sceneManager::showDefaultError);
             }
         });
     }
