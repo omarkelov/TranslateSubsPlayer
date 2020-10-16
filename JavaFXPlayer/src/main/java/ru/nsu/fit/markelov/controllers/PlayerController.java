@@ -267,6 +267,10 @@ public class PlayerController implements Controller {
         });
 
         subtitlesTextFlow.setOnMouseReleased(mouseEvent -> {
+            if (firstSelectedText == null) {
+                return;
+            }
+
             for (Node child : subtitlesTextFlow.getChildren()) {
                 if (child == firstSelectedText) {
                     leftSelectedText = firstSelectedText;
