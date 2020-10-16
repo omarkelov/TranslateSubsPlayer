@@ -1,8 +1,6 @@
 package ru.nsu.fit.markelov.controllers;
 
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.Parent;
@@ -22,6 +20,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.TextFlow;
+import ru.nsu.fit.markelov.controllers.player.ControlBarControl;
 import ru.nsu.fit.markelov.controllers.player.SubtitlesControl;
 import ru.nsu.fit.markelov.controllers.player.SubtitlesObserver;
 import ru.nsu.fit.markelov.managers.FileChooserManager;
@@ -36,7 +35,6 @@ import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Locale;
 
 import static javafx.scene.input.KeyCode.ENTER;
 import static javafx.scene.input.KeyCode.ESCAPE;
@@ -56,15 +54,6 @@ import static uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurfaceFactor
 public class PlayerController implements Controller, SubtitlesObserver {
 
     private static final String FXML_FILE_NAME = "player.fxml";
-
-    private static final String PLAY_CLASSNAME = "control-button-play";
-    private static final String PAUSE_CLASSNAME = "control-button-pause";
-    private static final String COLLAPSE_CLASSNAME = "control-button-collapse";
-    private static final String EXPAND_CLASSNAME = "control-button-expand";
-
-    private static final String SLIDER_STYLE_FORMAT =
-        "-slider-track-color: linear-gradient(to right, -slider-filled-track-color 0%%, "
-            + "-slider-filled-track-color %1$f%%, -fx-base %1$f%%, -fx-base 100%%);";
 
     private static final KeyCodeCombination ON_OPEN_KEYS = new KeyCodeCombination(O, SHORTCUT_DOWN);
     private static final KeyCodeCombination ON_STOP_KEYS = new KeyCodeCombination(P, ALT_DOWN);
@@ -88,6 +77,8 @@ public class PlayerController implements Controller, SubtitlesObserver {
     @FXML private MenuItem subtitlesAddItem;
     @FXML private MenuItem helpAboutItem;
 
+    @FXML private Slider slider;
+
     @FXML private HBox leftControlBox;
     @FXML private HBox centerControlBox;
 
@@ -100,8 +91,6 @@ public class PlayerController implements Controller, SubtitlesObserver {
 
     @FXML private Label currentTimeLabel;
     @FXML private Label entireTimeLabel;
-
-    @FXML private Slider slider;
 
     private final ToggleGroup audioToggleGroup = new ToggleGroup();
     private final ToggleGroup subtitlesToggleGroup = new ToggleGroup();
@@ -117,6 +106,7 @@ public class PlayerController implements Controller, SubtitlesObserver {
     private boolean initialized = false;
 
     private SubtitlesControl subtitlesControl;
+    private ControlBarControl controlBarControl;
 
     /**
      * Creates new PlayerController with specified SceneManager.
@@ -143,7 +133,7 @@ public class PlayerController implements Controller, SubtitlesObserver {
                 if (finished) {
                     finished = false;
                     Platform.runLater(() -> {
-                        onStopPressed();
+                        controlBarControl.onStopPressed();
                         mediaPlayer.subpictures().setTrack(-1);
                         mediaPlayer.audio().setTrack(
                             (Integer) audioToggleGroup.getSelectedToggle().getUserData());
@@ -162,7 +152,7 @@ public class PlayerController implements Controller, SubtitlesObserver {
             public void timeChanged(MediaPlayer mediaPlayer, long newTime) {
                 subtitlesControl.setTime(newTime);
 
-                Platform.runLater(() -> slider.setValue(newTime));
+                Platform.runLater(() -> controlBarControl.setSliderValue(newTime));
             }
 
             @Override
@@ -182,40 +172,27 @@ public class PlayerController implements Controller, SubtitlesObserver {
         fileOpenItem.setOnAction(actionEvent -> chooseFileAndPlay());
         fileCloseItem.setOnAction(actionEvent -> disposePlaying());
 
-        pauseButton.setOnAction(actionEvent -> onPausePressed());
-        stopButton.setOnAction(actionEvent -> onStopPressed());
-        expandButton.setOnAction(actionEvent -> onExpandPressed());
-
-        slider.setOnMousePressed(mouseEvent -> onSliderPressedOrDragged());
-        slider.setOnMouseDragged(mouseEvent -> onSliderPressedOrDragged());
-        slider.styleProperty().bind(Bindings.createStringBinding(() -> {
-            double percentage = (slider.getValue() - slider.getMin()) / (slider.getMax() - slider.getMin()) * 100.0;
-            return String.format(Locale.US, SLIDER_STYLE_FORMAT, percentage);
-        }, slider.valueProperty(), slider.minProperty(), slider.maxProperty()));
-
-        currentTimeLabel.textProperty().bind(Bindings.createStringBinding(() ->
-            formatTime((long) slider.getValue()), slider.valueProperty()));
-
-        entireTimeLabel.textProperty().bind(Bindings.createStringBinding(() ->
-            formatTime((long) slider.getMax()), slider.maxProperty()));
-
         videoImageView.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> subtitlesControl.hideTranslationBar());
 
         subtitlesControl = new SubtitlesControl(sceneManager, this, subtitlesGroup,
             subtitlesTextFlow, translationPane, translationGroup, translationTextFlow);
+
+        controlBarControl = new ControlBarControl(sceneManager, embeddedMediaPlayer,
+            subtitlesControl, slider, leftControlBox, centerControlBox, pauseButton, stopButton,
+            skipLeftButton, skipRightButton, soundButton, expandButton, currentTimeLabel, entireTimeLabel);
     }
 
     @Override
     public void onSubtitlesTextPressed() {
         if (embeddedMediaPlayer.status().isPlaying()) {
-            onPausePressed(true);
+            controlBarControl.onPausePressed(true);
         }
     }
 
     private void chooseFileAndPlay() {
         boolean isPlaying = embeddedMediaPlayer.status().isPlaying();
         if (isPlaying) {
-            onPausePressed(true);
+            controlBarControl.onPausePressed(true);
         }
 
         File file = fileChooserManager.chooseVideoFile();
@@ -223,7 +200,7 @@ public class PlayerController implements Controller, SubtitlesObserver {
             disposePlaying();
 
             if (!sceneManager.isFullScreen()) {
-                onExpandPressed();
+                controlBarControl.onExpandPressed();
             }
 
             embeddedMediaPlayer.media().play(file.getAbsolutePath());
@@ -232,7 +209,7 @@ public class PlayerController implements Controller, SubtitlesObserver {
         }
 
         if (isPlaying) {
-            onPausePressed(false);
+            controlBarControl.onPausePressed(false);
         }
     }
 
@@ -241,18 +218,17 @@ public class PlayerController implements Controller, SubtitlesObserver {
             initialized = true;
 
             sceneManager.setTitle(videoFile.getName());
-            onPausePressed(false);
+            controlBarControl.onPausePressed(false);
 
             initAudioMenu(mediaPlayer);
             initSubtitlesMenu(mediaPlayer);
 
-            initControlBoxes();
-            initSlider(mediaPlayer);
+            controlBarControl.init();
         }
     }
 
     private void disposePlaying() {
-        onPausePressed(true);
+        controlBarControl.onPausePressed(true);
         embeddedMediaPlayer.controls().stop();
         videoImageView.setImage(null);
 
@@ -260,8 +236,7 @@ public class PlayerController implements Controller, SubtitlesObserver {
         disposeSubtitlesMenu();
         subtitlesControl.disposeSubtitles();
 
-        disposeControlBoxes();
-        disposeSlider();
+        controlBarControl.dispose();
 
         sceneManager.setDefaultTitle();
         videoFile = null;
@@ -314,7 +289,7 @@ public class PlayerController implements Controller, SubtitlesObserver {
         subtitlesOpenItem.setOnAction(actionEvent -> {
             boolean isPlaying = embeddedMediaPlayer.status().isPlaying();
             if (isPlaying) {
-                onPausePressed(true);
+                controlBarControl.onPausePressed(true);
             }
 
             File file = fileChooserManager.chooseSubtitlesFile();
@@ -322,15 +297,15 @@ public class PlayerController implements Controller, SubtitlesObserver {
                 RadioMenuItem radioMenuItem = new RadioMenuItem(file.getName());
                 radioMenuItem.setToggleGroup(subtitlesToggleGroup);
                 radioMenuItem.setSelected(true);
-                radioMenuItem.setOnAction(fileActionEvent -> subtitlesControl.initSubtitles(file.getAbsolutePath(), radioMenuItem, (long) slider.getValue()));
+                radioMenuItem.setOnAction(fileActionEvent -> subtitlesControl.initSubtitles(file.getAbsolutePath(), radioMenuItem, (long) controlBarControl.getSliderValue()));
                 radioMenuItem.setMnemonicParsing(false);
                 subtitlesMenu.getItems().add(subtitlesMenu.getItems().size() - 1, radioMenuItem);
 
-                subtitlesControl.initSubtitles(file.getAbsolutePath(), radioMenuItem, (long) slider.getValue());
+                subtitlesControl.initSubtitles(file.getAbsolutePath(), radioMenuItem, (long) controlBarControl.getSliderValue());
             }
 
             if (isPlaying) {
-                onPausePressed(false);
+                controlBarControl.onPausePressed(false);
             }
         });
         subtitlesMenu.getItems().add(subtitlesOpenItem);
@@ -351,13 +326,13 @@ public class PlayerController implements Controller, SubtitlesObserver {
                     radioMenuItem.setToggleGroup(subtitlesToggleGroup);
                     radioMenuItem.setSelected(disabled);
                     radioMenuItem.setOnAction(fileActionEvent -> subtitlesControl.initSubtitles(
-                        subtitlesPath.toString(), radioMenuItem, (long) slider.getValue()));
+                        subtitlesPath.toString(), radioMenuItem, (long) controlBarControl.getSliderValue()));
                     radioMenuItem.setMnemonicParsing(false);
                     subtitlesMenu.getItems().add(subtitlesMenu.getItems().size() - 1, radioMenuItem);
 
                     if (disabled) {
                         subtitlesControl.initSubtitles(
-                            subtitlesPath.toString(), radioMenuItem, (long) slider.getValue());
+                            subtitlesPath.toString(), radioMenuItem, (long) controlBarControl.getSliderValue());
                     }
                 });
         } catch (Exception e) {
@@ -373,85 +348,21 @@ public class PlayerController implements Controller, SubtitlesObserver {
         subtitlesToggleGroup.getToggles().clear();
     }
 
-    private void initControlBoxes() {
-        leftControlBox.setDisable(false);
-        centerControlBox.setDisable(false);
-    }
-
-    private void disposeControlBoxes() {
-        leftControlBox.setDisable(true);
-        centerControlBox.setDisable(true);
-    }
-
-    private void initSlider(MediaPlayer mediaPlayer) {
-        slider.setMax(mediaPlayer.status().length() - 1);
-        slider.setDisable(false);
-    }
-
-    private void disposeSlider() {
-        slider.setDisable(true);
-        slider.setValue(0);
-        slider.setMax(1);
-    }
-
-    private void onSliderPressedOrDragged() {
-        long newTime = (long) slider.getValue();
-
-        subtitlesControl.setTime(newTime);
-        embeddedMediaPlayer.controls().setTime(newTime);
-    }
-
-    private void onPausePressed() {
-        onPausePressed(embeddedMediaPlayer.status().isPlaying());
-    }
-
-    private void onPausePressed(boolean pause) {
-        if (!pause) {
-            subtitlesControl.hideTranslationBar();
-        }
-
-        replaceClassName(pauseButton.getStyleClass(), pause, PAUSE_CLASSNAME, PLAY_CLASSNAME);
-
-        embeddedMediaPlayer.controls().setPause(pause);
-    }
-
-    private void onStopPressed() {
-        if (embeddedMediaPlayer.status().isPlaying()) {
-            onPausePressed(true);
-        }
-        embeddedMediaPlayer.controls().setTime(0);
-        slider.setValue(slider.getMin());
-        subtitlesControl.setTime(0);
-    }
-
-    private void onExpandPressed() {
-        replaceClassName(expandButton.getStyleClass(),
-            sceneManager.isFullScreen(), COLLAPSE_CLASSNAME, EXPAND_CLASSNAME);
-
-        sceneManager.toggleFullScreen();
-    }
-
-    private void replaceClassName(ObservableList<String> classNames, boolean cond,
-                                  String removeClassName, String addClassName) {
-        classNames.removeIf(className -> className.equals(cond ? removeClassName : addClassName));
-        classNames.add(!cond ? removeClassName : addClassName);
-    }
-
     private void onKeyReleased(KeyEvent keyEvent) {
         if (ON_OPEN_KEYS.match(keyEvent)) {
             chooseFileAndPlay();
         } else if (ON_STOP_KEYS.match(keyEvent)) {
-            onStopPressed();
+            controlBarControl.onStopPressed();
         } else if (ON_EXPAND_KEYS.match(keyEvent)) {
-            onExpandPressed();
+            controlBarControl.onExpandPressed();
         } else if (keyEvent.getCode() == ESCAPE) {
             if (subtitlesControl.isTranslationBarVisible()) {
                 subtitlesControl.hideTranslationBar();
             } else if (sceneManager.isFullScreen()) {
-                onExpandPressed();
+                controlBarControl.onExpandPressed();
             }
         } else if (keyEvent.getCode() == SPACE) {
-            onPausePressed();
+            controlBarControl.onPausePressed();
         }
     }
 
@@ -483,10 +394,5 @@ public class PlayerController implements Controller, SubtitlesObserver {
         embeddedMediaPlayer.controls().stop();
         embeddedMediaPlayer.release();
         mediaPlayerFactory.release();
-    }
-
-    private String formatTime(long milliseconds) {
-        return String.format("%02d:%02d:%02d",
-            milliseconds / 3600000, (milliseconds / 60000) % 60, (milliseconds / 1000) % 60);
     }
 }
