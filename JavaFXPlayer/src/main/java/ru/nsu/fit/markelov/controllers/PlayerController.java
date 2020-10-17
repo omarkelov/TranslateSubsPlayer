@@ -55,6 +55,8 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
     private static final String FXML_FILE_NAME = "player.fxml";
 
     private static final KeyCodeCombination ON_OPEN_KEYS = new KeyCodeCombination(O, SHORTCUT_DOWN);
+    private static final KeyCodeCombination ON_SKIP_LEFT_TEN_KEYS = new KeyCodeCombination(LEFT, SHORTCUT_DOWN);
+    private static final KeyCodeCombination ON_SKIP_RIGHT_TEN_KEYS = new KeyCodeCombination(RIGHT, SHORTCUT_DOWN);
     private static final KeyCodeCombination ON_STOP_KEYS = new KeyCodeCombination(P, ALT_DOWN);
     private static final KeyCodeCombination ON_EXPAND_KEYS = new KeyCodeCombination(ENTER, ALT_DOWN);
 
@@ -75,7 +77,10 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
 
     @FXML private Button pauseButton;
     @FXML private Button stopButton;
+    @FXML private Button skipLeftTenButton;
+    @FXML private Button skipRightTenButton;
     @FXML private Button skipLeftButton;
+    @FXML private Button skipCurrentButton;
     @FXML private Button skipRightButton;
     @FXML private Button soundButton;
     @FXML private Button expandButton;
@@ -179,7 +184,8 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
 
         controlBarControl = new ControlBarControl(sceneManager, embeddedMediaPlayer,
             subtitlesControl, slider, leftControlBox, centerControlBox, pauseButton, stopButton,
-            skipLeftButton, skipRightButton, soundButton, expandButton, currentTimeLabel, entireTimeLabel);
+            skipLeftTenButton, skipRightTenButton, skipLeftButton, skipCurrentButton, skipRightButton,
+            soundButton, expandButton, currentTimeLabel, entireTimeLabel);
 
         menuBarControl = new MenuBarControl(this, fileChooserManager, embeddedMediaPlayer,
             subtitlesControl, controlBarControl, audioMenu, subtitlesMenu, fileOpenItem, fileCloseItem);
@@ -237,6 +243,10 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
             chooseFileAndPlay();
         } else if (ON_STOP_KEYS.match(keyEvent)) {
             controlBarControl.onStopPressed();
+        } else if (ON_SKIP_LEFT_TEN_KEYS.match(keyEvent)) {
+            controlBarControl.onSkipLeftTenPressed();
+        } else if (ON_SKIP_RIGHT_TEN_KEYS.match(keyEvent)) {
+            controlBarControl.onSkipRightTenPressed();
         } else if (ON_EXPAND_KEYS.match(keyEvent)) {
             controlBarControl.onExpandPressed();
         } else if (keyEvent.getCode() == ESCAPE) {

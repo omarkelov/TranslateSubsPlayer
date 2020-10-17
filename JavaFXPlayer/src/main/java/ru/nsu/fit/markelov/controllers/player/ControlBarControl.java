@@ -22,6 +22,7 @@ public class ControlBarControl {
         "-slider-track-color: linear-gradient(to right, -slider-filled-track-color 0%%, "
             + "-slider-filled-track-color %1$f%%, -fx-base %1$f%%, -fx-base 100%%);";
 
+    private static final int SKIP_TIME = 10000;
     /** To avoid flickering the subtitles bar after skipping during a pause */
     private static final int EXTRA_TIME_SKIP = 15;
 
@@ -36,7 +37,10 @@ public class ControlBarControl {
 
     private final Button pauseButton;
     private final Button stopButton;
+    private final Button skipLeftTenButton;
+    private final Button skipRightTenButton;
     private final Button skipLeftButton;
+    private final Button skipCurrentButton;
     private final Button skipRightButton;
     private final Button soundButton;
     private final Button expandButton;
@@ -47,8 +51,10 @@ public class ControlBarControl {
     public ControlBarControl(SceneManager sceneManager, EmbeddedMediaPlayer embeddedMediaPlayer,
                              SubtitlesControl subtitlesControl, Slider slider, HBox leftControlBox,
                              HBox centerControlBox, Button pauseButton, Button stopButton,
-                             Button skipLeftButton, Button skipRightButton, Button soundButton,
-                             Button expandButton, Label currentTimeLabel, Label entireTimeLabel) {
+                             Button skipLeftTenButton, Button skipRightTenButton,
+                             Button skipLeftButton, Button skipCurrentButton,
+                             Button skipRightButton, Button soundButton, Button expandButton,
+                             Label currentTimeLabel, Label entireTimeLabel) {
         this.sceneManager = sceneManager;
         this.embeddedMediaPlayer = embeddedMediaPlayer;
         this.subtitlesControl = subtitlesControl;
@@ -57,7 +63,10 @@ public class ControlBarControl {
         this.centerControlBox = centerControlBox;
         this.pauseButton = pauseButton;
         this.stopButton = stopButton;
+        this.skipLeftTenButton = skipLeftTenButton;
+        this.skipRightTenButton = skipRightTenButton;
         this.skipLeftButton = skipLeftButton;
+        this.skipCurrentButton = skipCurrentButton;
         this.skipRightButton = skipRightButton;
         this.soundButton = soundButton;
         this.expandButton = expandButton;
@@ -74,7 +83,10 @@ public class ControlBarControl {
 
         pauseButton.setOnAction(actionEvent -> onPausePressed());
         stopButton.setOnAction(actionEvent -> onStopPressed());
+        skipLeftTenButton.setOnAction(actionEvent -> onSkipLeftTenPressed());
+        skipRightTenButton.setOnAction(actionEvent -> onSkipRightTenPressed());
         skipLeftButton.setOnAction(actionEvent -> onSkipLeftPressed());
+        skipCurrentButton.setOnAction(actionEvent -> onSkipCurrentPressed());
         skipRightButton.setOnAction(actionEvent -> onSkipRightPressed());
         expandButton.setOnAction(actionEvent -> onExpandPressed());
 
@@ -154,23 +166,35 @@ public class ControlBarControl {
         subtitlesControl.setTime(0);
     }
 
+    public void onSkipLeftTenPressed() {
+        skipTo(embeddedMediaPlayer.status().time() - SKIP_TIME);
+    }
+
+    public void onSkipRightTenPressed() {
+        skipTo(embeddedMediaPlayer.status().time() + SKIP_TIME);
+    }
+
     public void onSkipLeftPressed() {
-        skipTo(subtitlesControl.getLeftSubtitleTime());
+        skipToSubtitle(subtitlesControl.getLeftSubtitleTime());
     }
 
     public void onSkipCurrentPressed() {
-        skipTo(subtitlesControl.getCurrentSubtitleTime());
+        skipToSubtitle(subtitlesControl.getCurrentSubtitleTime());
     }
 
     public void onSkipRightPressed() {
-        skipTo(subtitlesControl.getRightSubtitleTime());
+        skipToSubtitle(subtitlesControl.getRightSubtitleTime());
     }
 
-    private void skipTo(Long newTime) {
-        if (newTime != null) {
-            slider.setValue(newTime + EXTRA_TIME_SKIP);
-            onSliderPressedOrDragged();
+    private void skipToSubtitle(Long startTime) {
+        if (startTime != null) {
+            skipTo(startTime + EXTRA_TIME_SKIP);
         }
+    }
+
+    private void skipTo(long newTime) {
+        slider.setValue(newTime);
+        onSliderPressedOrDragged();
     }
 
     public void onExpandPressed() {
