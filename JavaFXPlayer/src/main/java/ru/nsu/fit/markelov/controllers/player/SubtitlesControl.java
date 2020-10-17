@@ -46,7 +46,7 @@ public class SubtitlesControl {
     private Text rightSelectedText;
 
     private Map<Integer, CloseSubtitlesInfo> closeSubtitlesInfoMap;
-    private int currentSubtitleId;
+    private int currentSubtitleId = 0;
 
     public SubtitlesControl(SceneManager sceneManager, SubtitlesObserver subtitlesObserver,
                             Group subtitlesGroup, TextFlow subtitlesTextFlow,
@@ -62,8 +62,6 @@ public class SubtitlesControl {
         subtitlesTextFlow.setOnMousePressed(this::onSubtitlesTextFlowMousePressed);
         subtitlesTextFlow.setOnMouseDragged(this::onSubtitlesTextFlowMouseDragged);
         subtitlesTextFlow.setOnMouseReleased(this::onSubtitlesTextFlowOnMouseReleased);
-
-        closeSubtitlesInfoMap = new HashMap<>();
     }
 
     public void setCurrentSubtitlesMenuItem(RadioMenuItem currentSubtitlesMenuItem) {
@@ -74,9 +72,11 @@ public class SubtitlesControl {
         try (FileReader fileReader = new FileReader(fileName)) {
             Spus subtitleUnits = new BOMSrtParser().parse(fileReader);
             List<Spu<?>> spuList = subtitleUnits.asList();
+            Map<Integer, CloseSubtitlesInfo> closeSubtitlesInfoMap = null;
 
             if (!spuList.isEmpty()) {
                 subtitleUnits = new Spus();
+                closeSubtitlesInfoMap = new HashMap<>();
 
                 Spu<?> first = spuList.get(0);
                 if (first.start() > 0) {
@@ -148,6 +148,7 @@ public class SubtitlesControl {
             hideSubtitlesBar();
             currentSubtitlesMenuItem = newRadioMenuItem;
             subtitlesHandler.setTime(newTime);
+            this.closeSubtitlesInfoMap = closeSubtitlesInfoMap;
         } catch (IOException e) {
             currentSubtitlesMenuItem.setSelected(true);
             sceneManager.showError("File cannot be opened",
@@ -166,6 +167,8 @@ public class SubtitlesControl {
 
     public void disposeSubtitles() {
         subtitlesHandler = null;
+        closeSubtitlesInfoMap = null;
+        currentSubtitleId = 0;
         hideSubtitlesBar();
         hideTranslationBar();
     }
@@ -177,14 +180,26 @@ public class SubtitlesControl {
     }
 
     public Long getLeftSubtitleTime() {
+        if (closeSubtitlesInfoMap == null) {
+            return null;
+        }
+
         return closeSubtitlesInfoMap.get(currentSubtitleId).getLeftSubtitleStartTime();
     }
 
     public Long getCurrentSubtitleTime() {
+        if (closeSubtitlesInfoMap == null) {
+            return null;
+        }
+
         return closeSubtitlesInfoMap.get(currentSubtitleId).getCurrentSubtitleStartTime();
     }
 
     public Long getRightSubtitleTime() {
+        if (closeSubtitlesInfoMap == null) {
+            return null;
+        }
+
         return closeSubtitlesInfoMap.get(currentSubtitleId).getRightSubtitleStartTime();
     }
 
