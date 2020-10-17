@@ -37,7 +37,6 @@ import static javafx.scene.input.KeyCode.ENTER;
 import static javafx.scene.input.KeyCode.ESCAPE;
 import static javafx.scene.input.KeyCode.LEFT;
 import static javafx.scene.input.KeyCode.O;
-import static javafx.scene.input.KeyCode.P;
 import static javafx.scene.input.KeyCode.RIGHT;
 import static javafx.scene.input.KeyCode.SPACE;
 import static javafx.scene.input.KeyCombination.ALT_DOWN;
@@ -57,7 +56,7 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
     private static final KeyCodeCombination ON_OPEN_KEYS = new KeyCodeCombination(O, SHORTCUT_DOWN);
     private static final KeyCodeCombination ON_SKIP_LEFT_TEN_KEYS = new KeyCodeCombination(LEFT, SHORTCUT_DOWN);
     private static final KeyCodeCombination ON_SKIP_RIGHT_TEN_KEYS = new KeyCodeCombination(RIGHT, SHORTCUT_DOWN);
-    private static final KeyCodeCombination ON_STOP_KEYS = new KeyCodeCombination(P, ALT_DOWN);
+    private static final KeyCodeCombination ON_STOP_KEYS = new KeyCodeCombination(SPACE, SHORTCUT_DOWN);
     private static final KeyCodeCombination ON_EXPAND_KEYS = new KeyCodeCombination(ENTER, ALT_DOWN);
 
     @FXML private StackPane root;
