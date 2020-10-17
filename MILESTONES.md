@@ -3,8 +3,8 @@
 * [x] [Project vision presentation](https://trello.com/c/phWHoqC6/2-project-vision-presentation)
 * [x] [Readme.md](https://trello.com/c/BtwRlpyC/3-readmemd)
 * [x] [Milestones.md](https://trello.com/c/aA5Vcy2G/18-milestonesmd)
-* [ ] [Architecture.md](https://trello.com/c/MnUR27mR/1-architecturemd)
-* [ ] [Database scheme](https://trello.com/c/S6f36oog/10-database-scheme)
+* [x] [Architecture.md](https://trello.com/c/MnUR27mR/1-architecturemd)
+* [x] [Database scheme](https://trello.com/c/S6f36oog/10-database-scheme)
 * [ ] [RESTful API](https://trello.com/c/gjI98FsM/15-restful-api)
 ### Desktop JavaFX application
 * [ ] [Player scene](https://trello.com/c/VxgCyNCz/4-player-scene)
