@@ -241,12 +241,6 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
     private void onKeyReleased(KeyEvent keyEvent) {
         if (ON_OPEN_KEYS.match(keyEvent)) {
             chooseFileAndPlay();
-        } else if (ON_STOP_KEYS.match(keyEvent)) {
-            controlBarControl.onStopPressed();
-        } else if (ON_SKIP_LEFT_TEN_KEYS.match(keyEvent)) {
-            controlBarControl.onSkipLeftTenPressed();
-        } else if (ON_SKIP_RIGHT_TEN_KEYS.match(keyEvent)) {
-            controlBarControl.onSkipRightTenPressed();
         } else if (ON_EXPAND_KEYS.match(keyEvent)) {
             controlBarControl.onExpandPressed();
         } else if (keyEvent.getCode() == ESCAPE) {
@@ -255,14 +249,22 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
             } else if (sceneManager.isFullScreen()) {
                 controlBarControl.onExpandPressed();
             }
-        } else if (keyEvent.getCode() == SPACE) {
-            controlBarControl.onPausePressed();
-        } else if (keyEvent.getCode() == LEFT) {
-            controlBarControl.onSkipLeftPressed();
-        } else if (keyEvent.getCode() == DOWN) {
-            controlBarControl.onSkipCurrentPressed();
-        } else if (keyEvent.getCode() == RIGHT) {
-            controlBarControl.onSkipRightPressed();
+        } else if (initialized) {
+            if (ON_STOP_KEYS.match(keyEvent)) {
+                controlBarControl.onStopPressed();
+            } else if (ON_SKIP_LEFT_TEN_KEYS.match(keyEvent)) {
+                controlBarControl.onSkipLeftTenPressed();
+            } else if (ON_SKIP_RIGHT_TEN_KEYS.match(keyEvent)) {
+                controlBarControl.onSkipRightTenPressed();
+            } else if (keyEvent.getCode() == SPACE) {
+                controlBarControl.onPausePressed();
+            } else if (keyEvent.getCode() == LEFT) {
+                controlBarControl.onSkipLeftPressed();
+            } else if (keyEvent.getCode() == DOWN) {
+                controlBarControl.onSkipCurrentPressed();
+            } else if (keyEvent.getCode() == RIGHT) {
+                controlBarControl.onSkipRightPressed();
+            }
         }
     }
 
