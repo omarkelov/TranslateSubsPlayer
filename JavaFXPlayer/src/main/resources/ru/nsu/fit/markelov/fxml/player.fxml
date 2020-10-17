@@ -53,6 +53,8 @@
                         <HBox fx:id="leftControlBox" disable="true" alignment="CENTER_LEFT" GridPane.columnIndex="0" GridPane.rowIndex="1">
                             <children>
                                 <Button fx:id="stopButton" focusTraversable="false" styleClass="control-button-stop" />
+                                <Button fx:id="skipLeftTenButton" focusTraversable="false" styleClass="control-button-skip-left-ten" />
+                                <Button fx:id="skipRightTenButton" focusTraversable="false" styleClass="control-button-skip-right-ten" />
                                 <HBox>
                                     <Label fx:id="currentTimeLabel" text="00:00:00" />
                                 </HBox>
@@ -65,6 +67,7 @@
                         <HBox fx:id="centerControlBox" disable="true" alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="1">
                             <children>
                                 <Button fx:id="skipLeftButton" focusTraversable="false" styleClass="control-button-skip-left" />
+                                <Button fx:id="skipCurrentButton" focusTraversable="false" styleClass="control-button-skip-current" />
                                 <Button fx:id="pauseButton" focusTraversable="false" styleClass="control-button-play" />
                                 <Button fx:id="skipRightButton" focusTraversable="false" styleClass="control-button-skip-right" />
                             </children>

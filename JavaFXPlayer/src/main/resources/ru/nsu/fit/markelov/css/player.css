@@ -110,6 +110,18 @@
     -fx-background-image: url('../icons/skip-right.png');
 }
 
+.control-button-skip-left-ten {
+    -fx-background-image: url('../icons/skip-left-10.png');
+}
+
+.control-button-skip-current {
+    -fx-background-image: url('../icons/skip-current.png');
+}
+
+.control-button-skip-right-ten {
+    -fx-background-image: url('../icons/skip-right-10.png');
+}
+
 .control-button-sound-high {
     -fx-background-image: url('../icons/sound-high.png');
 }
