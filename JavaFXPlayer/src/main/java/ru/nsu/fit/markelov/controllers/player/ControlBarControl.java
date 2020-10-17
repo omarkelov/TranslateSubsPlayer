@@ -193,6 +193,12 @@ public class ControlBarControl {
     }
 
     private void skipTo(long newTime) {
+        if (newTime < slider.getMin()) {
+            newTime = (long) slider.getMin();
+        } else if (newTime > slider.getMax()) {
+            newTime = (long) slider.getMax();
+        }
+
         slider.setValue(newTime);
         onSliderPressedOrDragged();
     }
