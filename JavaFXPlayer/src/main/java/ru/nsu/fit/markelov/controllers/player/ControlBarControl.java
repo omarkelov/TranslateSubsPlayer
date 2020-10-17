@@ -22,6 +22,9 @@ public class ControlBarControl {
         "-slider-track-color: linear-gradient(to right, -slider-filled-track-color 0%%, "
             + "-slider-filled-track-color %1$f%%, -fx-base %1$f%%, -fx-base 100%%);";
 
+    /** To avoid flickering the subtitles bar after skipping during a pause */
+    private static final int EXTRA_TIME_SKIP = 15;
+
     private final SceneManager sceneManager;
     private final EmbeddedMediaPlayer embeddedMediaPlayer;
     private final SubtitlesControl subtitlesControl;
@@ -71,6 +74,8 @@ public class ControlBarControl {
 
         pauseButton.setOnAction(actionEvent -> onPausePressed());
         stopButton.setOnAction(actionEvent -> onStopPressed());
+        skipLeftButton.setOnAction(actionEvent -> onSkipLeftPressed());
+        skipRightButton.setOnAction(actionEvent -> onSkipRightPressed());
         expandButton.setOnAction(actionEvent -> onExpandPressed());
 
         currentTimeLabel.textProperty().bind(Bindings.createStringBinding(() ->
@@ -147,6 +152,25 @@ public class ControlBarControl {
         embeddedMediaPlayer.controls().setTime(0);
         slider.setValue(slider.getMin());
         subtitlesControl.setTime(0);
+    }
+
+    public void onSkipLeftPressed() {
+        skipTo(subtitlesControl.getLeftSubtitleTime());
+    }
+
+    public void onSkipCurrentPressed() {
+        skipTo(subtitlesControl.getCurrentSubtitleTime());
+    }
+
+    public void onSkipRightPressed() {
+        skipTo(subtitlesControl.getRightSubtitleTime());
+    }
+
+    private void skipTo(Long newTime) {
+        if (newTime != null) {
+            slider.setValue(newTime + EXTRA_TIME_SKIP);
+            onSliderPressedOrDragged();
+        }
     }
 
     public void onExpandPressed() {

@@ -13,7 +13,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -33,10 +32,13 @@ import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 import java.io.File;
 
+import static javafx.scene.input.KeyCode.DOWN;
 import static javafx.scene.input.KeyCode.ENTER;
 import static javafx.scene.input.KeyCode.ESCAPE;
+import static javafx.scene.input.KeyCode.LEFT;
 import static javafx.scene.input.KeyCode.O;
 import static javafx.scene.input.KeyCode.P;
+import static javafx.scene.input.KeyCode.RIGHT;
 import static javafx.scene.input.KeyCode.SPACE;
 import static javafx.scene.input.KeyCombination.ALT_DOWN;
 import static javafx.scene.input.KeyCombination.SHORTCUT_DOWN;
@@ -245,6 +247,12 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
             }
         } else if (keyEvent.getCode() == SPACE) {
             controlBarControl.onPausePressed();
+        } else if (keyEvent.getCode() == LEFT) {
+            controlBarControl.onSkipLeftPressed();
+        } else if (keyEvent.getCode() == DOWN) {
+            controlBarControl.onSkipCurrentPressed();
+        } else if (keyEvent.getCode() == RIGHT) {
+            controlBarControl.onSkipRightPressed();
         }
     }
 

@@ -14,11 +14,16 @@ import javafx.scene.text.TextFlow;
 import ru.nsu.fit.markelov.managers.SceneManager;
 import ru.nsu.fit.markelov.subtitles.BOMSrtParser;
 import ru.nsu.fit.markelov.subtitles.JavaFxSubtitles;
+import uk.co.caprica.vlcj.subs.Spu;
 import uk.co.caprica.vlcj.subs.Spus;
+import uk.co.caprica.vlcj.subs.TextSpu;
 import uk.co.caprica.vlcj.subs.handler.SpuHandler;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SubtitlesControl {
 
@@ -40,6 +45,9 @@ public class SubtitlesControl {
     private Text leftSelectedText;
     private Text rightSelectedText;
 
+    private Map<Integer, CloseSubtitlesInfo> closeSubtitlesInfoMap;
+    private int currentSubtitleId;
+
     public SubtitlesControl(SceneManager sceneManager, SubtitlesObserver subtitlesObserver,
                             Group subtitlesGroup, TextFlow subtitlesTextFlow,
                             Pane translationPane, Group translationGroup, TextFlow translationTextFlow) {
@@ -54,6 +62,8 @@ public class SubtitlesControl {
         subtitlesTextFlow.setOnMousePressed(this::onSubtitlesTextFlowMousePressed);
         subtitlesTextFlow.setOnMouseDragged(this::onSubtitlesTextFlowMouseDragged);
         subtitlesTextFlow.setOnMouseReleased(this::onSubtitlesTextFlowOnMouseReleased);
+
+        closeSubtitlesInfoMap = new HashMap<>();
     }
 
     public void setCurrentSubtitlesMenuItem(RadioMenuItem currentSubtitlesMenuItem) {
@@ -63,10 +73,59 @@ public class SubtitlesControl {
     public void initSubtitles(String fileName, RadioMenuItem newRadioMenuItem, long newTime) {
         try (FileReader fileReader = new FileReader(fileName)) {
             Spus subtitleUnits = new BOMSrtParser().parse(fileReader);
+            List<Spu<?>> spuList = subtitleUnits.asList();
+
+            if (!spuList.isEmpty()) {
+                subtitleUnits = new Spus();
+
+                Spu<?> first = spuList.get(0);
+                if (first.start() > 0) {
+                    subtitleUnits.add(new TextSpu(0, 0, first.start() - 1, null));
+                    closeSubtitlesInfoMap.put(0, new CloseSubtitlesInfo(
+                        null, null, first.start()));
+                }
+
+                int i;
+                for (i = 0; i < spuList.size() - 1; i++) {
+                    Spu<?> current = spuList.get(i);
+                    Spu<?> next = spuList.get(i+1);
+
+                    int number = i + 1;
+                    subtitleUnits.add(new Spu<>(number, current.start(), current.end(), current.value()));
+                    closeSubtitlesInfoMap.put(number, new CloseSubtitlesInfo(
+                        i > 0 ? spuList.get(i-1).start() : null, current.start(), next.start()));
+
+                    if (next.start() > current.end() + 1) {
+                        subtitleUnits.add(new Spu<>(-number, current.end() + 1, next.start() - 1, null));
+                        closeSubtitlesInfoMap.put(-number, new CloseSubtitlesInfo(
+                            current.start(), null, next.start()));
+                    }
+                }
+
+                int number = i + 1;
+                Spu<?> last = spuList.get(spuList.size() - 1);
+                subtitleUnits.add(new Spu<>(number, last.start(), last.end(), last.value()));
+                closeSubtitlesInfoMap.put(number, new CloseSubtitlesInfo(
+                    spuList.size() > 1 ? spuList.get(spuList.size() - 2).start() : null, last.start(), null));
+                subtitleUnits.add(new Spu<>(-number, last.end() + 1, Long.MAX_VALUE, null));
+                closeSubtitlesInfoMap.put(-number, new CloseSubtitlesInfo(
+                    last.start(), null, null));
+            }
 
             subtitlesHandler = new SpuHandler(subtitleUnits);
             subtitlesHandler.addSpuEventListener(subtitleUnit -> {
-                if (subtitleUnit != null && !subtitleUnit.value().toString().isEmpty()) {
+                if (subtitleUnit == null) {
+                    System.out.println("Unexpected behavior: subtitleUnit is NULL");
+
+                    Platform.runLater(() -> {
+                        hideSubtitlesBar();
+                        hideTranslationBar();
+                    });
+
+                    return;
+                }
+
+                if (subtitleUnit.number() > 0) {
                     JavaFxSubtitles javaFxSubtitles =
                         new JavaFxSubtitles(subtitleUnit.value().toString());
 
@@ -75,18 +134,18 @@ public class SubtitlesControl {
                         subtitlesTextFlow.getChildren().clear();
                         subtitlesTextFlow.getChildren().addAll(javaFxSubtitles.getTextList());
                         subtitlesTextFlow.setVisible(true);
+                        currentSubtitleId = subtitleUnit.number();
                     });
                 } else {
                     Platform.runLater(() -> {
-                        subtitlesTextFlow.setVisible(false);
-                        subtitlesTextFlow.getChildren().clear();
                         hideTranslationBar();
+                        hideSubtitlesBar();
+                        currentSubtitleId = subtitleUnit.number();
                     });
                 }
             });
 
-            subtitlesTextFlow.setVisible(false);
-            subtitlesTextFlow.getChildren().clear();
+            hideSubtitlesBar();
             currentSubtitlesMenuItem = newRadioMenuItem;
             subtitlesHandler.setTime(newTime);
         } catch (IOException e) {
@@ -100,10 +159,14 @@ public class SubtitlesControl {
         }
     }
 
-    public void disposeSubtitles() {
-        subtitlesHandler = null;
+    private void hideSubtitlesBar() {
         subtitlesTextFlow.setVisible(false);
         subtitlesTextFlow.getChildren().clear();
+    }
+
+    public void disposeSubtitles() {
+        subtitlesHandler = null;
+        hideSubtitlesBar();
         hideTranslationBar();
     }
 
@@ -111,6 +174,18 @@ public class SubtitlesControl {
         if (subtitlesHandler != null) {
             subtitlesHandler.setTime(newTime);
         }
+    }
+
+    public Long getLeftSubtitleTime() {
+        return closeSubtitlesInfoMap.get(currentSubtitleId).getLeftSubtitleStartTime();
+    }
+
+    public Long getCurrentSubtitleTime() {
+        return closeSubtitlesInfoMap.get(currentSubtitleId).getCurrentSubtitleStartTime();
+    }
+
+    public Long getRightSubtitleTime() {
+        return closeSubtitlesInfoMap.get(currentSubtitleId).getRightSubtitleStartTime();
     }
 
     private void onSubtitlesTextFlowMousePressed(MouseEvent mouseEvent) {
