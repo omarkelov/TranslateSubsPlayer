@@ -7,6 +7,7 @@
 * [x] [Database scheme](https://trello.com/c/S6f36oog/10-database-scheme)
 * [ ] [RESTful API](https://trello.com/c/gjI98FsM/15-restful-api)
 ### Desktop JavaFX application
+* [ ] [Translation](https://trello.com/c/ozyvP15u/21-translation)
 * [ ] [Player scene](https://trello.com/c/VxgCyNCz/4-player-scene)
 * [ ] [Dictionary editor scene](https://trello.com/c/LW3Fi4Qc/5-dictionary-editor-scene)
 * [ ] [Dictionary scene](https://trello.com/c/mqjLXfoA/6-dictionary-scene)
