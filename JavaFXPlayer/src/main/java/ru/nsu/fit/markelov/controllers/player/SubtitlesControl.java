@@ -6,6 +6,7 @@ import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.RadioMenuItem;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -14,6 +15,9 @@ import javafx.scene.text.TextFlow;
 import ru.nsu.fit.markelov.managers.SceneManager;
 import ru.nsu.fit.markelov.subtitles.BOMSrtParser;
 import ru.nsu.fit.markelov.subtitles.JavaFxSubtitles;
+import ru.nsu.fit.markelov.translation.entities.TranslationResult;
+import ru.nsu.fit.markelov.translation.googlejson.GoogleJsonTranslator;
+import ru.nsu.fit.markelov.translation.googlescripts.GoogleScriptsTranslator;
 import uk.co.caprica.vlcj.subs.Spu;
 import uk.co.caprica.vlcj.subs.Spus;
 import uk.co.caprica.vlcj.subs.TextSpu;
@@ -27,6 +31,11 @@ import java.util.Map;
 
 public class SubtitlesControl {
 
+    private static final String SPACE = " ";
+    private static final String NEW_LINE = System.lineSeparator();
+
+    private static final int TRANSLATION_BAR_Y_MARGIN = 15;
+
     private SpuHandler subtitlesHandler;
     private RadioMenuItem currentSubtitlesMenuItem;
 
@@ -39,18 +48,22 @@ public class SubtitlesControl {
     private final Pane translationPane;
     private final Group translationGroup;
     private final TextFlow translationTextFlow;
+    private final ImageView translationSpinnerImageView;
 
     private Text firstSelectedText;
     private Text lastSelectedText;
     private Text leftSelectedText;
     private Text rightSelectedText;
 
+    private Thread translationThread;
+
     private Map<Integer, CloseSubtitlesInfo> closeSubtitlesInfoMap;
     private int currentSubtitleId = 0;
 
     public SubtitlesControl(SceneManager sceneManager, SubtitlesObserver subtitlesObserver,
                             Group subtitlesGroup, TextFlow subtitlesTextFlow,
-                            Pane translationPane, Group translationGroup, TextFlow translationTextFlow) {
+                            Pane translationPane, Group translationGroup,
+                            TextFlow translationTextFlow, ImageView translationSpinnerImageView) {
         this.sceneManager = sceneManager;
         this.subtitlesObserver = subtitlesObserver;
         this.subtitlesGroup = subtitlesGroup;
@@ -58,6 +71,7 @@ public class SubtitlesControl {
         this.translationPane = translationPane;
         this.translationGroup = translationGroup;
         this.translationTextFlow = translationTextFlow;
+        this.translationSpinnerImageView = translationSpinnerImageView;
 
         subtitlesTextFlow.setOnMousePressed(this::onSubtitlesTextFlowMousePressed);
         subtitlesTextFlow.setOnMouseDragged(this::onSubtitlesTextFlowMouseDragged);
@@ -277,9 +291,9 @@ public class SubtitlesControl {
             for (Node child : subtitlesTextFlow.getChildren()) {
                 Text currentText = (Text) child;
                 if (adding) {
-                    if (currentText.getText().equals(System.lineSeparator())) { // todo move to constants
+                    if (currentText.getText().equals(NEW_LINE)) {
                         containsLineSeparator = true;
-                        stringBuilder.append(" ");
+                        stringBuilder.append(SPACE);
                     } else {
                         stringBuilder.append(currentText.getText());
                     }
@@ -289,9 +303,9 @@ public class SubtitlesControl {
                     }
                 } else {
                     if (currentText == leftSelectedText) {
-                        if (currentText.getText().equals(System.lineSeparator())) { // todo move to constants
+                        if (currentText.getText().equals(NEW_LINE)) {
                             containsLineSeparator = true;
-                            stringBuilder.append(" ");
+                            stringBuilder.append(SPACE);
                         } else {
                             stringBuilder.append(currentText.getText());
                         }
@@ -302,52 +316,87 @@ public class SubtitlesControl {
             }
         }
 
-        Text text = new Text(stringBuilder.toString().trim());
-        text.setFill(Color.WHITE);
-
         translationTextFlow.getChildren().clear();
-        translationTextFlow.getChildren().add(text);
+        translationSpinnerImageView.setVisible(true);
+        bindGroups(containsLineSeparator);
+        translationPane.setVisible(true);
 
-        if (containsLineSeparator) {
-            translationGroup.layoutXProperty().bind(Bindings.createDoubleBinding(() -> {
+        boolean finalContainsLineSeparator = containsLineSeparator;
+        translationThread = new Thread(() -> {
+            try {
+                String text = stringBuilder.toString().trim(); // todo!!! trim dots, etc.
+
+                TranslationResult translationResult = new GoogleJsonTranslator().translate(
+                    "en", "ru", text);
+
+                if (translationResult.isEmpty()) {
+                    translationResult = new GoogleScriptsTranslator().translate(
+                        "en", "ru", text);
+                }
+
+                Text translationText = new Text(translationResult.toString());
+                translationText.setFill(Color.WHITE);
+
+                Platform.runLater(() -> {
+                    translationSpinnerImageView.setVisible(false);
+                    translationTextFlow.getChildren().add(translationText);
+
+                    unbindGroups();
+                    bindGroups(finalContainsLineSeparator);
+                });
+            } catch (InterruptedException e) { // todo!!! handle
+                System.out.println("Interrupted: " + e.getMessage()); // todo! print stack trace
+            }
+        });
+        translationThread.start();
+    }
+
+    private void bindGroups(boolean bindToCenter) {
+        translationGroup.layoutXProperty().bind(Bindings.createDoubleBinding(() -> {
+            double clickedTextCenterX;
+
+            if (bindToCenter) {
                 Bounds bounds = subtitlesGroup.localToScene(subtitlesGroup.getBoundsInLocal());
 
-                double clickedTextCenterX = 0.5d * (bounds.getMinX() + bounds.getMaxX());
-                double shiftX = 0.5d * translationGroup.getBoundsInLocal().getWidth();
-
-                return clickedTextCenterX - shiftX;
-            }, subtitlesGroup.layoutXProperty(), translationGroup.boundsInLocalProperty()));
-        } else {
-            translationGroup.layoutXProperty().bind(Bindings.createDoubleBinding(() -> {
+                clickedTextCenterX = 0.5d * (bounds.getMinX() + bounds.getMaxX());
+            } else {
                 Bounds leftBounds = leftSelectedText.localToScene(leftSelectedText.getBoundsInLocal());
                 Bounds rightBounds = rightSelectedText.localToScene(rightSelectedText.getBoundsInLocal());
 
-                double clickedTextCenterX = 0.5d * (leftBounds.getMinX() + rightBounds.getMaxX());
-                double shiftX = 0.5d * translationGroup.getBoundsInLocal().getWidth();
+                clickedTextCenterX = 0.5d * (leftBounds.getMinX() + rightBounds.getMaxX());
+            }
 
-                return clickedTextCenterX - shiftX;
-            }, subtitlesGroup.layoutXProperty(), translationGroup.boundsInLocalProperty()));
-        }
+            double shiftX = 0.5d * translationGroup.getBoundsInLocal().getWidth();
+
+            return clickedTextCenterX - shiftX;
+        }, subtitlesGroup.layoutXProperty(), translationGroup.boundsInLocalProperty()));
 
         translationGroup.layoutYProperty().bind(Bindings.createDoubleBinding(() -> {
             Bounds bounds = leftSelectedText.localToScene(leftSelectedText.getBoundsInLocal());
 
             double clickedTextCenterY = 0.5d * (bounds.getMinY() + bounds.getMaxY());
-            double shiftY = 1.25d * translationGroup.getBoundsInLocal().getHeight();
+            double shiftY = translationGroup.getBoundsInLocal().getHeight();
 
-            return clickedTextCenterY - shiftY;
+            return clickedTextCenterY - shiftY - TRANSLATION_BAR_Y_MARGIN;
         }, subtitlesGroup.layoutYProperty(), translationGroup.boundsInLocalProperty()));
+    }
 
-        translationPane.setVisible(true);
+    private void unbindGroups() {
+        translationGroup.layoutXProperty().unbind();
+        translationGroup.layoutYProperty().unbind();
     }
 
     public void hideTranslationBar() {
+        if (translationThread != null && translationThread.isAlive()) {
+            translationThread.interrupt();
+            translationThread = null;
+        }
+
         for (Node child : subtitlesTextFlow.getChildren()) {
             ((Text) child).setFill(Color.WHITE);
         }
 
-        translationGroup.layoutXProperty().unbind();
-        translationGroup.layoutYProperty().unbind();
+        unbindGroups();
 
         firstSelectedText = null;
         lastSelectedText = null;

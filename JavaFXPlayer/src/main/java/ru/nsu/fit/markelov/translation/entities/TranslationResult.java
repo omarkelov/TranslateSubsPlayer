@@ -8,6 +8,34 @@ public class TranslationResult {
     private String translation;
     private List<TranslationGroup> translationGroups;
 
+    @Override
+    public String toString() {
+        if (translationGroups != null) {
+            StringJoiner partOfSpeechJoiner = new StringJoiner(System.lineSeparator());
+            for (TranslationGroup translationGroup : translationGroups) {
+                StringJoiner variantJoiner = new StringJoiner(System.lineSeparator() + "  ", translationGroup.getPartOfSpeech() + System.lineSeparator() + "  ", "");
+                for (TranslationVariant translationVariant : translationGroup.getVariants()) {
+                    StringJoiner wordJoiner = new StringJoiner(", ", translationVariant.getWord() + " (", ")");
+                    for (String translation : translationVariant.getTranslations()) {
+                        wordJoiner.add(translation);
+                    }
+                    variantJoiner.add(wordJoiner.toString());
+                }
+                partOfSpeechJoiner.add(variantJoiner.toString());
+            }
+
+            return partOfSpeechJoiner.toString();
+        } else if (translation != null) {
+            return translation;
+        } else {
+            return "No translation...";
+        }
+    }
+
+    public boolean isEmpty() {
+        return translation == null && translationGroups == null;
+    }
+
     /**
      * Returns translation.
      *
