@@ -40,6 +40,10 @@
     -fx-opacity: 0.9;
 }
 
+.spinner {
+    -fx-image: url('../icons/spinning-drop-in-ring.gif');
+}
+
 .controls {
     -fx-vgap: 8;
     -fx-padding: 8;

@@ -113,6 +113,7 @@
                             </rowConstraints>
                             <children>
                                 <TextFlow fx:id="translationTextFlow" styleClass="translation" GridPane.halignment="CENTER" />
+                                <ImageView fx:id="translationSpinnerImageView" fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true" styleClass="spinner" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
                                 <ImageView fitHeight="10.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" styleClass="arrow-down" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP" />
                             </children>
                         </GridPane>
