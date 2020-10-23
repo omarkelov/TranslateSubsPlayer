@@ -16,6 +16,7 @@ dependencies {
     implementation group: 'uk.co.caprica', name: 'vlcj', version: '4.6.0'
     implementation group: 'uk.co.caprica', name: 'vlcj-javafx', version: '1.0.2'
     implementation group: 'uk.co.caprica', name: 'vlcj-subs', version: '0.2.0'
+    implementation group: 'org.json', name: 'json', version: '20200518'
     testImplementation group: 'junit', name: 'junit', version: '4.12'
 }
 
