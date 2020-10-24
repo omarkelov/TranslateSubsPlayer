@@ -239,6 +239,10 @@ public class SubtitlesControl {
     }
 
     private void onSubtitlesTextFlowMouseDragged(MouseEvent mouseEvent) {
+        if (firstSelectedText == null) {
+            return;
+        }
+
         Node intersectedNode = mouseEvent.getPickResult().getIntersectedNode();
         if (intersectedNode != null && intersectedNode.getParent() == subtitlesTextFlow) {
             lastSelectedText = (Text) intersectedNode;
