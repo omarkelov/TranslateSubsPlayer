@@ -24,6 +24,8 @@ public class GoogleJsonTranslator extends Translator {
         "translate_a/single?client=webapp&sl=%s&tl=%s&hl=ru&dt=at&dt=bd&dt=ex&dt=ld&dt=md&" +
         "dt=qca&dt=rw&dt=rm&dt=sos&dt=ss&dt=t&otf=1&pc=1&ssel=0&tsel=0&kc=2&tk=%s&q=%s";
 
+    private String tokenKey;
+
     public GoogleJsonTranslator(int attempts) {
         super(attempts);
     }
@@ -33,11 +35,18 @@ public class GoogleJsonTranslator extends Translator {
         String sourceLanguage, String targetLanguage, String text)
         throws URISyntaxException, IOException, InterruptedException
     {
-        String tokenKey = requestTokenKey(); // todo! do not get every time, but try to get 3 times if needed
+        if (tokenKey == null) {
+            tokenKey = requestTokenKey();
+        }
+
         String token = generateToken(tokenKey, text);
         String json = requestJson(sourceLanguage, targetLanguage, token, text);
 
         updateTranslationResultFromJson(translationResult, json);
+
+        if (translationResult.isEmpty()) {
+            tokenKey = null;
+        }
     }
 
     private String requestTokenKey() throws IOException, URISyntaxException, InterruptedException {
@@ -47,7 +56,7 @@ public class GoogleJsonTranslator extends Translator {
         Matcher matcher = pattern.matcher(content);
 
         if (!matcher.find()) {
-            throw new IOException("Token key is not found");
+            throw new IOException("Token key is not found:" + System.lineSeparator() + content);
         }
 
         return matcher.group().substring(5);
