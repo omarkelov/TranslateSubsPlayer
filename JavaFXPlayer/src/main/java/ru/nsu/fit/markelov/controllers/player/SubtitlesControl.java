@@ -326,11 +326,11 @@ public class SubtitlesControl {
             try {
                 String text = stringBuilder.toString().trim(); // todo!!! trim dots, etc.
 
-                TranslationResult translationResult = new GoogleJsonTranslator().translate(
+                TranslationResult translationResult = new GoogleJsonTranslator(2).translate(
                     "en", "ru", text);
 
                 if (translationResult.isEmpty()) {
-                    translationResult = new GoogleScriptsTranslator().translate(
+                    translationResult = new GoogleScriptsTranslator(1).translate(
                         "en", "ru", text);
                 }
 

@@ -14,6 +14,10 @@ public class GoogleScriptsTranslator extends Translator {
     private static final String GOOGLE_SCRIPTS_URL_FORMAT = "https://script.google.com/macros/s/" +
         "AKfycbzEbZdkPbqj7IrDD1kooNU_Px0eYTAnK5apnIskX3eG7_FzerM/exec?source=%s&target=%s&q=%s";
 
+    public GoogleScriptsTranslator(int attempts) {
+        super(attempts);
+    }
+
     @Override
     protected void updateTranslationResult(TranslationResult translationResult,
         String sourceLanguage, String targetLanguage, String text)

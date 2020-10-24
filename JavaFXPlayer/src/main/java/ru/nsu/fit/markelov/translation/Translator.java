@@ -9,15 +9,35 @@ import java.nio.charset.StandardCharsets;
 
 public abstract class Translator {
 
+    private static final int SLEEP_TIME_BETWEEN_ATTEMPTS = 750;
+
+    private final int attempts;
+
+    public Translator(int attempts) {
+        this.attempts = attempts;
+    }
+
     public TranslationResult translate(
         String sourceLanguage, String targetLanguage, String text) throws InterruptedException
     {
         TranslationResult translationResult = new TranslationResult();
+        int attempts = this.attempts;
 
-        try {
-            updateTranslationResult(translationResult, sourceLanguage, targetLanguage, text);
-        } catch (URISyntaxException | IOException e) {
-            System.out.println(e.getMessage()); // todo! print stack trace
+        while (attempts > 0) {
+            try {
+                updateTranslationResult(translationResult, sourceLanguage, targetLanguage, text);
+
+                if (translationResult.isEmpty()) {
+                    throw new IOException("TranslationResult is empty");
+                }
+
+                break;
+            } catch (URISyntaxException | IOException e) {
+                System.out.println(e.getMessage()); // todo! print stack trace
+
+                Thread.sleep(SLEEP_TIME_BETWEEN_ATTEMPTS);
+                attempts--;
+            }
         }
 
         return translationResult;

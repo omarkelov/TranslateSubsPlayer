@@ -24,6 +24,10 @@ public class GoogleJsonTranslator extends Translator {
         "translate_a/single?client=webapp&sl=%s&tl=%s&hl=ru&dt=at&dt=bd&dt=ex&dt=ld&dt=md&" +
         "dt=qca&dt=rw&dt=rm&dt=sos&dt=ss&dt=t&otf=1&pc=1&ssel=0&tsel=0&kc=2&tk=%s&q=%s";
 
+    public GoogleJsonTranslator(int attempts) {
+        super(attempts);
+    }
+
     @Override
     protected void updateTranslationResult(TranslationResult translationResult,
         String sourceLanguage, String targetLanguage, String text)
