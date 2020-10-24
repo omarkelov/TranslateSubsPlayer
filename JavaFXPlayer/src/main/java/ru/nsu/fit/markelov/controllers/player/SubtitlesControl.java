@@ -338,6 +338,10 @@ public class SubtitlesControl {
                 translationText.setFill(Color.WHITE);
 
                 Platform.runLater(() -> {
+                    if (translationThread == null || translationThread.isInterrupted()) {
+                        return;
+                    }
+
                     translationSpinnerImageView.setVisible(false);
                     translationTextFlow.getChildren().add(translationText);
 
@@ -387,7 +391,7 @@ public class SubtitlesControl {
     }
 
     public void hideTranslationBar() {
-        if (translationThread != null && translationThread.isAlive()) {
+        if (translationThread != null) {
             translationThread.interrupt();
             translationThread = null;
         }
