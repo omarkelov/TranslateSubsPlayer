@@ -69,14 +69,22 @@ public class GoogleJsonTranslator extends Translator {
             // trying to set mainTranslation
             JSONArray outerArray = new JSONArray(json);
             JSONArray mainArray = new JSONArray(outerArray.get(0).toString());
-            JSONArray mainTranslationArray = new JSONArray(mainArray.get(0).toString());
 
-            String translation = mainTranslationArray.get(0).toString(); // todo! parse string from object
-            if (translation.equals("null")) {
+            StringBuilder translationBuilder = new StringBuilder();
+            for (int i = 0; i < mainArray.length(); i++) {
+                JSONArray mainTranslationArray = new JSONArray(mainArray.get(i).toString());
+                String translationPart = mainTranslationArray.get(0).toString(); // todo! parse string from object
+
+                if (!translationPart.equals("null")) {
+                    translationBuilder.append(translationPart);
+                }
+            }
+
+            if (translationBuilder.length() == 0) {
                 throw new JSONException("No translation");
             }
 
-            translationResult.setTranslation(translation);
+            translationResult.setTranslation(translationBuilder.toString());
 
             // trying to set translationGroups
             JSONArray groupsArray = new JSONArray(outerArray.get(1).toString());
