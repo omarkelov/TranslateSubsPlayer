@@ -15,6 +15,7 @@ import javafx.scene.text.TextFlow;
 import ru.nsu.fit.markelov.managers.SceneManager;
 import ru.nsu.fit.markelov.subtitles.BOMSrtParser;
 import ru.nsu.fit.markelov.subtitles.JavaFxSubtitles;
+import ru.nsu.fit.markelov.translation.Translator;
 import ru.nsu.fit.markelov.translation.entities.TranslationResult;
 import ru.nsu.fit.markelov.translation.googlejson.GoogleJsonTranslator;
 import ru.nsu.fit.markelov.translation.googlescripts.GoogleScriptsTranslator;
@@ -56,6 +57,9 @@ public class SubtitlesControl {
     private Text rightSelectedText;
 
     private Thread translationThread;
+
+    private final Translator googleJsonTranslator = new GoogleJsonTranslator(2);
+    private final Translator googleScriptsTranslator = new GoogleScriptsTranslator(1);
 
     private Map<Integer, CloseSubtitlesInfo> closeSubtitlesInfoMap;
     private int currentSubtitleId = 0;
@@ -326,11 +330,11 @@ public class SubtitlesControl {
             try {
                 String text = stringBuilder.toString().trim(); // todo!!! trim dots, etc.
 
-                TranslationResult translationResult = new GoogleJsonTranslator(2).translate(
+                TranslationResult translationResult = googleJsonTranslator.translate(
                     "en", "ru", text);
 
                 if (translationResult.isEmpty()) {
-                    translationResult = new GoogleScriptsTranslator(1).translate(
+                    translationResult = googleScriptsTranslator.translate(
                         "en", "ru", text);
                 }
 
