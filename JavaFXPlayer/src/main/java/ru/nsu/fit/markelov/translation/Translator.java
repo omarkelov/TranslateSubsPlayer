@@ -20,9 +20,18 @@ public abstract class Translator {
     public TranslationResult translate(
         String sourceLanguage, String targetLanguage, String text) throws InterruptedException
     {
-        TranslationResult translationResult = new TranslationResult();
-        int attempts = this.attempts;
+        if (text == null) {
+            text = "";
+        }
 
+        TranslationResult translationResult = new TranslationResult();
+
+        if (text.isBlank()) {
+            translationResult.setTranslation(text);
+            return translationResult;
+        }
+
+        int attempts = this.attempts;
         while (attempts > 0) {
             try {
                 updateTranslationResult(translationResult, sourceLanguage, targetLanguage, text);
