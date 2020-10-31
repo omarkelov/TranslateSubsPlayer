@@ -90,6 +90,8 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
 
     @FXML private Menu audioMenu;
     @FXML private Menu subtitlesMenu;
+    @FXML private Menu sourceLanguageMenu;
+    @FXML private Menu targetLanguageMenu;
     @FXML private MenuItem fileOpenItem;
     @FXML private MenuItem fileCloseItem;
     @FXML private MenuItem helpAboutItem;
@@ -188,7 +190,8 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
             soundButton, expandButton, currentTimeLabel, entireTimeLabel);
 
         menuBarControl = new MenuBarControl(this, fileChooserManager, embeddedMediaPlayer,
-            subtitlesControl, controlBarControl, audioMenu, subtitlesMenu, fileOpenItem, fileCloseItem);
+            subtitlesControl, controlBarControl, audioMenu, subtitlesMenu, sourceLanguageMenu,
+            targetLanguageMenu, fileOpenItem, fileCloseItem);
     }
 
     /**

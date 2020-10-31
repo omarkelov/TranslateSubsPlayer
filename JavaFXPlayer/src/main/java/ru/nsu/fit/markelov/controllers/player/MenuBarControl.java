@@ -5,14 +5,19 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.ToggleGroup;
 import ru.nsu.fit.markelov.managers.FileChooserManager;
+import ru.nsu.fit.markelov.translation.iso639.ISO639;
 import uk.co.caprica.vlcj.player.base.TrackDescription;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 
 public class MenuBarControl {
+
+    private static final Comparator<MenuItem> MENU_ITEM_COMPARATOR
+        = Comparator.comparing(MenuItem::getText);
 
     private final FileChooserManager fileChooserManager;
     private final EmbeddedMediaPlayer embeddedMediaPlayer;
@@ -21,25 +26,36 @@ public class MenuBarControl {
 
     private final Menu audioMenu;
     private final Menu subtitlesMenu;
+    private final Menu sourceLanguageMenu;
+    private final Menu targetLanguageMenu;
 
     private final ToggleGroup audioToggleGroup = new ToggleGroup();
     private final ToggleGroup subtitlesToggleGroup = new ToggleGroup();
+    private final ToggleGroup sourceLanguageToggleGroup = new ToggleGroup();
+    private final ToggleGroup targetLanguageToggleGroup = new ToggleGroup();
 
     private File videoFile;
 
     public MenuBarControl(MenuBarObserver menuBarObserver, FileChooserManager fileChooserManager,
                           EmbeddedMediaPlayer embeddedMediaPlayer, SubtitlesControl subtitlesControl,
                           ControlBarControl controlBarControl, Menu audioMenu, Menu subtitlesMenu,
-                          MenuItem fileOpenItem, MenuItem fileCloseItem) {
+                          Menu sourceLanguageMenu, Menu targetLanguageMenu, MenuItem fileOpenItem,
+                          MenuItem fileCloseItem)
+    {
         this.fileChooserManager = fileChooserManager;
         this.embeddedMediaPlayer = embeddedMediaPlayer;
         this.subtitlesControl = subtitlesControl;
         this.controlBarControl = controlBarControl;
         this.audioMenu = audioMenu;
         this.subtitlesMenu = subtitlesMenu;
+        this.sourceLanguageMenu = sourceLanguageMenu;
+        this.targetLanguageMenu = targetLanguageMenu;
 
         fileOpenItem.setOnAction(actionEvent -> menuBarObserver.onFileClicked());
         fileCloseItem.setOnAction(actionEvent -> menuBarObserver.onClosedClicked());
+
+        initLanguageMenu(true, "English"); // todo -hardcode
+        initLanguageMenu(false, "Russian"); // todo -hardcode
     }
 
     public void init() {
@@ -164,5 +180,42 @@ public class MenuBarControl {
         subtitlesMenu.setDisable(true);
         subtitlesMenu.getItems().clear();
         subtitlesToggleGroup.getToggles().clear();
+    }
+
+    private void initLanguageMenu(boolean isSource, String defaultLanguage) {
+        Menu menu = isSource ? sourceLanguageMenu : targetLanguageMenu;
+        ToggleGroup toggleGroup = isSource ? sourceLanguageToggleGroup : targetLanguageToggleGroup;
+
+        for (String language : ISO639.getLanguages()) {
+            String languageCode = ISO639.getLanguageCode(language);
+
+            RadioMenuItem languageRadioItem = new RadioMenuItem(language);
+            languageRadioItem.setToggleGroup(toggleGroup);
+            languageRadioItem.setOnAction(actionEvent -> {
+                if (isSource) {
+                    subtitlesControl.setSourceLanguageCode(languageCode);
+                } else {
+                    subtitlesControl.setTargetLanguageCode(languageCode);
+                }
+
+                menu.getItems().remove(languageRadioItem);
+                menu.getItems().sort(MENU_ITEM_COMPARATOR);
+                menu.getItems().add(0, languageRadioItem);
+            });
+            languageRadioItem.setMnemonicParsing(false);
+
+            if (language.equals(defaultLanguage)) {
+                if (isSource) {
+                    subtitlesControl.setSourceLanguageCode(languageCode);
+                } else {
+                    subtitlesControl.setTargetLanguageCode(languageCode);
+                }
+
+                languageRadioItem.setSelected(true);
+                menu.getItems().add(0, languageRadioItem);
+            } else {
+                menu.getItems().add(languageRadioItem);
+            }
+        }
     }
 }

@@ -61,6 +61,9 @@ public class SubtitlesControl {
     private final Translator googleJsonTranslator = new GoogleJsonTranslator(2);
     private final Translator googleScriptsTranslator = new GoogleScriptsTranslator(1);
 
+    private String sourceLanguageCode;
+    private String targetLanguageCode;
+
     private Map<Integer, CloseSubtitlesInfo> closeSubtitlesInfoMap;
     private int currentSubtitleId = 0;
 
@@ -84,6 +87,14 @@ public class SubtitlesControl {
 
     public void setCurrentSubtitlesMenuItem(RadioMenuItem currentSubtitlesMenuItem) {
         this.currentSubtitlesMenuItem = currentSubtitlesMenuItem;
+    }
+
+    public void setSourceLanguageCode(String sourceLanguageCode) {
+        this.sourceLanguageCode = sourceLanguageCode;
+    }
+
+    public void setTargetLanguageCode(String targetLanguageCode) {
+        this.targetLanguageCode = targetLanguageCode;
     }
 
     public void initSubtitles(String fileName, RadioMenuItem newRadioMenuItem, long newTime) {
@@ -335,11 +346,11 @@ public class SubtitlesControl {
                 String text = stringBuilder.toString().trim(); // todo!!! trim dots, etc.
 
                 TranslationResult translationResult = googleJsonTranslator.translate(
-                    "en", "ru", text);
+                    sourceLanguageCode, targetLanguageCode, text);
 
                 if (translationResult.isEmpty()) {
                     translationResult = googleScriptsTranslator.translate(
-                        "en", "ru", text);
+                        sourceLanguageCode, targetLanguageCode, text);
                 }
 
                 Text translationText = new Text(translationResult.toString());
