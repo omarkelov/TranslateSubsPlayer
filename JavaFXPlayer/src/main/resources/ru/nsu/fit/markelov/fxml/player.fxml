@@ -127,5 +127,14 @@
                 </Group>
             </children>
         </Pane>
+        <Pane fx:id="tooltipPane" visible="false" pickOnBounds="false">
+            <children>
+                <Group fx:id="tooltipGroup" disable="true">
+                    <children>
+                        <TextFlow fx:id="tooltipTextFlow" styleClass="tooltip" />
+                    </children>
+                </Group>
+            </children>
+        </Pane>
     </children>
 </StackPane>

@@ -44,6 +44,16 @@
     -fx-image: url('../icons/spinning-drop-in-ring.gif');
 }
 
+.tooltip {
+    -fx-text-alignment: center;
+    -fx-padding: 6 12;
+    -fx-background-color: rgba(0, 0, 0, 0.9);
+    -fx-background-radius: 8;
+    -fx-border-width: 1;
+    -fx-border-color: rgba(255, 255, 255, 0.9);
+    -fx-border-radius: 8;
+}
+
 .controls {
     -fx-vgap: 8;
     -fx-padding: 8;
