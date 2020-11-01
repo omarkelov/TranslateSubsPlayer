@@ -10,13 +10,16 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import ru.nsu.fit.markelov.managers.SceneManager;
 import ru.nsu.fit.markelov.subtitles.BOMSrtParser;
 import ru.nsu.fit.markelov.subtitles.JavaFxSubtitles;
 import ru.nsu.fit.markelov.translation.Translator;
+import ru.nsu.fit.markelov.translation.entities.TranslationGroup;
 import ru.nsu.fit.markelov.translation.entities.TranslationResult;
+import ru.nsu.fit.markelov.translation.entities.TranslationVariant;
 import ru.nsu.fit.markelov.translation.googlejson.GoogleJsonTranslator;
 import ru.nsu.fit.markelov.translation.googlescripts.GoogleScriptsTranslator;
 import uk.co.caprica.vlcj.subs.Spu;
@@ -26,16 +29,21 @@ import uk.co.caprica.vlcj.subs.handler.SpuHandler;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 
 public class SubtitlesControl {
 
+    private static final Font TOOLTIP_FONT = new Font(20);
+    private static final Font BIG_FONT = new Font(30);
     private static final String SPACE = " ";
     private static final String NEW_LINE = System.lineSeparator();
 
     private static final int TRANSLATION_BAR_Y_MARGIN = 15;
+    private static final int TOOLTIP_Y_MARGIN = 15;
 
     private SpuHandler subtitlesHandler;
     private RadioMenuItem currentSubtitlesMenuItem;
@@ -50,6 +58,10 @@ public class SubtitlesControl {
     private final Group translationGroup;
     private final TextFlow translationTextFlow;
     private final ImageView translationSpinnerImageView;
+
+    private final Pane tooltipPane;
+    private final Group tooltipGroup;
+    private final TextFlow tooltipTextFlow;
 
     private Text firstSelectedText;
     private Text lastSelectedText;
@@ -70,7 +82,9 @@ public class SubtitlesControl {
     public SubtitlesControl(SceneManager sceneManager, SubtitlesObserver subtitlesObserver,
                             Group subtitlesGroup, TextFlow subtitlesTextFlow,
                             Pane translationPane, Group translationGroup,
-                            TextFlow translationTextFlow, ImageView translationSpinnerImageView) {
+                            TextFlow translationTextFlow, ImageView translationSpinnerImageView,
+                            Pane tooltipPane, Group tooltipGroup, TextFlow tooltipTextFlow)
+    {
         this.sceneManager = sceneManager;
         this.subtitlesObserver = subtitlesObserver;
         this.subtitlesGroup = subtitlesGroup;
@@ -79,6 +93,9 @@ public class SubtitlesControl {
         this.translationGroup = translationGroup;
         this.translationTextFlow = translationTextFlow;
         this.translationSpinnerImageView = translationSpinnerImageView;
+        this.tooltipPane = tooltipPane;
+        this.tooltipGroup = tooltipGroup;
+        this.tooltipTextFlow = tooltipTextFlow;
 
         subtitlesTextFlow.setOnMousePressed(this::onSubtitlesTextFlowMousePressed);
         subtitlesTextFlow.setOnMouseDragged(this::onSubtitlesTextFlowMouseDragged);
@@ -353,8 +370,70 @@ public class SubtitlesControl {
                         sourceLanguageCode, targetLanguageCode, text);
                 }
 
-                Text translationText = new Text(translationResult.toString());
-                translationText.setFill(Color.WHITE);
+                // todo!!! refactor
+                List<Text> textList = new ArrayList<>();
+                if (translationResult.isEmpty()) {
+                    textList.add(createText("No translation..."));
+                } else {
+                    if (translationResult.getTranslation() != null) {
+                        textList.add(createText(translationResult.getTranslation()));
+                    }
+
+                    if (translationResult.getTranslationGroups() != null) {
+                        for (TranslationGroup translationGroup : translationResult.getTranslationGroups()) {
+                            textList.add(createText(NEW_LINE));
+                            Text bigText = new Text(SPACE);
+                            bigText.setFont(BIG_FONT);
+                            textList.add(bigText);
+
+                            Text partOfSpeechText = new Text(capitalize(translationGroup.getPartOfSpeech()) + ": ");
+                            partOfSpeechText.setFill(Color.GRAY);
+                            textList.add(partOfSpeechText);
+
+                            for (TranslationVariant translationVariant : translationGroup.getVariants()) {
+                                StringJoiner translationJoiner = new StringJoiner(", ");
+                                for (String translation : translationVariant.getTranslations()) {
+                                    translationJoiner.add(translation);
+                                }
+
+                                Text wordText = new Text(translationVariant.getWord());
+                                wordText.setFill(Color.WHITE);
+                                wordText.setOnMouseEntered(wordMouseEvent -> {
+                                    wordText.setFill(Color.YELLOW);
+
+                                    Text backTranslationText = new Text(translationJoiner.toString());
+                                    backTranslationText.setFont(TOOLTIP_FONT);
+                                    backTranslationText.setFill(Color.YELLOW);
+                                    double backTranslationTextWidth = backTranslationText.getLayoutBounds().getWidth();
+                                    double backTranslationTextHeight = backTranslationText.getLayoutBounds().getHeight();
+
+                                    tooltipTextFlow.setMaxWidth(06.d * sceneManager.getStageWidthProperty().doubleValue());
+                                    tooltipTextFlow.getChildren().add(backTranslationText);
+
+                                    Bounds bounds = wordText.localToScene(wordText.getBoundsInLocal());
+                                    double hoveredTextCenterX = 0.5d * (bounds.getMinX() + bounds.getMaxX());
+                                    double shiftX = 0.5d * backTranslationTextWidth;
+                                    tooltipGroup.setLayoutX(hoveredTextCenterX - shiftX);
+
+                                    double hoveredTextCenterY = 0.5d * (bounds.getMinY() + bounds.getMaxY());
+                                    double shiftY = backTranslationTextHeight + tooltipTextFlow.getPadding().getTop() + tooltipTextFlow.getPadding().getBottom();
+                                    tooltipGroup.setLayoutY(hoveredTextCenterY - shiftY - TOOLTIP_Y_MARGIN);
+
+                                    tooltipPane.setVisible(true);
+                                });
+                                wordText.setOnMouseExited(wordMouseEvent -> {
+                                    wordText.setFill(Color.WHITE);
+                                    hideTooltipBar();
+                                });
+
+                                textList.add(wordText);
+                                textList.add(createText(", "));
+                            }
+
+                            textList.get(textList.size() - 1).setText(".");
+                        }
+                    }
+                }
 
                 Platform.runLater(() -> {
                     if (translationThread == null || translationThread.isInterrupted()) {
@@ -362,7 +441,7 @@ public class SubtitlesControl {
                     }
 
                     translationSpinnerImageView.setVisible(false);
-                    translationTextFlow.getChildren().add(translationText);
+                    translationTextFlow.getChildren().addAll(textList);
 
                     unbindGroups();
                     bindGroups(finalContainsLineSeparator);
@@ -372,6 +451,17 @@ public class SubtitlesControl {
             }
         });
         translationThread.start();
+    }
+
+    private Text createText(String str) {
+        Text text = new Text(str);
+        text.setFill(Color.WHITE);
+
+        return text;
+    }
+
+    private String capitalize(String str) {
+        return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 
     private void bindGroups(boolean bindToCenter) {
@@ -426,10 +516,17 @@ public class SubtitlesControl {
         leftSelectedText = null;
         rightSelectedText = null;
 
+        hideTooltipBar();
+        translationTextFlow.getChildren().clear();
         translationPane.setVisible(false);
     }
 
     public boolean isTranslationBarVisible() {
         return translationPane.isVisible();
+    }
+
+    private void hideTooltipBar() {
+        tooltipTextFlow.getChildren().clear();
+        tooltipPane.setVisible(false);
     }
 }

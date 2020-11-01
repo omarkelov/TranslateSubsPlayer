@@ -70,6 +70,10 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
     @FXML private TextFlow translationTextFlow;
     @FXML private ImageView translationSpinnerImageView;
 
+    @FXML private Pane tooltipPane;
+    @FXML private Group tooltipGroup;
+    @FXML private TextFlow tooltipTextFlow;
+
     @FXML private Slider slider;
 
     @FXML private HBox leftControlBox;
@@ -182,7 +186,8 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
         videoImageView.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> subtitlesControl.hideTranslationBar());
 
         subtitlesControl = new SubtitlesControl(sceneManager, this, subtitlesGroup,
-            subtitlesTextFlow, translationPane, translationGroup, translationTextFlow, translationSpinnerImageView);
+            subtitlesTextFlow, translationPane, translationGroup, translationTextFlow,
+            translationSpinnerImageView, tooltipPane, tooltipGroup, tooltipTextFlow);
 
         controlBarControl = new ControlBarControl(sceneManager, embeddedMediaPlayer,
             subtitlesControl, slider, leftControlBox, centerControlBox, pauseButton, stopButton,
