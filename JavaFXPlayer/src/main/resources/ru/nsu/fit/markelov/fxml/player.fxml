@@ -6,6 +6,7 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.Group?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -14,6 +15,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.TextFlow?>
 <?import java.net.URL?>
 <StackPane fx:id="root" styleClass="root" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
@@ -105,6 +107,9 @@
                 </Menu>
             </menus>
         </MenuBar>
+        <VBox styleClass="menu-bar-button-box" pickOnBounds="false">
+            <ToggleButton fx:id="menuBarToggleButton" selected="true" focusTraversable="false" styleClass="pin-button" />
+        </VBox>
         <Pane fx:id="translationPane" visible="false" pickOnBounds="false">
             <children>
                 <Group fx:id="translationGroup">
