@@ -7,8 +7,10 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Slider;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
@@ -92,6 +94,7 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
     @FXML private Label currentTimeLabel;
     @FXML private Label entireTimeLabel;
 
+    @FXML private MenuBar menuBar;
     @FXML private Menu audioMenu;
     @FXML private Menu subtitlesMenu;
     @FXML private Menu sourceLanguageMenu;
@@ -99,6 +102,7 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
     @FXML private MenuItem fileOpenItem;
     @FXML private MenuItem fileCloseItem;
     @FXML private MenuItem helpAboutItem;
+    @FXML private ToggleButton menuBarToggleButton;
 
     private final SceneManager sceneManager;
     private final FileChooserManager fileChooserManager;
@@ -184,6 +188,16 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
         videoImageView.fitWidthProperty().bind(root.widthProperty());
         videoImageView.fitHeightProperty().bind(root.heightProperty());
         videoImageView.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> subtitlesControl.hideTranslationBar());
+        menuBarToggleButton.opacityProperty().bind(menuBar.opacityProperty());
+        menuBar.setOnMouseEntered(mouseEvent -> menuBar.setOpacity(1));
+        menuBar.setOnMouseExited(mouseEvent -> {
+            if (menuBarToggleButton.isSelected() || mouseEvent.getPickResult().getIntersectedNode() == menuBarToggleButton) {
+                return;
+            }
+
+            menuBar.setOpacity(0);
+        });
+
 
         subtitlesControl = new SubtitlesControl(sceneManager, this, subtitlesGroup,
             subtitlesTextFlow, translationPane, translationGroup, translationTextFlow,
