@@ -14,7 +14,6 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -192,7 +191,7 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
 
         videoImageView.fitWidthProperty().bind(root.widthProperty());
         videoImageView.fitHeightProperty().bind(root.heightProperty());
-        videoImageView.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
+        videoImageView.setOnMouseClicked(mouseEvent -> {
             if (!subtitlesControl.isTranslationBarVisible()) {
                 controlBarControl.onPausePressed();
             }
