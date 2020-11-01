@@ -1,5 +1,6 @@
 package ru.nsu.fit.markelov.managers;
 
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -53,6 +54,10 @@ public class SceneManager implements AutoCloseable {
     private void initStage() {
         stage.setTitle(DEFAULT_TITLE);
         stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+    }
+
+    public ReadOnlyDoubleProperty getStageWidthProperty() {
+        return stage.widthProperty();
     }
 
     /**
