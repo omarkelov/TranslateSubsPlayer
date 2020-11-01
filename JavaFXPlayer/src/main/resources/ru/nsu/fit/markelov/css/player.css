@@ -68,7 +68,7 @@
     -fx-text-fill: rgba(255, 255, 255, 0.75);
 }
 
-.controls Button {
+.controls Button, .pin-button {
     -fx-min-width: 32;
     -fx-min-height: 32;
     -fx-max-width: 32;
@@ -82,16 +82,16 @@
     -fx-effect: innershadow(gaussian, rgba(255, 255, 255, 0.75), 1, 0, 0, 0);
 }
 
-.controls Button:hover {
+.controls Button:hover, .pin-button:hover {
     -fx-background-color: -fx-accent;
     -fx-opacity: 1;
 }
 
-.controls Button:disabled {
+.controls Button:disabled, .pin-button:disabled {
     -fx-opacity: 0.4;
 }
 
-.controls Button:pressed {
+.controls Button:pressed, .pin-button:pressed {
     -fx-background-size: 22;
     -fx-effect: innershadow(gaussian, black, 8, 0, 0, 0);
 }
@@ -150,6 +150,14 @@
 
 .control-button-sound-mute {
     -fx-background-image: url('../icons/sound-mute.png');
+}
+
+.pin-button {
+    -fx-background-image: url('../icons/unpinned.png');
+}
+
+.pin-button:selected {
+    -fx-background-image: url('../icons/pinned.png');
 }
 
 .slider {
