@@ -40,7 +40,7 @@
                         <TextFlow fx:id="subtitlesTextFlow" styleClass="subtitles" />
                     </children>
                 </Group>
-                <GridPane styleClass="controls" GridPane.rowIndex="2">
+                <GridPane fx:id="controlsGridPane" styleClass="controls" GridPane.rowIndex="2">
                     <columnConstraints>
                         <ColumnConstraints percentWidth="33.33" />
                         <ColumnConstraints percentWidth="33.33" />
@@ -76,6 +76,7 @@
                         </HBox>
                         <HBox alignment="CENTER_RIGHT" GridPane.columnIndex="2" GridPane.rowIndex="1">
                             <children>
+                                <ToggleButton fx:id="controlsToggleButton" selected="true" focusTraversable="false" styleClass="pin-button" />
                                 <Button fx:id="soundButton" focusTraversable="false" styleClass="control-button-sound-high" />
                                 <Button fx:id="expandButton" focusTraversable="false" styleClass="control-button-expand" />
                             </children>
@@ -109,6 +110,9 @@
         </MenuBar>
         <VBox styleClass="menu-bar-button-box" pickOnBounds="false">
             <ToggleButton fx:id="menuBarToggleButton" selected="true" focusTraversable="false" styleClass="pin-button" />
+        </VBox>
+        <VBox alignment="BOTTOM_CENTER" pickOnBounds="false">
+            <HBox fx:id="controlsDaemonHBox" styleClass="controls-daemon-box" />
         </VBox>
         <Pane fx:id="translationPane" visible="false" pickOnBounds="false">
             <children>
