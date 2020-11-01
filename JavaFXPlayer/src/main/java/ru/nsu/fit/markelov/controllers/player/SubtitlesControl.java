@@ -465,6 +465,28 @@ public class SubtitlesControl {
     }
 
     private void bindGroups(boolean bindToCenter) {
+        translationTextFlow.maxWidthProperty().bind(Bindings.createDoubleBinding(() -> {
+            double clickedTextCenterX;
+
+            if (bindToCenter) {
+                Bounds bounds = subtitlesGroup.localToScene(subtitlesGroup.getBoundsInLocal());
+
+                clickedTextCenterX = 0.5d * (bounds.getMinX() + bounds.getMaxX());
+            } else {
+                Bounds leftBounds = leftSelectedText.localToScene(leftSelectedText.getBoundsInLocal());
+                Bounds rightBounds = rightSelectedText.localToScene(rightSelectedText.getBoundsInLocal());
+
+                clickedTextCenterX = 0.5d * (leftBounds.getMinX() + rightBounds.getMaxX());
+            }
+
+            double stageWidth = sceneManager.getStageWidthProperty().doubleValue();
+
+            double minMargin = Math.min(clickedTextCenterX, stageWidth - clickedTextCenterX);
+            double partOfStageWidth = 0.6d * stageWidth;
+
+            return Math.min(partOfStageWidth, 2 * minMargin) - 50;
+        }, sceneManager.getStageWidthProperty()));
+
         translationGroup.layoutXProperty().bind(Bindings.createDoubleBinding(() -> {
             double clickedTextCenterX;
 
