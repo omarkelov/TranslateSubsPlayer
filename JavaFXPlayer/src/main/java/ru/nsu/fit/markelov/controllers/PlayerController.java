@@ -192,7 +192,14 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
 
         videoImageView.fitWidthProperty().bind(root.widthProperty());
         videoImageView.fitHeightProperty().bind(root.heightProperty());
-        videoImageView.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> subtitlesControl.hideTranslationBar());
+        videoImageView.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
+            if (!subtitlesControl.isTranslationBarVisible()) {
+                controlBarControl.onPausePressed();
+            }
+
+            subtitlesControl.hideTranslationBar();
+        });
+
         menuBarToggleButton.opacityProperty().bind(menuBar.opacityProperty());
         menuBar.setOnMouseEntered(mouseEvent -> menuBar.setOpacity(1));
         menuBar.setOnMouseExited(mouseEvent -> {
