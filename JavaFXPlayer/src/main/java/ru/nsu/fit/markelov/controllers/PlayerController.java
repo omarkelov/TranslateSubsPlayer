@@ -15,6 +15,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -76,6 +77,9 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
     @FXML private Group tooltipGroup;
     @FXML private TextFlow tooltipTextFlow;
 
+    @FXML private GridPane controlsGridPane;
+    @FXML private HBox controlsDaemonHBox;
+
     @FXML private Slider slider;
 
     @FXML private HBox leftControlBox;
@@ -90,6 +94,7 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
     @FXML private Button skipRightButton;
     @FXML private Button soundButton;
     @FXML private Button expandButton;
+    @FXML private ToggleButton controlsToggleButton;
 
     @FXML private Label currentTimeLabel;
     @FXML private Label entireTimeLabel;
@@ -198,6 +203,19 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
             menuBar.setOpacity(0);
         });
 
+        controlsGridPane.managedProperty().bind(controlsGridPane.visibleProperty());
+        controlsDaemonHBox.visibleProperty().bind(controlsGridPane.visibleProperty().not());
+        controlsDaemonHBox.managedProperty().bind(controlsGridPane.managedProperty().not());
+        controlsDaemonHBox.setOnMouseEntered(mouseEvent -> {
+            controlsGridPane.setVisible(true);
+        });
+        controlsGridPane.setOnMouseExited(mouseEvent -> {
+            if (controlsToggleButton.isSelected()) {
+                return;
+            }
+
+            controlsGridPane.setVisible(false);
+        });
 
         subtitlesControl = new SubtitlesControl(sceneManager, this, subtitlesGroup,
             subtitlesTextFlow, translationPane, translationGroup, translationTextFlow,
