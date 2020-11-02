@@ -15,8 +15,6 @@ import static ru.nsu.fit.markelov.util.validation.IllegalInputException.requireN
  */
 public class FileChooserManager {
 
-    private static final File HOME_DIRECTORY = new File(System.getProperty("user.home"));
-
     private final Stage stage;
 
     private final FileChooser videoFileChooser;
@@ -75,7 +73,7 @@ public class FileChooserManager {
 
     private void validateLastVideoDirectory() {
         if (!lastVideoDirectory.exists()) {
-            lastVideoDirectory = HOME_DIRECTORY;
+            lastVideoDirectory = new File(System.getProperty("user.home"));
         }
     }
 }
