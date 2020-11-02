@@ -221,6 +221,7 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
             }
 
             controlsGridPane.setVisible(false);
+            root.requestFocus();
         });
 
         subtitlesControl = new SubtitlesControl(sceneManager, this, subtitlesGroup,
