@@ -24,6 +24,7 @@ import ru.nsu.fit.markelov.controllers.player.MenuBarControl;
 import ru.nsu.fit.markelov.controllers.player.MenuBarObserver;
 import ru.nsu.fit.markelov.controllers.player.SubtitlesControl;
 import ru.nsu.fit.markelov.controllers.player.SubtitlesObserver;
+import ru.nsu.fit.markelov.controllers.player.VlcException;
 import ru.nsu.fit.markelov.managers.FileChooserManager;
 import ru.nsu.fit.markelov.managers.SceneManager;
 import ru.nsu.fit.markelov.util.validation.IllegalInputException;
@@ -127,15 +128,20 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
      * @param fileChooserManager file chooser manager.
      * @throws IllegalInputException if one of the input parameters is null.
      */
-    public PlayerController(SceneManager sceneManager,
-                            FileChooserManager fileChooserManager) throws IllegalInputException {
+    public PlayerController(SceneManager sceneManager, FileChooserManager fileChooserManager)
+        throws IllegalInputException, VlcException
+    {
         this.sceneManager = requireNonNull(sceneManager);
         this.fileChooserManager = requireNonNull(fileChooserManager);
 
-        mediaPlayerFactory = new MediaPlayerFactory();
-        embeddedMediaPlayer = mediaPlayerFactory.mediaPlayers().newEmbeddedMediaPlayer();
-        embeddedMediaPlayer.controls().setRepeat(true);
+        try {
+            mediaPlayerFactory = new MediaPlayerFactory();
+            embeddedMediaPlayer = mediaPlayerFactory.mediaPlayers().newEmbeddedMediaPlayer();
+        } catch (Throwable e) {
+            throw new VlcException(e);
+        }
 
+        embeddedMediaPlayer.controls().setRepeat(true);
         embeddedMediaPlayer.events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
 
             private boolean finished = false;

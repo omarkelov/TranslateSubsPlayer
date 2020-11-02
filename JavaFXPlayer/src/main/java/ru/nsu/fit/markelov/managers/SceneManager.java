@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 import ru.nsu.fit.markelov.controllers.Controller;
 import ru.nsu.fit.markelov.controllers.MenuController;
 import ru.nsu.fit.markelov.controllers.PlayerController;
+import ru.nsu.fit.markelov.controllers.player.VlcException;
 import ru.nsu.fit.markelov.util.validation.IllegalInputException;
 
 import java.io.IOException;
@@ -31,6 +32,10 @@ public class SceneManager implements AutoCloseable {
     private static final String DEFAULT_ERROR_HEADER = "Unknown error";
     private static final String DEFAULT_ERROR_CONTENT =
         "Unknown error has occurred. Please contact the developer.";
+
+    private static final String VLC_ERROR_HEADER = "VLC media player";
+    private static final String VLC_ERROR_CONTENT = "Make sure you have the latest version of " +
+        "VLC media player installed (can be downloaded from videolan.org).";
 
     private final Stage stage;
     private final FileChooserManager fileChooserManager;
@@ -111,7 +116,9 @@ public class SceneManager implements AutoCloseable {
         alert.setHeaderText(header == null || header.isEmpty() ? DEFAULT_ERROR_HEADER : header);
         alert.setContentText(content == null || content.isEmpty() ? DEFAULT_ERROR_CONTENT : content);
         alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
-        alert.initOwner(stage);
+        try {
+            alert.initOwner(stage);
+        } catch (RuntimeException ignored) {}
 
         alert.showAndWait();
     }
@@ -135,6 +142,8 @@ public class SceneManager implements AutoCloseable {
             switchScene(new PlayerController(this, fileChooserManager));
         } catch (IllegalInputException e) {
             buildErrorAlert("scene switching").showAndWait();
+        } catch (VlcException e) {
+            showError(VLC_ERROR_HEADER, VLC_ERROR_CONTENT);
         }
     }
 
