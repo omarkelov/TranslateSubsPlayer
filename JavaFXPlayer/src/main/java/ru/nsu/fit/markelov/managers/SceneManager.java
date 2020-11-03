@@ -152,7 +152,9 @@ public class SceneManager implements AutoCloseable {
      */
     @Override
     public void close() {
-        controller.close();
+        if (controller != null) {
+            controller.close();
+        }
     }
 
     private void switchScene(Controller controller) {
