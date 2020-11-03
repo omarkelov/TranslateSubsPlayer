@@ -216,8 +216,31 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
                 return;
             }
 
+            for (Menu menu : menuBar.getMenus()) {
+                if (menu.isShowing()) {
+                    return;
+                }
+            }
+
             menuBar.setOpacity(0);
         });
+        for (Menu menu : menuBar.getMenus()) {
+            menu.setOnHidden(event -> {
+                if (menuBarToggleButton.isSelected()) {
+                    return;
+                }
+
+                Platform.runLater(() -> { // running later for giving the next menu some time to show up
+                    for (Menu m : menuBar.getMenus()) {
+                        if (m.isShowing()) {
+                            return;
+                        }
+                    }
+
+                    menuBar.setOpacity(0);
+                });
+            });
+        }
 
         controlsGridPane.managedProperty().bind(controlsGridPane.visibleProperty());
         controlsDaemonHBox.visibleProperty().bind(controlsGridPane.visibleProperty().not());
