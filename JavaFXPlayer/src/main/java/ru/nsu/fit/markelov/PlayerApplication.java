@@ -51,6 +51,8 @@ public class PlayerApplication extends Application {
      */
     @Override
     public void stop() {
-        sceneManager.close();
+        if (sceneManager != null) {
+            sceneManager.close();
+        }
     }
 }
