@@ -175,11 +175,10 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
 
             @Override
             public void error(MediaPlayer mediaPlayer) {
-                Platform.runLater(() -> {
-                    new AlertBuilder()
-                        .setHeaderText(VLC_ERROR_HEADER).setOwner(sceneManager.getWindowOwner())
-                        .build().showAndWait();
-                });
+                Platform.runLater(() -> new AlertBuilder()
+                    .setHeaderText(VLC_ERROR_HEADER).setOwner(sceneManager.getWindowOwner())
+                    .build().showAndWait()
+                );
             }
         });
     }
