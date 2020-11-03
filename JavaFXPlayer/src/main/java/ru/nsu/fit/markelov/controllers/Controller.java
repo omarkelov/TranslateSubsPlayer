@@ -1,8 +1,5 @@
 package ru.nsu.fit.markelov.controllers;
 
-import javafx.scene.Parent;
-import ru.nsu.fit.markelov.util.validation.IllegalInputException;
-
 /**
  * Controller interface is used by JavaFX in javafx.fxml.FXMLLoader for controlling a view and a
  * model.
@@ -19,11 +16,8 @@ public interface Controller extends AutoCloseable {
 
     /**
      * This method is designed to run after the parent node is loaded by javafx.fxml.FXMLLoader.
-     *
-     * @param root the parent node.
-     * @throws IllegalInputException if 'root' parameter is null.
      */
-    default void runAfterSceneSet(Parent root) throws IllegalInputException {}
+    default void runAfterSceneSet() {}
 
     /**
      * {@inheritDoc}
