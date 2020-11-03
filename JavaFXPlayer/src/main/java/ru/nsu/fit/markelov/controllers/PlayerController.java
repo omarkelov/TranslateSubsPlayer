@@ -24,6 +24,7 @@ import ru.nsu.fit.markelov.controllers.player.MenuBarObserver;
 import ru.nsu.fit.markelov.controllers.player.SubtitlesControl;
 import ru.nsu.fit.markelov.controllers.player.SubtitlesObserver;
 import ru.nsu.fit.markelov.controllers.player.VlcException;
+import ru.nsu.fit.markelov.javafxutil.AlertBuilder;
 import ru.nsu.fit.markelov.managers.FileChooserManager;
 import ru.nsu.fit.markelov.managers.SceneManager;
 import ru.nsu.fit.markelov.util.validation.IllegalInputException;
@@ -43,6 +44,7 @@ import static javafx.scene.input.KeyCode.RIGHT;
 import static javafx.scene.input.KeyCode.SPACE;
 import static javafx.scene.input.KeyCombination.ALT_DOWN;
 import static javafx.scene.input.KeyCombination.SHORTCUT_DOWN;
+import static ru.nsu.fit.markelov.javafxutil.AlertBuilder.VLC_ERROR_HEADER;
 import static ru.nsu.fit.markelov.util.validation.IllegalInputException.requireNonNull;
 import static uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurfaceFactory.videoSurfaceForImageView;
 
@@ -173,7 +175,11 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
 
             @Override
             public void error(MediaPlayer mediaPlayer) {
-                Platform.runLater(sceneManager::showDefaultError);
+                Platform.runLater(() -> {
+                    new AlertBuilder()
+                        .setHeaderText(VLC_ERROR_HEADER).setOwner(sceneManager.getWindowOwner())
+                        .build().showAndWait();
+                });
             }
         });
     }

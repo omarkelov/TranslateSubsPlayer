@@ -13,6 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import ru.nsu.fit.markelov.javafxutil.AlertBuilder;
 import ru.nsu.fit.markelov.managers.SceneManager;
 import ru.nsu.fit.markelov.subtitles.BOMSrtParser;
 import ru.nsu.fit.markelov.subtitles.JavaFxSubtitles;
@@ -34,6 +35,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
+
+import static ru.nsu.fit.markelov.javafxutil.AlertBuilder.FILE_OPENING_ERROR_CONTENT_PREFIX;
+import static ru.nsu.fit.markelov.javafxutil.AlertBuilder.FILE_OPENING_ERROR_HEADER;
+import static ru.nsu.fit.markelov.javafxutil.AlertBuilder.SUBTITLES_PARSING_ERROR_CONTENT_PREFIX;
+import static ru.nsu.fit.markelov.javafxutil.AlertBuilder.SUBTITLES_PARSING_ERROR_HEADER;
 
 public class SubtitlesControl {
 
@@ -197,12 +203,24 @@ public class SubtitlesControl {
             this.closeSubtitlesInfoMap = closeSubtitlesInfoMap;
         } catch (IOException e) {
             currentSubtitlesMenuItem.setSelected(true);
-            sceneManager.showError("File cannot be opened",
-                "The next file cannot be opened: " + fileName);
+
+            new AlertBuilder()
+                .setHeaderText(FILE_OPENING_ERROR_HEADER)
+                .setContentText(FILE_OPENING_ERROR_CONTENT_PREFIX + fileName)
+                .setException(e)
+                .setOwner(sceneManager.getWindowOwner())
+                .build()
+                .showAndWait();
         } catch (Exception e) {
             currentSubtitlesMenuItem.setSelected(true);
-            sceneManager.showError("Subtitles cannot be parsed",
-                "The next file cannot be parsed: " + fileName);
+
+            new AlertBuilder()
+                .setHeaderText(SUBTITLES_PARSING_ERROR_HEADER)
+                .setContentText(SUBTITLES_PARSING_ERROR_CONTENT_PREFIX + fileName)
+                .setException(e)
+                .setOwner(sceneManager.getWindowOwner())
+                .build()
+                .showAndWait();
         }
     }
 

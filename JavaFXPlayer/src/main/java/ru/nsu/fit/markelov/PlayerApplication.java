@@ -2,11 +2,12 @@ package ru.nsu.fit.markelov;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import ru.nsu.fit.markelov.javafxutil.AlertBuilder;
 import ru.nsu.fit.markelov.managers.FileChooserManager;
 import ru.nsu.fit.markelov.managers.SceneManager;
 import ru.nsu.fit.markelov.util.validation.IllegalInputException;
 
-import static ru.nsu.fit.markelov.javafxutil.AlertBuilder.buildErrorAlert;
+import static ru.nsu.fit.markelov.javafxutil.AlertBuilder.APPLICATION_LAUNCH_ERROR_HEADER;
 
 /**
  * PlayerApplication is a player with special features made with JavaFX.
@@ -36,11 +37,13 @@ public class PlayerApplication extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            sceneManager = new SceneManager(primaryStage, new FileChooserManager(primaryStage));
+            sceneManager = new SceneManager(primaryStage, getHostServices(), new FileChooserManager(primaryStage));
             sceneManager.switchToPlayer();
             primaryStage.show();
         } catch (IllegalInputException e) {
-            buildErrorAlert("game launching").showAndWait();
+            new AlertBuilder()
+                .setHeaderText(APPLICATION_LAUNCH_ERROR_HEADER).setException(e)
+                .build().showAndWait();
         }
     }
 
