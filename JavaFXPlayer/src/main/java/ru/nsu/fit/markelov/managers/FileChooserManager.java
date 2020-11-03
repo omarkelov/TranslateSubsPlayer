@@ -1,7 +1,7 @@
 package ru.nsu.fit.markelov.managers;
 
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
+import javafx.stage.Window;
 import ru.nsu.fit.markelov.util.validation.IllegalInputException;
 
 import java.io.File;
@@ -15,7 +15,7 @@ import static ru.nsu.fit.markelov.util.validation.IllegalInputException.requireN
  */
 public class FileChooserManager {
 
-    private final Stage stage;
+    private final Window window;
 
     private final FileChooser videoFileChooser;
     private final FileChooser subtitlesFileChooser;
@@ -23,13 +23,13 @@ public class FileChooserManager {
     private File lastVideoDirectory;
 
     /**
-     * Creates new FileChooserManager with specified JavaFX stage.
+     * Creates new FileChooserManager with specified JavaFX window.
      *
-     * @param stage JavaFX stage.
+     * @param window JavaFX window.
      * @throws IllegalInputException if one of the input parameters is null.
      */
-    public FileChooserManager(Stage stage) throws IllegalInputException {
-        this.stage = requireNonNull(stage);
+    public FileChooserManager(Window window) throws IllegalInputException {
+        this.window = requireNonNull(window);
 
         videoFileChooser = new FileChooser();
         videoFileChooser.setTitle("Choose Video");
@@ -51,7 +51,7 @@ public class FileChooserManager {
         validateLastVideoDirectory();
         videoFileChooser.setInitialDirectory(lastVideoDirectory);
 
-        File file = videoFileChooser.showOpenDialog(stage);
+        File file = videoFileChooser.showOpenDialog(window);
         if (file != null) {
             lastVideoDirectory = new File(file.getParent());
         }
@@ -68,7 +68,7 @@ public class FileChooserManager {
         validateLastVideoDirectory();
         subtitlesFileChooser.setInitialDirectory(lastVideoDirectory);
 
-        return subtitlesFileChooser.showOpenDialog(stage);
+        return subtitlesFileChooser.showOpenDialog(window);
     }
 
     private void validateLastVideoDirectory() {
