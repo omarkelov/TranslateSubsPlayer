@@ -3,6 +3,7 @@ package ru.nsu.fit.markelov.controllers;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -254,7 +255,6 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
             }
 
             controlsGridPane.setVisible(false);
-            root.requestFocus();
         });
 
         subtitlesControl = new SubtitlesControl(sceneManager, this, subtitlesGroup,
@@ -283,9 +283,8 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
      * {@inheritDoc}
      */
     @Override
-    public void runAfterSceneSet() {
-        root.setOnKeyReleased(this::onKeyReleased);
-        root.requestFocus();
+    public void runAfterSceneSet(Scene scene) throws IllegalInputException {
+        requireNonNull(scene).setOnKeyReleased(this::onKeyReleased);
     }
 
     /**
@@ -380,8 +379,6 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
 
         sceneManager.setDefaultTitle();
         menuBarControl.setVideoFile(null);
-
-        root.requestFocus();
 
         initialized = false;
     }
