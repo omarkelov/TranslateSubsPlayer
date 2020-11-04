@@ -1,17 +1,16 @@
 package ru.nsu.fit.markelov.subtitles;
 
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class JavaFxSubtitles {
+import static ru.nsu.fit.markelov.Constants.BIG_BOLD_FONT;
+import static ru.nsu.fit.markelov.Constants.NEW_LINE;
+import static ru.nsu.fit.markelov.Constants.SPACE;
+import static ru.nsu.fit.markelov.Constants.STANDARD_COLOR;
 
-    private static final Font SUBTITLES_FONT = new Font(30);
-    private static final String SPACE = " ";
-    private static final String NEW_LINE = System.lineSeparator();
+public class JavaFxSubtitles {
 
     private final List<Text> textList;
 
@@ -47,8 +46,8 @@ public class JavaFxSubtitles {
 
     private Text createText(String str) {
         Text text = new Text(str);
-        text.setFont(SUBTITLES_FONT);
-        text.setFill(Color.WHITE);
+        text.setFont(BIG_BOLD_FONT);
+        text.setFill(STANDARD_COLOR);
 
         return text;
     }

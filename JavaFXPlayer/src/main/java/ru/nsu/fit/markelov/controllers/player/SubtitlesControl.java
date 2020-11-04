@@ -9,8 +9,6 @@ import javafx.scene.control.RadioMenuItem;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import ru.nsu.fit.markelov.javafxutil.AlertBuilder;
@@ -36,17 +34,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
+import static ru.nsu.fit.markelov.Constants.BIG_BOLD_FONT;
+import static ru.nsu.fit.markelov.Constants.MEDIUM_FONT;
+import static ru.nsu.fit.markelov.Constants.NEW_LINE;
+import static ru.nsu.fit.markelov.Constants.DISABLED_COLOR;
+import static ru.nsu.fit.markelov.Constants.SELECTED_COLOR;
+import static ru.nsu.fit.markelov.Constants.SPACE;
+import static ru.nsu.fit.markelov.Constants.STANDARD_COLOR;
 import static ru.nsu.fit.markelov.javafxutil.AlertBuilder.FILE_OPENING_ERROR_CONTENT_PREFIX;
 import static ru.nsu.fit.markelov.javafxutil.AlertBuilder.FILE_OPENING_ERROR_HEADER;
 import static ru.nsu.fit.markelov.javafxutil.AlertBuilder.SUBTITLES_PARSING_ERROR_CONTENT_PREFIX;
 import static ru.nsu.fit.markelov.javafxutil.AlertBuilder.SUBTITLES_PARSING_ERROR_HEADER;
 
 public class SubtitlesControl {
-
-    private static final Font TOOLTIP_FONT = new Font(20);
-    private static final Font BIG_FONT = new Font(30);
-    private static final String SPACE = " ";
-    private static final String NEW_LINE = System.lineSeparator();
 
     private static final int TRANSLATION_BAR_Y_MARGIN = 15;
     private static final int TOOLTIP_Y_MARGIN = 15;
@@ -275,10 +275,10 @@ public class SubtitlesControl {
             subtitlesObserver.onSubtitlesTextPressed();
 
             firstSelectedText = lastSelectedText = (Text) intersectedNode;
-            firstSelectedText.setFill(Color.YELLOW);
+            firstSelectedText.setFill(SELECTED_COLOR);
             for (Node child : subtitlesTextFlow.getChildren()) {
                 if (child != firstSelectedText) {
-                    ((Text) child).setFill(Color.WHITE);
+                    ((Text) child).setFill(STANDARD_COLOR);
                 }
             }
         }
@@ -305,15 +305,15 @@ public class SubtitlesControl {
                         filling = false;
                     }
 
-                    currentText.setFill(Color.YELLOW);
+                    currentText.setFill(SELECTED_COLOR);
                 } else {
                     if (currentText == firstSelectedText || currentText == lastSelectedText) {
-                        currentText.setFill(Color.YELLOW);
+                        currentText.setFill(SELECTED_COLOR);
                         filling = true;
                         continue;
                     }
 
-                    currentText.setFill(Color.WHITE);
+                    currentText.setFill(STANDARD_COLOR);
                 }
             }
         }
@@ -401,11 +401,11 @@ public class SubtitlesControl {
                         for (TranslationGroup translationGroup : translationResult.getTranslationGroups()) {
                             textList.add(createText(NEW_LINE));
                             Text bigText = new Text(SPACE);
-                            bigText.setFont(BIG_FONT);
+                            bigText.setFont(BIG_BOLD_FONT);
                             textList.add(bigText);
 
                             Text partOfSpeechText = new Text(capitalize(translationGroup.getPartOfSpeech()) + ": ");
-                            partOfSpeechText.setFill(Color.GRAY);
+                            partOfSpeechText.setFill(DISABLED_COLOR);
                             textList.add(partOfSpeechText);
 
                             for (TranslationVariant translationVariant : translationGroup.getVariants()) {
@@ -415,13 +415,13 @@ public class SubtitlesControl {
                                 }
 
                                 Text wordText = new Text(translationVariant.getWord());
-                                wordText.setFill(Color.WHITE);
+                                wordText.setFill(STANDARD_COLOR);
                                 wordText.setOnMouseEntered(wordMouseEvent -> {
-                                    wordText.setFill(Color.YELLOW);
+                                    wordText.setFill(SELECTED_COLOR);
 
                                     Text backTranslationText = new Text(translationJoiner.toString());
-                                    backTranslationText.setFont(TOOLTIP_FONT);
-                                    backTranslationText.setFill(Color.YELLOW);
+                                    backTranslationText.setFont(MEDIUM_FONT);
+                                    backTranslationText.setFill(SELECTED_COLOR);
                                     double backTranslationTextWidth = backTranslationText.getLayoutBounds().getWidth();
                                     double backTranslationTextHeight = backTranslationText.getLayoutBounds().getHeight();
 
@@ -440,7 +440,7 @@ public class SubtitlesControl {
                                     tooltipPane.setVisible(true);
                                 });
                                 wordText.setOnMouseExited(wordMouseEvent -> {
-                                    wordText.setFill(Color.WHITE);
+                                    wordText.setFill(STANDARD_COLOR);
                                     hideTooltipBar();
                                 });
 
@@ -473,7 +473,7 @@ public class SubtitlesControl {
 
     private Text createText(String str) {
         Text text = new Text(str);
-        text.setFill(Color.WHITE);
+        text.setFill(STANDARD_COLOR);
 
         return text;
     }
@@ -546,7 +546,7 @@ public class SubtitlesControl {
         }
 
         for (Node child : subtitlesTextFlow.getChildren()) {
-            ((Text) child).setFill(Color.WHITE);
+            ((Text) child).setFill(STANDARD_COLOR);
         }
 
         unbindGroups();
