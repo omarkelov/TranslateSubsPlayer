@@ -85,31 +85,36 @@
                 </GridPane>
             </children>
         </GridPane>
-        <MenuBar fx:id="menuBar" StackPane.alignment="TOP_CENTER">
-            <menus>
-                <Menu text="File">
-                    <items>
-                        <MenuItem fx:id="fileOpenItem" text="Open" />
-                        <MenuItem fx:id="fileCloseItem" text="Close" />
-                    </items>
-                </Menu>
-                <Menu fx:id="audioMenu" disable="true" text="Audio" />
-                <Menu fx:id="subtitlesMenu" disable="true" text="Subtitles" />
-                <Menu text="Translation">
-                    <items>
-                        <Menu fx:id="sourceLanguageMenu" text="Source language" />
-                        <Menu fx:id="targetLanguageMenu" text="Target language" />
-                    </items>
-                </Menu>
-                <Menu text="Help">
-                    <items>
-                        <MenuItem fx:id="helpAboutItem" text="About" />
-                    </items>
-                </Menu>
-            </menus>
-        </MenuBar>
-        <VBox styleClass="menu-bar-button-box" pickOnBounds="false">
-            <ToggleButton fx:id="menuBarToggleButton" selected="true" focusTraversable="false" styleClass="pin-button" />
+        <StackPane fx:id="menuBarStackPane" pickOnBounds="false">
+            <MenuBar fx:id="menuBar" StackPane.alignment="TOP_CENTER">
+                <menus>
+                    <Menu text="File">
+                        <items>
+                            <MenuItem fx:id="fileOpenItem" text="Open" />
+                            <MenuItem fx:id="fileCloseItem" text="Close" />
+                        </items>
+                    </Menu>
+                    <Menu fx:id="audioMenu" disable="true" text="Audio" />
+                    <Menu fx:id="subtitlesMenu" disable="true" text="Subtitles" />
+                    <Menu text="Translation">
+                        <items>
+                            <Menu fx:id="sourceLanguageMenu" text="Source language" />
+                            <Menu fx:id="targetLanguageMenu" text="Target language" />
+                        </items>
+                    </Menu>
+                    <Menu text="Help">
+                        <items>
+                            <MenuItem fx:id="helpAboutItem" text="About" />
+                        </items>
+                    </Menu>
+                </menus>
+            </MenuBar>
+            <VBox styleClass="menu-bar-button-box" pickOnBounds="false">
+                <ToggleButton fx:id="menuBarToggleButton" selected="true" focusTraversable="false" styleClass="pin-button" />
+            </VBox>
+        </StackPane>
+        <VBox alignment="TOP_CENTER" pickOnBounds="false">
+            <HBox fx:id="menuBarDaemonHBox" />
         </VBox>
         <VBox alignment="BOTTOM_CENTER" pickOnBounds="false">
             <HBox fx:id="controlsDaemonHBox" />

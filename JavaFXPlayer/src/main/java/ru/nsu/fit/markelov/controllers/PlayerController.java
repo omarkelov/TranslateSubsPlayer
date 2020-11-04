@@ -105,6 +105,9 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
     @FXML private Label currentTimeLabel;
     @FXML private Label entireTimeLabel;
 
+    @FXML private StackPane menuBarStackPane;
+    @FXML private HBox menuBarDaemonHBox;
+
     @FXML private MenuBar menuBar;
     @FXML private Menu audioMenu;
     @FXML private Menu subtitlesMenu;
@@ -214,8 +217,12 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
             subtitlesControl.hideTranslationBar();
         });
 
-        menuBarToggleButton.opacityProperty().bind(menuBar.opacityProperty());
-        menuBar.setOnMouseEntered(mouseEvent -> menuBar.setOpacity(1));
+        menuBarStackPane.managedProperty().bind(menuBarStackPane.visibleProperty());
+        menuBarDaemonHBox.visibleProperty().bind(menuBarStackPane.visibleProperty().not());
+        menuBarDaemonHBox.managedProperty().bind(menuBarStackPane.managedProperty().not());
+        menuBarDaemonHBox.prefHeightProperty().bind(menuBar.heightProperty());
+        menuBarDaemonHBox.setOnMouseEntered(mouseEvent -> menuBarStackPane.setVisible(true));
+        menuBar.disableProperty().bind(menuBarStackPane.visibleProperty().not());
         menuBar.setOnMouseExited(mouseEvent -> {
             if (menuBarToggleButton.isSelected() || mouseEvent.getPickResult().getIntersectedNode() == menuBarToggleButton) {
                 return;
@@ -227,7 +234,7 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
                 }
             }
 
-            menuBar.setOpacity(0);
+            menuBarStackPane.setVisible(false);
         });
         for (Menu menu : menuBar.getMenus()) {
             menu.setOnHidden(event -> {
@@ -242,7 +249,7 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
                         }
                     }
 
-                    menuBar.setOpacity(0);
+                    menuBarStackPane.setVisible(false);
                 });
             });
         }
