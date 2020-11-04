@@ -217,6 +217,7 @@ public class ControlBarControl {
 
     public void onSkipCurrentPressed() {
         skipToSubtitle(subtitlesControl.getCurrentSubtitleTime());
+        onPausePressed(false);
     }
 
     public void onSkipRightPressed() {
