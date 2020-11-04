@@ -25,7 +25,7 @@
     </stylesheets>
     <children>
         <ImageView fx:id="videoImageView" preserveRatio="true" />
-        <GridPane styleClass="grid-pane" pickOnBounds="false">
+        <GridPane fx:id="mainGridPane" styleClass="grid-pane" pickOnBounds="false">
             <columnConstraints>
                 <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" />
             </columnConstraints>
@@ -112,7 +112,7 @@
             <ToggleButton fx:id="menuBarToggleButton" selected="true" focusTraversable="false" styleClass="pin-button" />
         </VBox>
         <VBox alignment="BOTTOM_CENTER" pickOnBounds="false">
-            <HBox fx:id="controlsDaemonHBox" styleClass="controls-daemon-box" />
+            <HBox fx:id="controlsDaemonHBox" />
         </VBox>
         <Pane fx:id="translationPane" visible="false" pickOnBounds="false">
             <children>

@@ -1,6 +1,7 @@
 package ru.nsu.fit.markelov.controllers;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -58,6 +59,8 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
 
     private static final String FXML_FILE_NAME = "player.fxml";
 
+    private static final int MENU_BAR_DAEMON_BOX_MAX_HEIGHT = 10;
+
     private static final KeyCodeCombination ON_OPEN_KEYS = new KeyCodeCombination(O, SHORTCUT_DOWN);
     private static final KeyCodeCombination ON_SKIP_LEFT_TEN_KEYS = new KeyCodeCombination(LEFT, SHORTCUT_DOWN);
     private static final KeyCodeCombination ON_SKIP_RIGHT_TEN_KEYS = new KeyCodeCombination(RIGHT, SHORTCUT_DOWN);
@@ -66,6 +69,7 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
 
     @FXML private StackPane root;
     @FXML private ImageView videoImageView;
+    @FXML private GridPane mainGridPane;
 
     @FXML private Group subtitlesGroup;
     @FXML private TextFlow subtitlesTextFlow;
@@ -246,6 +250,8 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
         controlsGridPane.managedProperty().bind(controlsGridPane.visibleProperty());
         controlsDaemonHBox.visibleProperty().bind(controlsGridPane.visibleProperty().not());
         controlsDaemonHBox.managedProperty().bind(controlsGridPane.managedProperty().not());
+        controlsDaemonHBox.prefHeightProperty().bind(Bindings.max(MENU_BAR_DAEMON_BOX_MAX_HEIGHT,
+            mainGridPane.vgapProperty().multiply(0.8d)));
         controlsDaemonHBox.setOnMouseEntered(mouseEvent -> {
             controlsGridPane.setVisible(true);
         });

@@ -65,11 +65,6 @@
     -fx-background-color: rgba(0, 0, 0, 0.75);
 }
 
-.controls-daemon-box {
-    -fx-min-height: 16;
-    -fx-max-height: 16;
-}
-
 .controls > HBox {
     -fx-spacing: 8;
 }
