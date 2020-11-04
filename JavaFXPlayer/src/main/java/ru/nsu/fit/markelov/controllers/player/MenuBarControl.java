@@ -1,9 +1,14 @@
 package ru.nsu.fit.markelov.controllers.player;
 
+import javafx.application.Platform;
 import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import ru.nsu.fit.markelov.managers.FileChooserManager;
 import ru.nsu.fit.markelov.translation.iso639.ISO639;
 import uk.co.caprica.vlcj.player.base.TrackDescription;
@@ -24,6 +29,10 @@ public class MenuBarControl {
     private final SubtitlesControl subtitlesControl;
     private final ControlBarControl controlBarControl;
 
+    private final StackPane menuBarStackPane;
+    private final HBox menuBarDaemonHBox;
+    private final ToggleButton menuBarToggleButton;
+    private final MenuBar menuBar;
     private final Menu audioMenu;
     private final Menu subtitlesMenu;
     private final Menu sourceLanguageMenu;
@@ -38,18 +47,25 @@ public class MenuBarControl {
 
     public MenuBarControl(MenuBarObserver menuBarObserver, FileChooserManager fileChooserManager,
                           EmbeddedMediaPlayer embeddedMediaPlayer, SubtitlesControl subtitlesControl,
-                          ControlBarControl controlBarControl, Menu audioMenu, Menu subtitlesMenu,
-                          Menu sourceLanguageMenu, Menu targetLanguageMenu, MenuItem fileOpenItem,
-                          MenuItem fileCloseItem)
+                          ControlBarControl controlBarControl, StackPane menuBarStackPane,
+                          HBox menuBarDaemonHBox, ToggleButton menuBarToggleButton, MenuBar menuBar,
+                          Menu audioMenu, Menu subtitlesMenu, Menu sourceLanguageMenu,
+                          Menu targetLanguageMenu, MenuItem fileOpenItem, MenuItem fileCloseItem)
     {
         this.fileChooserManager = fileChooserManager;
         this.embeddedMediaPlayer = embeddedMediaPlayer;
         this.subtitlesControl = subtitlesControl;
         this.controlBarControl = controlBarControl;
+        this.menuBarStackPane = menuBarStackPane;
+        this.menuBarDaemonHBox = menuBarDaemonHBox;
+        this.menuBarToggleButton = menuBarToggleButton;
+        this.menuBar = menuBar;
         this.audioMenu = audioMenu;
         this.subtitlesMenu = subtitlesMenu;
         this.sourceLanguageMenu = sourceLanguageMenu;
         this.targetLanguageMenu = targetLanguageMenu;
+
+        activateBindings();
 
         fileOpenItem.setOnAction(actionEvent -> menuBarObserver.onFileClicked());
         fileCloseItem.setOnAction(actionEvent -> menuBarObserver.onClosedClicked());
@@ -78,6 +94,48 @@ public class MenuBarControl {
 
     public void setVideoFile(File videoFile) {
         this.videoFile = videoFile;
+    }
+
+    private void activateBindings() {
+        menuBarStackPane.managedProperty().bind(menuBarStackPane.visibleProperty());
+
+        menuBarDaemonHBox.visibleProperty().bind(menuBarStackPane.visibleProperty().not());
+        menuBarDaemonHBox.managedProperty().bind(menuBarStackPane.managedProperty().not());
+        menuBarDaemonHBox.prefHeightProperty().bind(menuBar.heightProperty());
+        menuBarDaemonHBox.setOnMouseEntered(mouseEvent -> menuBarStackPane.setVisible(true));
+
+        menuBar.disableProperty().bind(menuBarStackPane.visibleProperty().not());
+        menuBar.setOnMouseExited(mouseEvent -> {
+            if (menuBarToggleButton.isSelected() || mouseEvent.getPickResult().getIntersectedNode() == menuBarToggleButton) {
+                return;
+            }
+
+            for (Menu menu : menuBar.getMenus()) {
+                if (menu.isShowing()) {
+                    return;
+                }
+            }
+
+            menuBarStackPane.setVisible(false);
+        });
+
+        for (Menu menu : menuBar.getMenus()) {
+            menu.setOnHidden(event -> {
+                if (menuBarToggleButton.isSelected()) {
+                    return;
+                }
+
+                Platform.runLater(() -> { // running later for giving the next menu some time to show up
+                    for (Menu m : menuBar.getMenus()) {
+                        if (m.isShowing()) {
+                            return;
+                        }
+                    }
+
+                    menuBarStackPane.setVisible(false);
+                });
+            });
+        }
     }
 
     private void initAudioMenu() {

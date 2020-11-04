@@ -107,7 +107,7 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
 
     @FXML private StackPane menuBarStackPane;
     @FXML private HBox menuBarDaemonHBox;
-
+    @FXML private ToggleButton menuBarToggleButton;
     @FXML private MenuBar menuBar;
     @FXML private Menu audioMenu;
     @FXML private Menu subtitlesMenu;
@@ -116,7 +116,6 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
     @FXML private MenuItem fileOpenItem;
     @FXML private MenuItem fileCloseItem;
     @FXML private MenuItem helpAboutItem;
-    @FXML private ToggleButton menuBarToggleButton;
 
     private final SceneManager sceneManager;
     private final FileChooserManager fileChooserManager;
@@ -217,43 +216,6 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
             subtitlesControl.hideTranslationBar();
         });
 
-        menuBarStackPane.managedProperty().bind(menuBarStackPane.visibleProperty());
-        menuBarDaemonHBox.visibleProperty().bind(menuBarStackPane.visibleProperty().not());
-        menuBarDaemonHBox.managedProperty().bind(menuBarStackPane.managedProperty().not());
-        menuBarDaemonHBox.prefHeightProperty().bind(menuBar.heightProperty());
-        menuBarDaemonHBox.setOnMouseEntered(mouseEvent -> menuBarStackPane.setVisible(true));
-        menuBar.disableProperty().bind(menuBarStackPane.visibleProperty().not());
-        menuBar.setOnMouseExited(mouseEvent -> {
-            if (menuBarToggleButton.isSelected() || mouseEvent.getPickResult().getIntersectedNode() == menuBarToggleButton) {
-                return;
-            }
-
-            for (Menu menu : menuBar.getMenus()) {
-                if (menu.isShowing()) {
-                    return;
-                }
-            }
-
-            menuBarStackPane.setVisible(false);
-        });
-        for (Menu menu : menuBar.getMenus()) {
-            menu.setOnHidden(event -> {
-                if (menuBarToggleButton.isSelected()) {
-                    return;
-                }
-
-                Platform.runLater(() -> { // running later for giving the next menu some time to show up
-                    for (Menu m : menuBar.getMenus()) {
-                        if (m.isShowing()) {
-                            return;
-                        }
-                    }
-
-                    menuBarStackPane.setVisible(false);
-                });
-            });
-        }
-
         controlsGridPane.managedProperty().bind(controlsGridPane.visibleProperty());
         controlsDaemonHBox.visibleProperty().bind(controlsGridPane.visibleProperty().not());
         controlsDaemonHBox.managedProperty().bind(controlsGridPane.managedProperty().not());
@@ -280,7 +242,8 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
             soundButton, expandButton, currentTimeLabel, entireTimeLabel);
 
         menuBarControl = new MenuBarControl(this, fileChooserManager, embeddedMediaPlayer,
-            subtitlesControl, controlBarControl, audioMenu, subtitlesMenu, sourceLanguageMenu,
+            subtitlesControl, controlBarControl, menuBarStackPane, menuBarDaemonHBox,
+            menuBarToggleButton, menuBar, audioMenu, subtitlesMenu, sourceLanguageMenu,
             targetLanguageMenu, fileOpenItem, fileCloseItem);
     }
 
