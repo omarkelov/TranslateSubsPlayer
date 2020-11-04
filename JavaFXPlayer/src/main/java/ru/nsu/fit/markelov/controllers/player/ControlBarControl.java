@@ -5,6 +5,8 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import ru.nsu.fit.markelov.managers.SceneManager;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
@@ -12,6 +14,9 @@ import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 import java.util.Locale;
 
 public class ControlBarControl {
+
+    private static final double MENU_BAR_DAEMON_BOX_MAX_HEIGHT = 10;
+    private static final double MENU_BAR_DAEMON_BOX_HEIGHT_FACTOR = 0.8d;
 
     private static final String PLAY_CLASSNAME = "control-button-play";
     private static final String PAUSE_CLASSNAME = "control-button-pause";
@@ -30,6 +35,10 @@ public class ControlBarControl {
     private final EmbeddedMediaPlayer embeddedMediaPlayer;
     private final SubtitlesControl subtitlesControl;
 
+    private final GridPane mainGridPane;
+    private final GridPane controlsGridPane;
+    private final HBox controlsDaemonHBox;
+
     private final Slider slider;
 
     private final HBox leftControlBox;
@@ -44,20 +53,27 @@ public class ControlBarControl {
     private final Button skipRightButton;
     private final Button soundButton;
     private final Button expandButton;
+    private final ToggleButton controlsToggleButton;
 
     private final Label currentTimeLabel;
     private final Label entireTimeLabel;
 
     public ControlBarControl(SceneManager sceneManager, EmbeddedMediaPlayer embeddedMediaPlayer,
-                             SubtitlesControl subtitlesControl, Slider slider, HBox leftControlBox,
-                             HBox centerControlBox, Button pauseButton, Button stopButton,
-                             Button skipLeftTenButton, Button skipRightTenButton,
+                             SubtitlesControl subtitlesControl, GridPane mainGridPane,
+                             GridPane controlsGridPane, HBox controlsDaemonHBox, Slider slider,
+                             HBox leftControlBox, HBox centerControlBox, Button pauseButton,
+                             Button stopButton, Button skipLeftTenButton, Button skipRightTenButton,
                              Button skipLeftButton, Button skipCurrentButton,
                              Button skipRightButton, Button soundButton, Button expandButton,
-                             Label currentTimeLabel, Label entireTimeLabel) {
+                             ToggleButton controlsToggleButton, Label currentTimeLabel,
+                             Label entireTimeLabel)
+    {
         this.sceneManager = sceneManager;
         this.embeddedMediaPlayer = embeddedMediaPlayer;
         this.subtitlesControl = subtitlesControl;
+        this.mainGridPane = mainGridPane;
+        this.controlsGridPane = controlsGridPane;
+        this.controlsDaemonHBox = controlsDaemonHBox;
         this.slider = slider;
         this.leftControlBox = leftControlBox;
         this.centerControlBox = centerControlBox;
@@ -70,8 +86,11 @@ public class ControlBarControl {
         this.skipRightButton = skipRightButton;
         this.soundButton = soundButton;
         this.expandButton = expandButton;
+        this.controlsToggleButton = controlsToggleButton;
         this.currentTimeLabel = currentTimeLabel;
         this.entireTimeLabel = entireTimeLabel;
+
+        activateBindings();
 
         slider.setOnMousePressed(mouseEvent -> onSliderPressedOrDragged());
         slider.setOnMouseDragged(mouseEvent -> onSliderPressedOrDragged());
@@ -113,6 +132,24 @@ public class ControlBarControl {
 
     public void setSliderValue(double value) {
         slider.setValue(value);
+    }
+
+    private void activateBindings() {
+        controlsGridPane.managedProperty().bind(controlsGridPane.visibleProperty());
+
+        controlsDaemonHBox.visibleProperty().bind(controlsGridPane.visibleProperty().not());
+        controlsDaemonHBox.managedProperty().bind(controlsGridPane.managedProperty().not());
+        controlsDaemonHBox.prefHeightProperty().bind(Bindings.max(MENU_BAR_DAEMON_BOX_MAX_HEIGHT,
+            mainGridPane.vgapProperty().multiply(MENU_BAR_DAEMON_BOX_HEIGHT_FACTOR)));
+        controlsDaemonHBox.setOnMouseEntered(mouseEvent -> controlsGridPane.setVisible(true));
+
+        controlsGridPane.setOnMouseExited(mouseEvent -> {
+            if (controlsToggleButton.isSelected()) {
+                return;
+            }
+
+            controlsGridPane.setVisible(false);
+        });
     }
 
     private void initSlider() {
