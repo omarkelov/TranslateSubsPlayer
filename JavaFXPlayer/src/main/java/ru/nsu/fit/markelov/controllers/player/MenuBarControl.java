@@ -19,6 +19,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 
+import static ru.nsu.fit.markelov.util.CharsetConverter.convertToUtf8;
+
 public class MenuBarControl {
 
     private static final Comparator<MenuItem> MENU_ITEM_COMPARATOR
@@ -144,7 +146,7 @@ public class MenuBarControl {
                 continue;
             }
 
-            RadioMenuItem radioItem = new RadioMenuItem(trackDescription.description());
+            RadioMenuItem radioItem = new RadioMenuItem(convertToUtf8(trackDescription.description()));
             radioItem.setToggleGroup(audioToggleGroup);
             radioItem.setSelected(trackDescription.id() == embeddedMediaPlayer.audio().track());
             radioItem.setUserData(trackDescription.id());
