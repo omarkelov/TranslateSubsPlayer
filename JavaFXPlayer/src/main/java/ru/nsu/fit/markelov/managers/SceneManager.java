@@ -186,14 +186,10 @@ public class SceneManager implements AutoCloseable {
                 stage.getScene().setRoot(root);
             }
 
-            controller.runAfterSceneSet(stage.getScene());
+            controller.runAfterSceneSet();
         } catch (IOException e) {
             new AlertBuilder()
                 .setHeaderText(LAYOUT_LOADING_ERROR_HEADER).setException(e).setOwner(stage)
-                .build().showAndWait();
-        } catch (IllegalInputException e) {
-            new AlertBuilder()
-                .setException(e).setOwner(stage)
                 .build().showAndWait();
         }
     }

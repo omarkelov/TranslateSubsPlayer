@@ -3,7 +3,6 @@ package ru.nsu.fit.markelov.controllers;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -241,8 +240,8 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
      * {@inheritDoc}
      */
     @Override
-    public void runAfterSceneSet(Scene scene) throws IllegalInputException {
-        requireNonNull(scene).setOnKeyReleased(this::onKeyReleased);
+    public void runAfterSceneSet() {
+        sceneManager.getScene().setOnKeyReleased(this::onKeyReleased);
     }
 
     /**
@@ -254,6 +253,7 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
         embeddedMediaPlayer.controls().stop();
         embeddedMediaPlayer.release();
         mediaPlayerFactory.release();
+        sceneManager.getScene().setOnKeyReleased(null);
     }
 
     @Override
