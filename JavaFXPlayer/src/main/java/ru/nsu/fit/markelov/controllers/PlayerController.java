@@ -250,6 +250,7 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
      */
     @Override
     public void close() {
+        subtitlesControl.close();
         embeddedMediaPlayer.controls().stop();
         embeddedMediaPlayer.release();
         mediaPlayerFactory.release();

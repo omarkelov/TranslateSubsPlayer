@@ -46,7 +46,7 @@ import static ru.nsu.fit.markelov.javafxutil.AlertBuilder.FILE_OPENING_ERROR_HEA
 import static ru.nsu.fit.markelov.javafxutil.AlertBuilder.SUBTITLES_PARSING_ERROR_CONTENT_PREFIX;
 import static ru.nsu.fit.markelov.javafxutil.AlertBuilder.SUBTITLES_PARSING_ERROR_HEADER;
 
-public class SubtitlesControl {
+public class SubtitlesControl implements AutoCloseable {
 
     private static final int TRANSLATION_BAR_Y_MARGIN = 15;
     private static final int TOOLTIP_Y_MARGIN = 15;
@@ -540,10 +540,7 @@ public class SubtitlesControl {
     }
 
     public void hideTranslationBar() {
-        if (translationThread != null) {
-            translationThread.interrupt();
-            translationThread = null;
-        }
+        interruptTranslationThread();
 
         for (Node child : subtitlesTextFlow.getChildren()) {
             ((Text) child).setFill(STANDARD_COLOR);
@@ -568,5 +565,17 @@ public class SubtitlesControl {
     private void hideTooltipBar() {
         tooltipTextFlow.getChildren().clear();
         tooltipPane.setVisible(false);
+    }
+
+    @Override
+    public void close() {
+        interruptTranslationThread();
+    }
+
+    private void interruptTranslationThread() {
+        if (translationThread != null) {
+            translationThread.interrupt();
+            translationThread = null;
+        }
     }
 }
