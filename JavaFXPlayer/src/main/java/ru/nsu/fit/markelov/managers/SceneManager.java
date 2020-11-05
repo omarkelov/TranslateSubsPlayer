@@ -154,6 +154,8 @@ public class SceneManager implements AutoCloseable {
                 .setOwner(stage)
                 .build()
                 .showAndWait();
+
+            switchToMenu();
         }
     }
 
