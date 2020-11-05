@@ -14,7 +14,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import ru.nsu.fit.markelov.javafxutil.AlertBuilder;
 import ru.nsu.fit.markelov.managers.SceneManager;
-import ru.nsu.fit.markelov.subtitles.BOMSrtParser;
+import ru.nsu.fit.markelov.subtitles.AdvancedSrtParser;
 import ru.nsu.fit.markelov.subtitles.JavaFxSubtitles;
 import ru.nsu.fit.markelov.translation.Translator;
 import ru.nsu.fit.markelov.translation.entities.TranslationGroup;
@@ -29,7 +29,6 @@ import uk.co.caprica.vlcj.subs.handler.SpuHandler;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,9 +36,9 @@ import java.util.Map;
 import java.util.StringJoiner;
 
 import static ru.nsu.fit.markelov.Constants.BIG_BOLD_FONT;
+import static ru.nsu.fit.markelov.Constants.DISABLED_COLOR;
 import static ru.nsu.fit.markelov.Constants.MEDIUM_FONT;
 import static ru.nsu.fit.markelov.Constants.NEW_LINE;
-import static ru.nsu.fit.markelov.Constants.DISABLED_COLOR;
 import static ru.nsu.fit.markelov.Constants.SELECTED_COLOR;
 import static ru.nsu.fit.markelov.Constants.SPACE;
 import static ru.nsu.fit.markelov.Constants.STANDARD_COLOR;
@@ -124,7 +123,9 @@ public class SubtitlesControl implements AutoCloseable {
 
     public void initSubtitles(String fileName, RadioMenuItem newRadioMenuItem, long newTime) {
         try (FileReader fileReader = new FileReader(fileName, Charsets.UTF_8)) {
-            Spus subtitleUnits = new BOMSrtParser().parse(fileReader);
+            Spus subtitleUnits = new AdvancedSrtParser.Builder()
+                .enableBomSupport().addTag("i").addTag("u")
+                .build().parse(fileReader);
             List<Spu<?>> spuList = subtitleUnits.asList();
             Map<Integer, CloseSubtitlesInfo> closeSubtitlesInfoMap = null;
 

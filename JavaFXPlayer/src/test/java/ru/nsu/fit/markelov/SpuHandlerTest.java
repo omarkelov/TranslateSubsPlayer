@@ -1,7 +1,6 @@
 package ru.nsu.fit.markelov;
 
-import ru.nsu.fit.markelov.subtitles.BOMSrtParser;
-import uk.co.caprica.vlcj.subs.Spu;
+import ru.nsu.fit.markelov.subtitles.AdvancedSrtParser;
 import uk.co.caprica.vlcj.subs.Spus;
 import uk.co.caprica.vlcj.subs.handler.SpuHandler;
 import uk.co.caprica.vlcj.subs.parser.SpuParseException;
@@ -13,7 +12,7 @@ import java.io.IOException;
 public class SpuHandlerTest {
 
     public static void main(String[] args) throws IOException, SpuParseException {
-        SpuParser parser = new BOMSrtParser();
+        SpuParser parser = new AdvancedSrtParser.Builder().enableBomSupport().build();
         Spus spus;
         try (FileReader fileReader = new FileReader("F:\\Multimedia\\Series\\Westworld\\1\\Subtitles\\Westworld.[S01E01].HD720.DUB.[qqss44].eng.srt")) {
             spus = parser.parse(fileReader);
