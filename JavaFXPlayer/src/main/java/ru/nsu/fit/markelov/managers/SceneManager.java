@@ -111,6 +111,15 @@ public class SceneManager implements AutoCloseable {
     }
 
     /**
+     * Returns current scene of the stage.
+     *
+     * @return current scene of the stage.
+     */
+    public Scene getScene() {
+        return stage.getScene();
+    }
+
+    /**
      * Creates new MenuController and switches the scene to a menu.
      */
     public void switchToMenu() {
