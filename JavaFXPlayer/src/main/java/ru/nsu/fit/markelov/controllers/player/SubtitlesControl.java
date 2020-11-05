@@ -1,5 +1,6 @@
 package ru.nsu.fit.markelov.controllers.player;
 
+import com.google.common.base.Charsets;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Bounds;
@@ -28,6 +29,7 @@ import uk.co.caprica.vlcj.subs.handler.SpuHandler;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -121,7 +123,7 @@ public class SubtitlesControl implements AutoCloseable {
     }
 
     public void initSubtitles(String fileName, RadioMenuItem newRadioMenuItem, long newTime) {
-        try (FileReader fileReader = new FileReader(fileName)) {
+        try (FileReader fileReader = new FileReader(fileName, Charsets.UTF_8)) {
             Spus subtitleUnits = new BOMSrtParser().parse(fileReader);
             List<Spu<?>> spuList = subtitleUnits.asList();
             Map<Integer, CloseSubtitlesInfo> closeSubtitlesInfoMap = null;
