@@ -108,14 +108,11 @@ public class MenuBarControl {
 
         menuBar.disableProperty().bind(menuBarStackPane.visibleProperty().not());
         menuBar.setOnMouseExited(mouseEvent -> {
-            if (menuBarToggleButton.isSelected() || mouseEvent.getPickResult().getIntersectedNode() == menuBarToggleButton) {
+            if (menuBarToggleButton.isSelected()
+                || mouseEvent.getPickResult().getIntersectedNode() == menuBarToggleButton
+                || isAnyMenuShowing()
+            ) {
                 return;
-            }
-
-            for (Menu menu : menuBar.getMenus()) {
-                if (menu.isShowing()) {
-                    return;
-                }
             }
 
             menuBarStackPane.setVisible(false);
@@ -128,16 +125,18 @@ public class MenuBarControl {
                 }
 
                 Platform.runLater(() -> { // running later for giving the next menu some time to show up
-                    for (Menu m : menuBar.getMenus()) {
-                        if (m.isShowing()) {
-                            return;
-                        }
+                    if (isAnyMenuShowing()) {
+                        return;
                     }
 
                     menuBarStackPane.setVisible(false);
                 });
             });
         }
+    }
+
+    private boolean isAnyMenuShowing() {
+        return menuBar.getMenus().stream().anyMatch(Menu::isShowing);
     }
 
     private void initAudioMenu() {
