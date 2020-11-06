@@ -24,6 +24,9 @@ import static ru.nsu.fit.markelov.util.CharsetConverter.convertToUtf8;
 
 public class MenuBarControl {
 
+    private static final String DISABLED_SUBTITLES_MENU_ITEM_TEXT = "Disabled";
+    private static final String OPEN_SUBTITLES_MENU_ITEM_TEXT = "Open .srt-file";
+
     private static final Comparator<MenuItem> MENU_ITEM_COMPARATOR
         = Comparator.comparing(MenuItem::getText);
 
@@ -183,7 +186,7 @@ public class MenuBarControl {
         embeddedMediaPlayer.subpictures().setTrack(-1); // disable subtitles inside vlc-player
 
         RadioMenuItem disabledRadioItem = new MenuItemBuilder()
-            .setText("Disabled")
+            .setText(DISABLED_SUBTITLES_MENU_ITEM_TEXT)
             .setToggleGroup(subtitlesToggleGroup)
             .setSelected(true)
             .buildRadio();
@@ -195,7 +198,7 @@ public class MenuBarControl {
         subtitlesMenu.getItems().add(disabledRadioItem);
 
         MenuItem subtitlesOpenItem = new MenuItemBuilder()
-            .setText("Open .srt-file")
+            .setText(OPEN_SUBTITLES_MENU_ITEM_TEXT)
             .addStyleClass("italic")
             .buildStandard();
         subtitlesOpenItem.setOnAction(actionEvent -> {
@@ -234,7 +237,8 @@ public class MenuBarControl {
                     return fileName.startsWith(videoFileName) && fileName.endsWith(".srt");
                 })
                 .forEach(subtitlesPath -> {
-                    boolean disabled = ((RadioMenuItem) subtitlesToggleGroup.getSelectedToggle()).getText().equals("Disabled");
+                    boolean disabled = ((RadioMenuItem) subtitlesToggleGroup.getSelectedToggle())
+                        .getText().equals(DISABLED_SUBTITLES_MENU_ITEM_TEXT);
 
                     RadioMenuItem radioMenuItem = new MenuItemBuilder()
                         .setText(videoFilePath.relativize(subtitlesPath).toString())
