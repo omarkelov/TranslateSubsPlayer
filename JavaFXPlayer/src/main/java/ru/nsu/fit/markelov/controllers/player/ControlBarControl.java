@@ -134,6 +134,11 @@ public class ControlBarControl {
         slider.setValue(value);
     }
 
+    public void fireControlsToggleButton() {
+        controlsToggleButton.fire();
+        controlsGridPane.setVisible(controlsToggleButton.isSelected());
+    }
+
     private void activateBindings() {
         controlsGridPane.managedProperty().bind(controlsGridPane.visibleProperty());
 
