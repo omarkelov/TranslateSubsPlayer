@@ -98,6 +98,20 @@ public class MenuBarControl {
         this.videoFile = videoFile;
     }
 
+    public void fireMenuBarToggleButton() {
+        menuBarToggleButton.fire();
+
+        if (menuBarToggleButton.isSelected()) {
+            menuBarStackPane.setVisible(true);
+        } else {
+            if (isAnyMenuShowing()) {
+                return;
+            }
+
+            menuBarStackPane.setVisible(false);
+        }
+    }
+
     private void activateBindings() {
         menuBarStackPane.managedProperty().bind(menuBarStackPane.visibleProperty());
 

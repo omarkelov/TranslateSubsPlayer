@@ -38,6 +38,7 @@ import java.io.File;
 import static javafx.scene.input.KeyCode.DOWN;
 import static javafx.scene.input.KeyCode.ENTER;
 import static javafx.scene.input.KeyCode.ESCAPE;
+import static javafx.scene.input.KeyCode.F2;
 import static javafx.scene.input.KeyCode.LEFT;
 import static javafx.scene.input.KeyCode.O;
 import static javafx.scene.input.KeyCode.RIGHT;
@@ -284,6 +285,8 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
             } else if (sceneManager.isFullScreen()) {
                 controlBarControl.onExpandPressed();
             }
+        } else if (keyEvent.getCode() == F2) {
+            menuBarControl.fireMenuBarToggleButton();
         } else if (initialized) {
             if (ON_STOP_KEYS.match(keyEvent)) {
                 controlBarControl.onStopPressed();
