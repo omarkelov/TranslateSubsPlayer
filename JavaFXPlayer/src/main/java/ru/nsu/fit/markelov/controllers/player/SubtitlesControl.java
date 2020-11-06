@@ -464,7 +464,7 @@ public class SubtitlesControl implements AutoCloseable {
                     translationSpinnerImageView.setVisible(false);
                     translationTextFlow.getChildren().addAll(textList);
 
-                    unbindGroups();
+                    unbindTranslationNodes();
                     bindGroups(finalContainsLineSeparator);
                 });
             } catch (InterruptedException e) { // todo!!! handle
@@ -537,7 +537,8 @@ public class SubtitlesControl implements AutoCloseable {
         }, subtitlesGroup.layoutYProperty(), translationGroup.boundsInLocalProperty()));
     }
 
-    private void unbindGroups() {
+    private void unbindTranslationNodes() {
+        translationTextFlow.maxWidthProperty().unbind();
         translationGroup.layoutXProperty().unbind();
         translationGroup.layoutYProperty().unbind();
     }
@@ -549,7 +550,7 @@ public class SubtitlesControl implements AutoCloseable {
             ((Text) child).setFill(STANDARD_COLOR);
         }
 
-        unbindGroups();
+        unbindTranslationNodes();
 
         firstSelectedText = null;
         lastSelectedText = null;
