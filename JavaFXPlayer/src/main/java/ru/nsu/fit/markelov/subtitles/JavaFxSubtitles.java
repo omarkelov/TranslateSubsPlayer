@@ -1,6 +1,7 @@
 package ru.nsu.fit.markelov.subtitles;
 
 import javafx.scene.text.Text;
+import ru.nsu.fit.markelov.javafxutil.TextBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,9 +9,12 @@ import java.util.List;
 import static ru.nsu.fit.markelov.Constants.BIG_BOLD_FONT;
 import static ru.nsu.fit.markelov.Constants.NEW_LINE;
 import static ru.nsu.fit.markelov.Constants.SPACE;
-import static ru.nsu.fit.markelov.Constants.STANDARD_COLOR;
 
 public class JavaFxSubtitles {
+
+    private static final TextBuilder TEXT_BUILDER = new TextBuilder() {{
+        setFont(BIG_BOLD_FONT);
+    }};
 
     private final List<Text> textList;
 
@@ -29,27 +33,17 @@ public class JavaFxSubtitles {
 
             String[] words = lines[i].split("\\s+");
             for (int j = 0; j < words.length; j++) {
-                Text word = createText(words[j]);
-                textList.add(word);
+                textList.add(TEXT_BUILDER.setText(words[j]).build());
 
                 if (j < words.length - 1) {
-                    Text delimiter = createText(SPACE);
-                    textList.add(delimiter);
+                    textList.add(TEXT_BUILDER.setText(SPACE).build());
                 }
             }
 
             if (i < lines.length - 1) {
-                textList.add(createText(NEW_LINE));
+                textList.add(TEXT_BUILDER.setText(NEW_LINE).build());
             }
         }
-    }
-
-    private Text createText(String str) {
-        Text text = new Text(str);
-        text.setFont(BIG_BOLD_FONT);
-        text.setFill(STANDARD_COLOR);
-
-        return text;
     }
 
     /**

@@ -10,9 +10,11 @@ import javafx.scene.control.RadioMenuItem;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import ru.nsu.fit.markelov.javafxutil.AlertBuilder;
+import ru.nsu.fit.markelov.javafxutil.TextBuilder;
 import ru.nsu.fit.markelov.managers.SceneManager;
 import ru.nsu.fit.markelov.subtitles.AdvancedSrtParser;
 import ru.nsu.fit.markelov.subtitles.JavaFxSubtitles;
@@ -51,6 +53,18 @@ public class SubtitlesControl implements AutoCloseable {
 
     private static final int TRANSLATION_BAR_Y_MARGIN = 15;
     private static final int TOOLTIP_Y_MARGIN = 15;
+
+    private static final TextBuilder TRANSLATION_TB = new TextBuilder();
+    private static final TextBuilder LINE_EXPANDER_TB = new TextBuilder() {{
+        setFont(new Font(BIG_BOLD_FONT.getSize()));
+    }};
+    private static final TextBuilder PART_OF_SPEECH_TB = new TextBuilder() {{
+        setColor(DISABLED_COLOR);
+    }};
+    private static final TextBuilder BACK_TRANSLATION_TB = new TextBuilder() {{
+        setFont(MEDIUM_FONT);
+        setColor(SELECTED_COLOR);
+    }};
 
     private SpuHandler subtitlesHandler;
     private RadioMenuItem currentSubtitlesMenuItem;
@@ -394,22 +408,19 @@ public class SubtitlesControl implements AutoCloseable {
                 // todo!!! refactor
                 List<Text> textList = new ArrayList<>();
                 if (translationResult.isEmpty()) {
-                    textList.add(createText("No translation..."));
+                    textList.add(TRANSLATION_TB.setText("No translation...").build());
                 } else {
                     if (translationResult.getTranslation() != null) {
-                        textList.add(createText(translationResult.getTranslation()));
+                        textList.add(TRANSLATION_TB.setText(translationResult.getTranslation()).build());
                     }
 
                     if (translationResult.getTranslationGroups() != null) {
                         for (TranslationGroup translationGroup : translationResult.getTranslationGroups()) {
-                            textList.add(createText(NEW_LINE));
-                            Text bigText = new Text(SPACE);
-                            bigText.setFont(BIG_BOLD_FONT);
-                            textList.add(bigText);
+                            textList.add(TRANSLATION_TB.setText(NEW_LINE).build());
+                            textList.add(LINE_EXPANDER_TB.setText(SPACE).build());
 
-                            Text partOfSpeechText = new Text(capitalize(translationGroup.getPartOfSpeech()) + ": ");
-                            partOfSpeechText.setFill(DISABLED_COLOR);
-                            textList.add(partOfSpeechText);
+                            textList.add(PART_OF_SPEECH_TB.setText(
+                                capitalize(translationGroup.getPartOfSpeech()) + ": ").build());
 
                             for (TranslationVariant translationVariant : translationGroup.getVariants()) {
                                 StringJoiner translationJoiner = new StringJoiner(", ");
@@ -417,14 +428,12 @@ public class SubtitlesControl implements AutoCloseable {
                                     translationJoiner.add(translation);
                                 }
 
-                                Text wordText = new Text(translationVariant.getWord());
-                                wordText.setFill(STANDARD_COLOR);
+                                Text wordText = TRANSLATION_TB.setText(translationVariant.getWord()).build();
                                 wordText.setOnMouseEntered(wordMouseEvent -> {
                                     wordText.setFill(SELECTED_COLOR);
 
-                                    Text backTranslationText = new Text(translationJoiner.toString());
-                                    backTranslationText.setFont(MEDIUM_FONT);
-                                    backTranslationText.setFill(SELECTED_COLOR);
+                                    Text backTranslationText = BACK_TRANSLATION_TB
+                                        .setText(translationJoiner.toString()).build();
                                     double backTranslationTextWidth = backTranslationText.getLayoutBounds().getWidth();
                                     double backTranslationTextHeight = backTranslationText.getLayoutBounds().getHeight();
 
@@ -448,7 +457,7 @@ public class SubtitlesControl implements AutoCloseable {
                                 });
 
                                 textList.add(wordText);
-                                textList.add(createText(", "));
+                                textList.add(TRANSLATION_TB.setText(", ").build());
                             }
 
                             textList.get(textList.size() - 1).setText(".");
@@ -472,13 +481,6 @@ public class SubtitlesControl implements AutoCloseable {
             }
         });
         translationThread.start();
-    }
-
-    private Text createText(String str) {
-        Text text = new Text(str);
-        text.setFill(STANDARD_COLOR);
-
-        return text;
     }
 
     private String capitalize(String str) {
