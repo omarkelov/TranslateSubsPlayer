@@ -9,6 +9,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import ru.nsu.fit.markelov.javafxutil.MenuItemBuilder;
 import ru.nsu.fit.markelov.managers.FileChooserManager;
 import ru.nsu.fit.markelov.translation.iso639.ISO639;
 import uk.co.caprica.vlcj.player.base.TrackDescription;
@@ -159,12 +160,13 @@ public class MenuBarControl {
                 continue;
             }
 
-            RadioMenuItem radioItem = new RadioMenuItem(convertToUtf8(trackDescription.description()));
-            radioItem.setToggleGroup(audioToggleGroup);
-            radioItem.setSelected(trackDescription.id() == embeddedMediaPlayer.audio().track());
-            radioItem.setUserData(trackDescription.id());
+            RadioMenuItem radioItem = new MenuItemBuilder()
+                .setText(convertToUtf8(trackDescription.description()))
+                .setToggleGroup(audioToggleGroup)
+                .setSelected(trackDescription.id() == embeddedMediaPlayer.audio().track())
+                .setUserData(trackDescription.id())
+                .buildRadio();
             radioItem.setOnAction(actionEvent -> embeddedMediaPlayer.audio().setTrack(trackDescription.id()));
-            radioItem.setMnemonicParsing(false);
             audioMenu.getItems().add(radioItem);
         }
 
@@ -180,19 +182,22 @@ public class MenuBarControl {
     private void initSubtitlesMenu() {
         embeddedMediaPlayer.subpictures().setTrack(-1); // disable subtitles inside vlc-player
 
-        RadioMenuItem disabledRadioItem = new RadioMenuItem("Disabled");
-        disabledRadioItem.setToggleGroup(subtitlesToggleGroup);
-        disabledRadioItem.setSelected(true);
-        subtitlesControl.setCurrentSubtitlesMenuItem(disabledRadioItem);
+        RadioMenuItem disabledRadioItem = new MenuItemBuilder()
+            .setText("Disabled")
+            .setToggleGroup(subtitlesToggleGroup)
+            .setSelected(true)
+            .buildRadio();
         disabledRadioItem.setOnAction(actionEvent -> {
             subtitlesControl.disposeSubtitles();
             subtitlesControl.setCurrentSubtitlesMenuItem(disabledRadioItem);
         });
-        disabledRadioItem.setMnemonicParsing(false);
+        subtitlesControl.setCurrentSubtitlesMenuItem(disabledRadioItem);
         subtitlesMenu.getItems().add(disabledRadioItem);
 
-        MenuItem subtitlesOpenItem = new MenuItem("Open .srt-file");
-        subtitlesOpenItem.getStyleClass().add("italic");
+        MenuItem subtitlesOpenItem = new MenuItemBuilder()
+            .setText("Open .srt-file")
+            .addStyleClass("italic")
+            .buildStandard();
         subtitlesOpenItem.setOnAction(actionEvent -> {
             boolean isPlaying = embeddedMediaPlayer.status().isPlaying();
             if (isPlaying) {
@@ -201,11 +206,13 @@ public class MenuBarControl {
 
             File file = fileChooserManager.chooseSubtitlesFile();
             if (file != null) {
-                RadioMenuItem radioMenuItem = new RadioMenuItem(file.getName());
-                radioMenuItem.setToggleGroup(subtitlesToggleGroup);
-                radioMenuItem.setSelected(true);
-                radioMenuItem.setOnAction(fileActionEvent -> subtitlesControl.initSubtitles(file.getAbsolutePath(), radioMenuItem, (long) controlBarControl.getSliderValue()));
-                radioMenuItem.setMnemonicParsing(false);
+                RadioMenuItem radioMenuItem = new MenuItemBuilder()
+                    .setText(file.getName())
+                    .setToggleGroup(subtitlesToggleGroup)
+                    .setSelected(true)
+                    .buildRadio();
+                radioMenuItem.setOnAction(fileActionEvent ->
+                    subtitlesControl.initSubtitles(file.getAbsolutePath(), radioMenuItem, (long) controlBarControl.getSliderValue()));
                 subtitlesMenu.getItems().add(subtitlesMenu.getItems().size() - 1, radioMenuItem);
 
                 subtitlesControl.initSubtitles(file.getAbsolutePath(), radioMenuItem, (long) controlBarControl.getSliderValue());
@@ -229,12 +236,13 @@ public class MenuBarControl {
                 .forEach(subtitlesPath -> {
                     boolean disabled = ((RadioMenuItem) subtitlesToggleGroup.getSelectedToggle()).getText().equals("Disabled");
 
-                    RadioMenuItem radioMenuItem = new RadioMenuItem(videoFilePath.relativize(subtitlesPath).toString());
-                    radioMenuItem.setToggleGroup(subtitlesToggleGroup);
-                    radioMenuItem.setSelected(disabled);
+                    RadioMenuItem radioMenuItem = new MenuItemBuilder()
+                        .setText(videoFilePath.relativize(subtitlesPath).toString())
+                        .setToggleGroup(subtitlesToggleGroup)
+                        .setSelected(disabled)
+                        .buildRadio();
                     radioMenuItem.setOnAction(fileActionEvent -> subtitlesControl.initSubtitles(
                         subtitlesPath.toString(), radioMenuItem, (long) controlBarControl.getSliderValue()));
-                    radioMenuItem.setMnemonicParsing(false);
                     subtitlesMenu.getItems().add(subtitlesMenu.getItems().size() - 1, radioMenuItem);
 
                     if (disabled) {
@@ -262,8 +270,10 @@ public class MenuBarControl {
         for (String language : ISO639.getLanguages()) {
             String languageCode = ISO639.getLanguageCode(language);
 
-            RadioMenuItem languageRadioItem = new RadioMenuItem(language);
-            languageRadioItem.setToggleGroup(toggleGroup);
+            RadioMenuItem languageRadioItem = new MenuItemBuilder()
+                .setText(language)
+                .setToggleGroup(toggleGroup)
+                .buildRadio();
             languageRadioItem.setOnAction(actionEvent -> {
                 if (isSource) {
                     subtitlesControl.setSourceLanguageCode(languageCode);
@@ -275,7 +285,6 @@ public class MenuBarControl {
                 menu.getItems().sort(MENU_ITEM_COMPARATOR);
                 menu.getItems().add(0, languageRadioItem);
             });
-            languageRadioItem.setMnemonicParsing(false);
 
             if (language.equals(defaultLanguage)) {
                 if (isSource) {
