@@ -16,11 +16,11 @@
   * logs user out
   * *redirects* to the /login page
 
-* **DELETE** /`<movieName>`
+* **DELETE** /movie.delete?{"movieId":`<movieId>`}
   * deletes this movie from the database
 
-* **DELETE** /context.delete?{"movieName":`<movieName>`,"contextId":`<contextId>`}
+* **DELETE** /context.delete?{"movieId":`<movieId>`,"contextId":`<contextId>`}
   * deletes this context from the database
 
-* **POST** /test?{"movieName":`<movieName>`,"contextId":`<contextId>`,"phraseId":`<phraseId>`,"correct":`<true/false>`}
+* **POST** /test?{"movieId":`<movieId>`,"contextId":`<contextId>`,"phraseId":`<phraseId>`,"correct":`<true/false>`}
   * updates the database with this answer
