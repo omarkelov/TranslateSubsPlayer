@@ -11,6 +11,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
@@ -19,6 +20,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.TextFlow;
 import ru.nsu.fit.markelov.controllers.player.ControlBarControl;
+import ru.nsu.fit.markelov.controllers.player.KeyEventInfo;
 import ru.nsu.fit.markelov.controllers.player.MenuBarControl;
 import ru.nsu.fit.markelov.controllers.player.MenuBarObserver;
 import ru.nsu.fit.markelov.controllers.player.SubtitlesControl;
@@ -34,6 +36,8 @@ import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import static javafx.scene.input.KeyCode.DOWN;
 import static javafx.scene.input.KeyCode.ENTER;
@@ -47,7 +51,7 @@ import static javafx.scene.input.KeyCode.O;
 import static javafx.scene.input.KeyCode.RIGHT;
 import static javafx.scene.input.KeyCode.SPACE;
 import static javafx.scene.input.KeyCombination.ALT_DOWN;
-import static javafx.scene.input.KeyCombination.SHORTCUT_DOWN;
+import static javafx.scene.input.KeyCombination.CONTROL_DOWN;
 import static ru.nsu.fit.markelov.javafxutil.AlertBuilder.VLC_ERROR_HEADER;
 import static ru.nsu.fit.markelov.util.validation.IllegalInputException.requireNonNull;
 import static uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurfaceFactory.videoSurfaceForImageView;
@@ -61,11 +65,37 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
 
     private static final String FXML_FILE_NAME = "player.fxml";
 
-    private static final KeyCodeCombination ON_OPEN_KEYS = new KeyCodeCombination(O, SHORTCUT_DOWN);
-    private static final KeyCodeCombination ON_SKIP_LEFT_TEN_KEYS = new KeyCodeCombination(LEFT, SHORTCUT_DOWN);
-    private static final KeyCodeCombination ON_SKIP_RIGHT_TEN_KEYS = new KeyCodeCombination(RIGHT, SHORTCUT_DOWN);
-    private static final KeyCodeCombination ON_STOP_KEYS = new KeyCodeCombination(SPACE, SHORTCUT_DOWN);
-    private static final KeyCodeCombination ON_EXPAND_KEYS = new KeyCodeCombination(ENTER, ALT_DOWN);
+    private static final KeyCodeCombination OPEN_COMBINATION = new KeyCodeCombination(O, CONTROL_DOWN);
+    private static final KeyCodeCombination SKIP_LEFT_TEN_COMBINATION = new KeyCodeCombination(LEFT, CONTROL_DOWN);
+    private static final KeyCodeCombination SKIP_RIGHT_TEN_COMBINATION = new KeyCodeCombination(RIGHT, CONTROL_DOWN);
+    private static final KeyCodeCombination STOP_COMBINATION = new KeyCodeCombination(SPACE, CONTROL_DOWN);
+    private static final KeyCodeCombination EXPAND_COMBINATION = new KeyCodeCombination(ENTER, ALT_DOWN);
+    private static final KeyCode ESCAPE_CODE = ESCAPE;
+    private static final KeyCode MUTE_CODE = M;
+    private static final KeyCode HELP_CODE = F1;
+    private static final KeyCode TOGGLE_MENU_CODE = F2;
+    private static final KeyCode TOGGLE_CONTROLS_CODE = F3;
+    private static final KeyCode PAUSE_CODE = SPACE;
+    private static final KeyCode SKIP_TO_LEFT_SUBTITLE_CODE = LEFT;
+    private static final KeyCode SKIP_TO_CURRENT_SUBTITLE_CODE = DOWN;
+    private static final KeyCode SKIP_TO_RIGHT_SUBTITLE_CODE = RIGHT;
+
+    private static final List<KeyEventInfo> HOTKEYS = new ArrayList<>() {{
+        add(new KeyEventInfo(OPEN_COMBINATION.getName(), "Open video file"));
+        add(new KeyEventInfo(EXPAND_COMBINATION.getName(), "Turn the fullscreen on/off"));
+        add(new KeyEventInfo(PAUSE_CODE.getName(), "Pause"));
+        add(new KeyEventInfo(STOP_COMBINATION.getName(), "Stop"));
+        add(new KeyEventInfo(SKIP_TO_LEFT_SUBTITLE_CODE.getName(), "Skip back to the nearest subtitle"));
+        add(new KeyEventInfo(SKIP_TO_RIGHT_SUBTITLE_CODE.getName(), "Skip forward to the nearest subtitle"));
+        add(new KeyEventInfo(SKIP_LEFT_TEN_COMBINATION.getName(), "Skip 10 seconds back"));
+        add(new KeyEventInfo(SKIP_RIGHT_TEN_COMBINATION.getName(), "Skip 10 seconds forward"));
+        add(new KeyEventInfo(SKIP_TO_CURRENT_SUBTITLE_CODE.getName(), "Replay from the current subtitle"));
+        add(new KeyEventInfo(ESCAPE_CODE.getName(), "Close the translation popup/Turn the fullscreen off"));
+        add(new KeyEventInfo(MUTE_CODE.getName(), "Mute"));
+        add(new KeyEventInfo(HELP_CODE.getName(), "Show help menu"));
+        add(new KeyEventInfo(TOGGLE_MENU_CODE.getName(), "Pin/unpin the menu bar"));
+        add(new KeyEventInfo(TOGGLE_CONTROLS_CODE.getName(), "Pin/unpin the control bar"));
+    }};
 
     @FXML private StackPane root;
     @FXML private ImageView videoImageView;
@@ -280,38 +310,38 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
     }
 
     private void onKeyReleased(KeyEvent keyEvent) {
-        if (ON_OPEN_KEYS.match(keyEvent)) {
+        if (OPEN_COMBINATION.match(keyEvent)) {
             chooseFileAndPlay();
-        } else if (ON_EXPAND_KEYS.match(keyEvent)) {
+        } else if (EXPAND_COMBINATION.match(keyEvent)) {
             controlBarControl.onExpandPressed();
-        } else if (keyEvent.getCode() == ESCAPE) {
+        } else if (keyEvent.getCode() == ESCAPE_CODE) {
             if (subtitlesControl.isTranslationBarVisible()) {
                 subtitlesControl.hideTranslationBar();
             } else if (sceneManager.isFullScreen()) {
                 controlBarControl.onExpandPressed();
             }
-        } else if (keyEvent.getCode() == M) {
+        } else if (keyEvent.getCode() == MUTE_CODE) {
             controlBarControl.fireSoundToggleButton();
-        } else if (keyEvent.getCode() == F1) {
+        } else if (keyEvent.getCode() == HELP_CODE) {
             menuBarControl.showHelpMenu();
-        } else if (keyEvent.getCode() == F2) {
+        } else if (keyEvent.getCode() == TOGGLE_MENU_CODE) {
             menuBarControl.fireMenuBarToggleButton();
-        } else if (keyEvent.getCode() == F3) {
+        } else if (keyEvent.getCode() == TOGGLE_CONTROLS_CODE) {
             controlBarControl.fireControlsToggleButton();
         } else if (initialized) {
-            if (ON_STOP_KEYS.match(keyEvent)) {
+            if (STOP_COMBINATION.match(keyEvent)) {
                 controlBarControl.onStopPressed();
-            } else if (ON_SKIP_LEFT_TEN_KEYS.match(keyEvent)) {
+            } else if (SKIP_LEFT_TEN_COMBINATION.match(keyEvent)) {
                 controlBarControl.onSkipLeftTenPressed();
-            } else if (ON_SKIP_RIGHT_TEN_KEYS.match(keyEvent)) {
+            } else if (SKIP_RIGHT_TEN_COMBINATION.match(keyEvent)) {
                 controlBarControl.onSkipRightTenPressed();
-            } else if (keyEvent.getCode() == SPACE) {
+            } else if (keyEvent.getCode() == PAUSE_CODE) {
                 controlBarControl.onPausePressed();
-            } else if (keyEvent.getCode() == LEFT) {
+            } else if (keyEvent.getCode() == SKIP_TO_LEFT_SUBTITLE_CODE) {
                 controlBarControl.onSkipLeftPressed();
-            } else if (keyEvent.getCode() == DOWN) {
+            } else if (keyEvent.getCode() == SKIP_TO_CURRENT_SUBTITLE_CODE) {
                 controlBarControl.onSkipCurrentPressed();
-            } else if (keyEvent.getCode() == RIGHT) {
+            } else if (keyEvent.getCode() == SKIP_TO_RIGHT_SUBTITLE_CODE) {
                 controlBarControl.onSkipRightPressed();
             }
         }
