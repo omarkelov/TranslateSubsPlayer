@@ -80,8 +80,8 @@
                   GridPane.rowIndex="1">
                 <ToggleButton fx:id="controlsToggleButton" selected="true"
                               focusTraversable="false" styleClass="pin-button"/>
-                <Button fx:id="soundButton" focusTraversable="false"
-                        styleClass="control-button-sound-high"/>
+                <ToggleButton fx:id="soundToggleButton" selected="true"
+                              focusTraversable="false" styleClass="control-button-sound"/>
                 <Button fx:id="expandButton" focusTraversable="false"
                         styleClass="control-button-expand"/>
             </HBox>

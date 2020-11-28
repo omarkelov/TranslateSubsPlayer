@@ -41,6 +41,7 @@ import static javafx.scene.input.KeyCode.ESCAPE;
 import static javafx.scene.input.KeyCode.F2;
 import static javafx.scene.input.KeyCode.F3;
 import static javafx.scene.input.KeyCode.LEFT;
+import static javafx.scene.input.KeyCode.M;
 import static javafx.scene.input.KeyCode.O;
 import static javafx.scene.input.KeyCode.RIGHT;
 import static javafx.scene.input.KeyCode.SPACE;
@@ -96,9 +97,9 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
     @FXML private Button skipLeftButton;
     @FXML private Button skipCurrentButton;
     @FXML private Button skipRightButton;
-    @FXML private Button soundButton;
-    @FXML private Button expandButton;
     @FXML private ToggleButton controlsToggleButton;
+    @FXML private ToggleButton soundToggleButton;
+    @FXML private Button expandButton;
 
     @FXML private Label currentTimeLabel;
     @FXML private Label entireTimeLabel;
@@ -162,6 +163,7 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
                         mediaPlayer.audio().setTrack(menuBarControl.getSelectedAudioTrack());
                     });
                 } else {
+                    mediaPlayer.audio().setMute(!soundToggleButton.isSelected());
                     Platform.runLater(() -> initPlayingIfNot());
                 }
             }
@@ -221,8 +223,8 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
         controlBarControl = new ControlBarControl(sceneManager, embeddedMediaPlayer,
             subtitlesControl, mainGridPane, controlsGridPane, controlsDaemonHBox, slider,
             leftControlBox, centerControlBox, pauseButton, stopButton, skipLeftTenButton,
-            skipRightTenButton, skipLeftButton, skipCurrentButton, skipRightButton, soundButton,
-            expandButton, controlsToggleButton, currentTimeLabel, entireTimeLabel);
+            skipRightTenButton, skipLeftButton, skipCurrentButton, skipRightButton,
+            controlsToggleButton, soundToggleButton, expandButton, currentTimeLabel, entireTimeLabel);
 
         menuBarControl = new MenuBarControl(this, fileChooserManager, embeddedMediaPlayer,
             subtitlesControl, controlBarControl, menuBarStackPane, menuBarDaemonHBox,
@@ -286,6 +288,8 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
             } else if (sceneManager.isFullScreen()) {
                 controlBarControl.onExpandPressed();
             }
+        } else if (keyEvent.getCode() == M) {
+            controlBarControl.fireSoundToggleButton();
         } else if (keyEvent.getCode() == F2) {
             menuBarControl.fireMenuBarToggleButton();
         } else if (keyEvent.getCode() == F3) {

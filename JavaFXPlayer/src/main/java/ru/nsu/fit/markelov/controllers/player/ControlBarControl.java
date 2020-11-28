@@ -51,9 +51,9 @@ public class ControlBarControl {
     private final Button skipLeftButton;
     private final Button skipCurrentButton;
     private final Button skipRightButton;
-    private final Button soundButton;
-    private final Button expandButton;
     private final ToggleButton controlsToggleButton;
+    private final ToggleButton soundToggleButton;
+    private final Button expandButton;
 
     private final Label currentTimeLabel;
     private final Label entireTimeLabel;
@@ -64,9 +64,9 @@ public class ControlBarControl {
                              HBox leftControlBox, HBox centerControlBox, Button pauseButton,
                              Button stopButton, Button skipLeftTenButton, Button skipRightTenButton,
                              Button skipLeftButton, Button skipCurrentButton,
-                             Button skipRightButton, Button soundButton, Button expandButton,
-                             ToggleButton controlsToggleButton, Label currentTimeLabel,
-                             Label entireTimeLabel)
+                             Button skipRightButton, ToggleButton controlsToggleButton,
+                             ToggleButton soundToggleButton, Button expandButton,
+                             Label currentTimeLabel, Label entireTimeLabel)
     {
         this.sceneManager = sceneManager;
         this.embeddedMediaPlayer = embeddedMediaPlayer;
@@ -84,9 +84,9 @@ public class ControlBarControl {
         this.skipLeftButton = skipLeftButton;
         this.skipCurrentButton = skipCurrentButton;
         this.skipRightButton = skipRightButton;
-        this.soundButton = soundButton;
-        this.expandButton = expandButton;
         this.controlsToggleButton = controlsToggleButton;
+        this.soundToggleButton = soundToggleButton;
+        this.expandButton = expandButton;
         this.currentTimeLabel = currentTimeLabel;
         this.entireTimeLabel = entireTimeLabel;
 
@@ -107,6 +107,7 @@ public class ControlBarControl {
         skipLeftButton.setOnAction(actionEvent -> onSkipLeftPressed());
         skipCurrentButton.setOnAction(actionEvent -> onSkipCurrentPressed());
         skipRightButton.setOnAction(actionEvent -> onSkipRightPressed());
+        soundToggleButton.setOnAction(actionEvent -> onSoundPressed());
         expandButton.setOnAction(actionEvent -> onExpandPressed());
 
         currentTimeLabel.textProperty().bind(Bindings.createStringBinding(() ->
@@ -137,6 +138,10 @@ public class ControlBarControl {
     public void fireControlsToggleButton() {
         controlsToggleButton.fire();
         controlsGridPane.setVisible(controlsToggleButton.isSelected());
+    }
+
+    public void fireSoundToggleButton() {
+        soundToggleButton.fire();
     }
 
     private void activateBindings() {
@@ -244,6 +249,14 @@ public class ControlBarControl {
 
         slider.setValue(newTime);
         onSliderPressedOrDragged();
+    }
+
+    private void onSoundPressed() {
+        if (!embeddedMediaPlayer.status().isPlaying()) {
+            return;
+        }
+
+        embeddedMediaPlayer.audio().setMute(!soundToggleButton.isSelected());
     }
 
     public void onExpandPressed() {

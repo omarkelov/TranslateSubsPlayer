@@ -73,7 +73,7 @@
     -fx-text-fill: rgba(255, 255, 255, 0.75);
 }
 
-.controls Button, .pin-button {
+.controls Button, ToggleButton {
     -fx-min-width: 32;
     -fx-min-height: 32;
     -fx-max-width: 32;
@@ -87,16 +87,16 @@
     -fx-effect: innershadow(gaussian, rgba(255, 255, 255, 0.75), 1, 0, 0, 0);
 }
 
-.controls Button:hover, .pin-button:hover {
+.controls Button:hover, ToggleButton:hover {
     -fx-background-color: -fx-accent;
     -fx-opacity: 1;
 }
 
-.controls Button:disabled, .pin-button:disabled {
+.controls Button:disabled, ToggleButton:disabled {
     -fx-opacity: 0.4;
 }
 
-.controls Button:pressed, .pin-button:pressed {
+.controls Button:pressed, ToggleButton:pressed {
     -fx-background-size: 22;
     -fx-effect: innershadow(gaussian, black, 8, 0, 0, 0);
 }
@@ -139,6 +139,14 @@
 
 .control-button-skip-right-ten {
     -fx-background-image: url('../icons/skip-right-10.png');
+}
+
+.control-button-sound {
+    -fx-background-image: url('../icons/sound-mute.png');
+}
+
+.control-button-sound:selected {
+    -fx-background-image: url('../icons/sound-high.png');
 }
 
 .control-button-sound-high {
