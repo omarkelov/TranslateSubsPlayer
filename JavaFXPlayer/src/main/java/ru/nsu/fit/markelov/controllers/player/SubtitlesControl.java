@@ -138,7 +138,7 @@ public class SubtitlesControl implements AutoCloseable {
     public void initSubtitles(String fileName, RadioMenuItem newRadioMenuItem, long newTime) {
         try (FileReader fileReader = new FileReader(fileName, Charsets.UTF_8)) {
             Spus subtitleUnits = new AdvancedSrtParser.Builder()
-                .enableBomSupport().addTag("i").addTag("u")
+                .enableBomSupport()
                 .build().parse(fileReader);
             List<Spu<?>> spuList = subtitleUnits.asList();
             Map<Integer, CloseSubtitlesInfo> closeSubtitlesInfoMap = null;
