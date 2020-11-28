@@ -41,8 +41,8 @@ public class AlertBuilder {
 
     private AlertType alertType = AlertType.ERROR;
     private ButtonType[] buttons = {};
-    private String headerText = "Unknown error";
-    private String contentText = "Unknown error has occurred. Please contact the developer.";
+    private String headerText = DEFAULT_ERROR_HEADER;
+    private String contentText = DEFAULT_ERROR_CONTENT;
     private Node header;
     private Node content;
     private Exception exception;
