@@ -356,6 +356,10 @@ public class SubtitlesControl implements AutoCloseable {
         boolean containsLineSeparator = false;
         StringBuilder stringBuilder = new StringBuilder();
         if (firstSelectedText == lastSelectedText) {
+            if (firstSelectedText.getText().isBlank()) {
+                return;
+            }
+
             stringBuilder.append(firstSelectedText.getText());
         } else {
             boolean adding = false;
