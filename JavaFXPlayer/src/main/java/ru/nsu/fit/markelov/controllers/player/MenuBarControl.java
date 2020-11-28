@@ -43,6 +43,7 @@ public class MenuBarControl {
     private final Menu subtitlesMenu;
     private final Menu sourceLanguageMenu;
     private final Menu targetLanguageMenu;
+    private final Menu helpMenu;
 
     private final ToggleGroup audioToggleGroup = new ToggleGroup();
     private final ToggleGroup subtitlesToggleGroup = new ToggleGroup();
@@ -56,7 +57,8 @@ public class MenuBarControl {
                           ControlBarControl controlBarControl, StackPane menuBarStackPane,
                           HBox menuBarDaemonHBox, ToggleButton menuBarToggleButton, MenuBar menuBar,
                           Menu audioMenu, Menu subtitlesMenu, Menu sourceLanguageMenu,
-                          Menu targetLanguageMenu, MenuItem fileOpenItem, MenuItem fileCloseItem)
+                          Menu targetLanguageMenu, Menu helpMenu, MenuItem fileOpenItem,
+                          MenuItem fileCloseItem)
     {
         this.fileChooserManager = fileChooserManager;
         this.embeddedMediaPlayer = embeddedMediaPlayer;
@@ -70,6 +72,7 @@ public class MenuBarControl {
         this.subtitlesMenu = subtitlesMenu;
         this.sourceLanguageMenu = sourceLanguageMenu;
         this.targetLanguageMenu = targetLanguageMenu;
+        this.helpMenu = helpMenu;
 
         activateBindings();
 
@@ -100,6 +103,11 @@ public class MenuBarControl {
 
     public void setVideoFile(File videoFile) {
         this.videoFile = videoFile;
+    }
+
+    public void showHelpMenu() {
+        menuBarStackPane.setVisible(true);
+        helpMenu.show();
     }
 
     public void fireMenuBarToggleButton() {

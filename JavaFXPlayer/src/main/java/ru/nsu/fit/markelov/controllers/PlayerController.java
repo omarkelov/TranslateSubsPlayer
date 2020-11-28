@@ -38,6 +38,7 @@ import java.io.File;
 import static javafx.scene.input.KeyCode.DOWN;
 import static javafx.scene.input.KeyCode.ENTER;
 import static javafx.scene.input.KeyCode.ESCAPE;
+import static javafx.scene.input.KeyCode.F1;
 import static javafx.scene.input.KeyCode.F2;
 import static javafx.scene.input.KeyCode.F3;
 import static javafx.scene.input.KeyCode.LEFT;
@@ -112,6 +113,7 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
     @FXML private Menu subtitlesMenu;
     @FXML private Menu sourceLanguageMenu;
     @FXML private Menu targetLanguageMenu;
+    @FXML private Menu helpMenu;
     @FXML private MenuItem fileOpenItem;
     @FXML private MenuItem fileCloseItem;
     @FXML private MenuItem helpAboutItem;
@@ -229,7 +231,7 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
         menuBarControl = new MenuBarControl(this, fileChooserManager, embeddedMediaPlayer,
             subtitlesControl, controlBarControl, menuBarStackPane, menuBarDaemonHBox,
             menuBarToggleButton, menuBar, audioMenu, subtitlesMenu, sourceLanguageMenu,
-            targetLanguageMenu, fileOpenItem, fileCloseItem);
+            targetLanguageMenu, helpMenu, fileOpenItem, fileCloseItem);
     }
 
     /**
@@ -290,6 +292,8 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
             }
         } else if (keyEvent.getCode() == M) {
             controlBarControl.fireSoundToggleButton();
+        } else if (keyEvent.getCode() == F1) {
+            menuBarControl.showHelpMenu();
         } else if (keyEvent.getCode() == F2) {
             menuBarControl.fireMenuBarToggleButton();
         } else if (keyEvent.getCode() == F3) {

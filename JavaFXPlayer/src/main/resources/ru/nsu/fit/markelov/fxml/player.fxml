@@ -99,7 +99,7 @@
                 <Menu fx:id="sourceLanguageMenu" text="Source language"/>
                 <Menu fx:id="targetLanguageMenu" text="Target language"/>
             </Menu>
-            <Menu text="Help">
+            <Menu fx:id="helpMenu" text="Help">
                 <MenuItem fx:id="helpAboutItem" text="About"/>
             </Menu>
         </MenuBar>
