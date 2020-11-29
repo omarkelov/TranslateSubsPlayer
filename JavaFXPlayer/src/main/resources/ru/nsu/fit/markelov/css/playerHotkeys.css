@@ -1,0 +1,15 @@
+.root-grid-pane {
+    -fx-grid-lines-visible: true;
+}
+
+.root-grid-pane Line {
+    -fx-stroke: rgba(0, 0, 0, 0.15);
+}
+
+.bold {
+    -fx-font-weight: bold;
+}
+
+.colored-row {
+    -fx-background-color: rgba(0, 0, 0, 0.05);
+}

@@ -3,6 +3,7 @@ package ru.nsu.fit.markelov.controllers;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -18,6 +19,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import ru.nsu.fit.markelov.controllers.player.ControlBarControl;
 import ru.nsu.fit.markelov.controllers.player.KeyEventInfo;
@@ -36,6 +38,7 @@ import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,6 +55,7 @@ import static javafx.scene.input.KeyCode.RIGHT;
 import static javafx.scene.input.KeyCode.SPACE;
 import static javafx.scene.input.KeyCombination.ALT_DOWN;
 import static javafx.scene.input.KeyCombination.CONTROL_DOWN;
+import static ru.nsu.fit.markelov.javafxutil.AlertBuilder.LAYOUT_LOADING_ERROR_HEADER;
 import static ru.nsu.fit.markelov.javafxutil.AlertBuilder.VLC_ERROR_HEADER;
 import static ru.nsu.fit.markelov.util.validation.IllegalInputException.requireNonNull;
 import static uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurfaceFactory.videoSurfaceForImageView;
@@ -64,6 +68,10 @@ import static uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurfaceFactor
 public class PlayerController implements Controller, SubtitlesObserver, MenuBarObserver {
 
     private static final String FXML_FILE_NAME = "player.fxml";
+    private static final String HOTKEYS_FXML_FILE_NAME = "playerHotkeys.fxml";
+    private static final String HOTKEYS_ROW_FXML_FILE_NAME = "playerHotkeysRow.fxml";
+
+    private static final String COLORED_ROW_STYLE_CLASS = "colored-row";
 
     private static final KeyCodeCombination OPEN_COMBINATION = new KeyCodeCombination(O, CONTROL_DOWN);
     private static final KeyCodeCombination SKIP_LEFT_TEN_COMBINATION = new KeyCodeCombination(LEFT, CONTROL_DOWN);
@@ -146,6 +154,7 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
     @FXML private Menu helpMenu;
     @FXML private MenuItem fileOpenItem;
     @FXML private MenuItem fileCloseItem;
+    @FXML private MenuItem helpHotkeysItem;
     @FXML private MenuItem helpAboutItem;
 
     private final SceneManager sceneManager;
@@ -261,7 +270,7 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
         menuBarControl = new MenuBarControl(this, fileChooserManager, embeddedMediaPlayer,
             subtitlesControl, controlBarControl, menuBarStackPane, menuBarDaemonHBox,
             menuBarToggleButton, menuBar, audioMenu, subtitlesMenu, sourceLanguageMenu,
-            targetLanguageMenu, helpMenu, fileOpenItem, fileCloseItem);
+            targetLanguageMenu, helpMenu, fileOpenItem, fileCloseItem, helpHotkeysItem);
     }
 
     /**
@@ -307,6 +316,44 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
     @Override
     public void onClosedClicked() {
         disposePlaying();
+    }
+
+    @Override
+    public void onHotkeysClicked() {
+        try {
+            GridPane contentGridPane = (GridPane) sceneManager.loadFXML(HOTKEYS_FXML_FILE_NAME);
+
+            for (int i = 0; i < HOTKEYS.size(); i++) {
+                GridPane tmpGridPane = (GridPane) sceneManager.loadFXML(HOTKEYS_ROW_FXML_FILE_NAME);
+
+                HBox hotkeyHBox = (HBox) tmpGridPane.getChildren().get(0);
+                HBox descriptionHBox = (HBox) tmpGridPane.getChildren().get(1);
+
+                if (i % 2 == 0) {
+                    hotkeyHBox.getStyleClass().add(COLORED_ROW_STYLE_CLASS);
+                    descriptionHBox.getStyleClass().add(COLORED_ROW_STYLE_CLASS);
+                }
+
+                ((Text) hotkeyHBox.getChildren().get(0)).setText(HOTKEYS.get(i).getName());
+                ((Text) descriptionHBox.getChildren().get(0)).setText(HOTKEYS.get(i).getDescription());
+
+                contentGridPane.add(hotkeyHBox, 0, i + 1);
+                contentGridPane.add(descriptionHBox, 1, i + 1);
+            }
+
+            new AlertBuilder()
+                .setAlertType(Alert.AlertType.INFORMATION)
+                .setHeaderText("Player Hotkeys")
+                .setContent(contentGridPane)
+                .setOwner(sceneManager.getWindowOwner())
+                .build().showAndWait();
+        } catch (IOException | ClassCastException e) {
+            new AlertBuilder()
+                .setHeaderText(LAYOUT_LOADING_ERROR_HEADER)
+                .setException(e)
+                .setOwner(sceneManager.getWindowOwner())
+                .build().showAndWait();
+        }
     }
 
     private void onKeyReleased(KeyEvent keyEvent) {

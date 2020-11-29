@@ -58,7 +58,7 @@ public class MenuBarControl {
                           HBox menuBarDaemonHBox, ToggleButton menuBarToggleButton, MenuBar menuBar,
                           Menu audioMenu, Menu subtitlesMenu, Menu sourceLanguageMenu,
                           Menu targetLanguageMenu, Menu helpMenu, MenuItem fileOpenItem,
-                          MenuItem fileCloseItem)
+                          MenuItem fileCloseItem, MenuItem helpHotkeysItem)
     {
         this.fileChooserManager = fileChooserManager;
         this.embeddedMediaPlayer = embeddedMediaPlayer;
@@ -78,6 +78,7 @@ public class MenuBarControl {
 
         fileOpenItem.setOnAction(actionEvent -> menuBarObserver.onFileClicked());
         fileCloseItem.setOnAction(actionEvent -> menuBarObserver.onClosedClicked());
+        helpHotkeysItem.setOnAction(actionEvent -> menuBarObserver.onHotkeysClicked());
 
         initLanguageMenu(true, "English"); // todo -hardcode
         initLanguageMenu(false, "Russian"); // todo -hardcode

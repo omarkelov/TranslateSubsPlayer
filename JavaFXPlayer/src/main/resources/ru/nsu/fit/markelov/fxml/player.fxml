@@ -100,6 +100,7 @@
                 <Menu fx:id="targetLanguageMenu" text="Target language"/>
             </Menu>
             <Menu fx:id="helpMenu" text="Help">
+                <MenuItem fx:id="helpHotkeysItem" text="Hotkeys"/>
                 <MenuItem fx:id="helpAboutItem" text="About"/>
             </Menu>
         </MenuBar>
