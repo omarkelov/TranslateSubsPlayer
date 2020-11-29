@@ -120,6 +120,17 @@ public class SceneManager implements AutoCloseable {
     }
 
     /**
+     * Loads .fxml file from the resources by specified filename and returns its root as Parent.
+     *
+     * @param fxmlFileName .fxml filename.
+     * @return root of .fxml file.
+     * @throws IOException if cannot read the file.
+     */
+    public Parent loadFXML(String fxmlFileName) throws IOException {
+        return new FXMLLoader(getClass().getResource(FXML_DIRECTORY + fxmlFileName)).load();
+    }
+
+    /**
      * Creates new MenuController and switches the scene to a menu.
      */
     public void switchToMenu() {
