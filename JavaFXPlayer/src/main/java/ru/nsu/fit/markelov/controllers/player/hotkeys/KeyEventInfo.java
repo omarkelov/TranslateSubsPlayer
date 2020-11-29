@@ -1,4 +1,4 @@
-package ru.nsu.fit.markelov.controllers.player;
+package ru.nsu.fit.markelov.controllers.player.hotkeys;
 
 public class KeyEventInfo {
 
