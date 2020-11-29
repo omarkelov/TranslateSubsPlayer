@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,15 +20,21 @@ import static ru.nsu.fit.markelov.util.http.HttpUtil.getContent;
 
 public class GoogleJsonTranslator extends Translator {
 
+    private static final String TOKEN_PREFERENCES_KEY = "GoogleTokenKey";
+
     private static final String MAIN_PAGE_URL = "https://translate.google.com/";
     private static final String TRANSLATION_URL_FORMAT = MAIN_PAGE_URL +
         "translate_a/single?client=webapp&sl=%s&tl=%s&hl=%2$s&dt=at&dt=bd&dt=ex&dt=ld&dt=md&" +
         "dt=qca&dt=rw&dt=rm&dt=sos&dt=ss&dt=t&otf=1&pc=1&ssel=0&tsel=0&kc=2&tk=%s&q=%s";
 
+    private final Preferences preferences;
     private String tokenKey;
 
     public GoogleJsonTranslator(int attempts) {
         super(attempts);
+
+        preferences = Preferences.userRoot().node(getClass().getName());
+        tokenKey = preferences.get(TOKEN_PREFERENCES_KEY, null);
     }
 
     @Override
@@ -37,6 +44,7 @@ public class GoogleJsonTranslator extends Translator {
     {
         if (tokenKey == null) {
             tokenKey = requestTokenKey();
+            preferences.put(TOKEN_PREFERENCES_KEY, tokenKey);
         }
 
         String token = generateToken(tokenKey, text);
@@ -46,6 +54,7 @@ public class GoogleJsonTranslator extends Translator {
 
         if (translationResult.isEmpty()) {
             tokenKey = null;
+            preferences.remove(TOKEN_PREFERENCES_KEY);
         }
     }
 
