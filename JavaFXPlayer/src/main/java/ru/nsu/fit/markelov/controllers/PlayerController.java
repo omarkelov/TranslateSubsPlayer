@@ -41,6 +41,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 import static javafx.scene.input.KeyCode.DOWN;
 import static javafx.scene.input.KeyCode.ENTER;
@@ -159,6 +160,8 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
     private final MediaPlayerFactory mediaPlayerFactory;
     private final EmbeddedMediaPlayer embeddedMediaPlayer;
 
+    private final Preferences preferences;
+
     private boolean initialized = false;
 
     private SubtitlesControl subtitlesControl;
@@ -185,6 +188,8 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
             throw new VlcException(e);
         }
 
+        preferences = Preferences.userRoot().node(getClass().getName());
+
         embeddedMediaPlayer.controls().setRepeat(true);
         embeddedMediaPlayer.events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
 
@@ -200,7 +205,16 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
                         mediaPlayer.audio().setTrack(menuBarControl.getSelectedAudioTrack());
                     });
                 } else {
-                    mediaPlayer.audio().setMute(!soundToggleButton.isSelected());
+                    mediaPlayer.submit(() -> {
+                        mediaPlayer.audio().setMute(!soundToggleButton.isSelected());
+
+                        long startTime = preferences.getLong(
+                            menuBarControl.getVideoFile().getAbsolutePath(), 0);
+
+                        if (startTime > 0 && startTime < mediaPlayer.status().length()) {
+                            mediaPlayer.controls().setTime(startTime);
+                        }
+                    });
                     Platform.runLater(this::initPlayingIfNot);
                 }
             }
@@ -290,6 +304,8 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
      */
     @Override
     public void close() {
+        rememberCurrentPlayingTime();
+
         subtitlesControl.close();
         embeddedMediaPlayer.controls().stop();
         embeddedMediaPlayer.release();
@@ -395,6 +411,8 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
     }
 
     private void disposePlaying() {
+        rememberCurrentPlayingTime();
+
         controlBarControl.onPausePressed(true);
         embeddedMediaPlayer.controls().stop();
         videoImageView.setImage(null);
@@ -407,5 +425,12 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
         menuBarControl.setVideoFile(null);
 
         initialized = false;
+    }
+
+    private void rememberCurrentPlayingTime() {
+        if (menuBarControl.getVideoFile() != null) {
+            preferences.putLong(menuBarControl.getVideoFile().getAbsolutePath(),
+                embeddedMediaPlayer.status().time());
+        }
     }
 }
