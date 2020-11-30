@@ -9,13 +9,13 @@
     <stylesheets>
         <URL value="@../css/playerHotkeys.css"/>
     </stylesheets>
-    <HBox>
-        <Text GridPane.halignment="CENTER">
+    <HBox alignment="CENTER">
+        <Text>
             <HBox.margin><Insets top="2" right="8" bottom="2" left="8" /></HBox.margin>
         </Text>
     </HBox>
-    <HBox GridPane.columnIndex="1">
-        <Text GridPane.halignment="CENTER">
+    <HBox alignment="CENTER_LEFT" GridPane.columnIndex="1">
+        <Text>
             <HBox.margin><Insets top="2" right="8" bottom="2" left="8" /></HBox.margin>
         </Text>
     </HBox>
