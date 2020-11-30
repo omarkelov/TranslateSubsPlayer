@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static ru.nsu.fit.markelov.Constants.BIG_BOLD_FONT;
 import static ru.nsu.fit.markelov.Constants.DISABLED_COLOR;
@@ -100,6 +101,8 @@ public class SubtitlesControl implements AutoCloseable {
     private Map<Integer, CloseSubtitlesInfo> closeSubtitlesInfoMap;
     private int currentSubtitleId = 0;
 
+    private final Map<String, TranslationResult> translationResultMap;
+
     public SubtitlesControl(SceneManager sceneManager, SubtitlesObserver subtitlesObserver,
                             Group subtitlesGroup, TextFlow subtitlesTextFlow,
                             Pane translationPane, Group translationGroup,
@@ -117,6 +120,8 @@ public class SubtitlesControl implements AutoCloseable {
         this.tooltipPane = tooltipPane;
         this.tooltipGroup = tooltipGroup;
         this.tooltipTextFlow = tooltipTextFlow;
+
+        translationResultMap = new ConcurrentHashMap<>();
 
         subtitlesTextFlow.setOnMousePressed(this::onSubtitlesTextFlowMousePressed);
         subtitlesTextFlow.setOnMouseDragged(this::onSubtitlesTextFlowMouseDragged);
@@ -250,6 +255,7 @@ public class SubtitlesControl implements AutoCloseable {
         subtitlesHandler = null;
         closeSubtitlesInfoMap = null;
         currentSubtitleId = 0;
+        translationResultMap.clear();
         hideSubtitlesBar();
         hideTranslationBar();
     }
@@ -401,12 +407,20 @@ public class SubtitlesControl implements AutoCloseable {
             try {
                 String text = stringBuilder.toString().trim(); // todo!!! trim dots, etc.
 
-                TranslationResult translationResult = googleJsonTranslator.translate(
-                    sourceLanguageCode, targetLanguageCode, text);
+                TranslationResult translationResult = translationResultMap.get(text);
+
+                if (translationResult == null) {
+                    translationResult = googleJsonTranslator.translate(
+                        sourceLanguageCode, targetLanguageCode, text);
+                }
 
                 if (translationResult.isEmpty()) {
                     translationResult = googleScriptsTranslator.translate(
                         sourceLanguageCode, targetLanguageCode, text);
+                }
+
+                if (!translationResult.isEmpty()) {
+                    translationResultMap.put(text, translationResult);
                 }
 
                 List<Text> textList = buildTranslationTextList(translationResult);
