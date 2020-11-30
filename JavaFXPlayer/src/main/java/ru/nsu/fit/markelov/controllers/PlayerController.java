@@ -204,7 +204,9 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
                         mediaPlayer.subpictures().setTrack(-1);
                         mediaPlayer.audio().setTrack(menuBarControl.getSelectedAudioTrack());
                     });
-                } else {
+                } else if (!initialized) {
+                    initialized = true;
+
                     mediaPlayer.submit(() -> {
                         mediaPlayer.audio().setMute(!soundToggleButton.isSelected());
 
@@ -215,20 +217,16 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
                             mediaPlayer.controls().setTime(startTime);
                         }
                     });
-                    Platform.runLater(this::initPlayingIfNot);
+                    Platform.runLater(this::initPlaying);
                 }
             }
 
-            private void initPlayingIfNot() {
-                if (!initialized) {
-                    initialized = true;
+            private void initPlaying() {
+                sceneManager.setTitle(menuBarControl.getVideoFile().getName());
+                controlBarControl.onPausePressed(false);
 
-                    sceneManager.setTitle(menuBarControl.getVideoFile().getName());
-                    controlBarControl.onPausePressed(false);
-
-                    controlBarControl.init();
-                    menuBarControl.init();
-                }
+                controlBarControl.init();
+                menuBarControl.init();
             }
 
             @Override
