@@ -409,65 +409,7 @@ public class SubtitlesControl implements AutoCloseable {
                         sourceLanguageCode, targetLanguageCode, text);
                 }
 
-                // todo!!! refactor
-                List<Text> textList = new ArrayList<>();
-                if (translationResult.isEmpty()) {
-                    textList.add(TRANSLATION_TB.setText("No translation...").build());
-                } else {
-                    if (translationResult.getTranslation() != null) {
-                        textList.add(TRANSLATION_TB.setText(translationResult.getTranslation()).build());
-                    }
-
-                    if (translationResult.getTranslationGroups() != null) {
-                        for (TranslationGroup translationGroup : translationResult.getTranslationGroups()) {
-                            textList.add(TRANSLATION_TB.setText(NEW_LINE).build());
-                            textList.add(LINE_EXPANDER_TB.setText(SPACE).build());
-
-                            textList.add(PART_OF_SPEECH_TB.setText(
-                                capitalize(translationGroup.getPartOfSpeech()) + ": ").build());
-
-                            for (TranslationVariant translationVariant : translationGroup.getVariants()) {
-                                StringJoiner translationJoiner = new StringJoiner(", ");
-                                for (String translation : translationVariant.getTranslations()) {
-                                    translationJoiner.add(translation);
-                                }
-
-                                Text wordText = TRANSLATION_TB.setText(translationVariant.getWord()).build();
-                                wordText.setOnMouseEntered(wordMouseEvent -> {
-                                    wordText.setFill(SELECTED_COLOR);
-
-                                    Text backTranslationText = BACK_TRANSLATION_TB
-                                        .setText(translationJoiner.toString()).build();
-                                    double backTranslationTextWidth = backTranslationText.getLayoutBounds().getWidth();
-                                    double backTranslationTextHeight = backTranslationText.getLayoutBounds().getHeight();
-
-                                    tooltipTextFlow.setMaxWidth(06.d * sceneManager.getStageWidthProperty().doubleValue());
-                                    tooltipTextFlow.getChildren().add(backTranslationText);
-
-                                    Bounds bounds = wordText.localToScene(wordText.getBoundsInLocal());
-                                    double hoveredTextCenterX = 0.5d * (bounds.getMinX() + bounds.getMaxX());
-                                    double shiftX = 0.5d * backTranslationTextWidth;
-                                    tooltipGroup.setLayoutX(hoveredTextCenterX - shiftX);
-
-                                    double hoveredTextCenterY = 0.5d * (bounds.getMinY() + bounds.getMaxY());
-                                    double shiftY = backTranslationTextHeight + tooltipTextFlow.getPadding().getTop() + tooltipTextFlow.getPadding().getBottom();
-                                    tooltipGroup.setLayoutY(hoveredTextCenterY - shiftY - TOOLTIP_Y_MARGIN);
-
-                                    tooltipPane.setVisible(true);
-                                });
-                                wordText.setOnMouseExited(wordMouseEvent -> {
-                                    wordText.setFill(STANDARD_COLOR);
-                                    hideTooltipBar();
-                                });
-
-                                textList.add(wordText);
-                                textList.add(TRANSLATION_TB.setText(", ").build());
-                            }
-
-                            textList.get(textList.size() - 1).setText(".");
-                        }
-                    }
-                }
+                List<Text> textList = buildTranslationTextList(translationResult);
 
                 Platform.runLater(() -> {
                     if (translationThread == null || translationThread.isInterrupted()) {
@@ -480,11 +422,75 @@ public class SubtitlesControl implements AutoCloseable {
                     unbindTranslationNodes();
                     bindGroups(finalContainsLineSeparator);
                 });
-            } catch (InterruptedException e) { // todo!!! handle
-                System.out.println("Interrupted: " + e.getMessage()); // todo! print stack trace
-            }
+            } catch (InterruptedException ignored) {}
         });
         translationThread.start();
+    }
+
+    private List<Text> buildTranslationTextList(TranslationResult translationResult) {
+        List<Text> textList = new ArrayList<>();
+
+        if (translationResult.isEmpty()) {
+            textList.add(TRANSLATION_TB.setText("No translation...").build()); // todo suggest link to the site
+        } else {
+            if (translationResult.getTranslation() != null) {
+                textList.add(TRANSLATION_TB.setText(translationResult.getTranslation()).build());
+            }
+
+            if (translationResult.getTranslationGroups() != null) {
+                for (TranslationGroup translationGroup : translationResult.getTranslationGroups()) {
+                    textList.add(TRANSLATION_TB.setText(NEW_LINE).build());
+                    textList.add(LINE_EXPANDER_TB.setText(SPACE).build());
+
+                    textList.add(PART_OF_SPEECH_TB.setText(
+                        capitalize(translationGroup.getPartOfSpeech()) + ": ").build());
+
+                    for (TranslationVariant translationVariant : translationGroup.getVariants()) {
+                        StringJoiner translationJoiner = new StringJoiner(", ");
+                        for (String translation : translationVariant.getTranslations()) {
+                            translationJoiner.add(translation);
+                        }
+
+                        Text wordText = TRANSLATION_TB.setText(translationVariant.getWord()).build();
+                        wordText.setOnMouseEntered(wordMouseEvent -> {
+                            wordText.setFill(SELECTED_COLOR);
+
+                            Text backTranslationText = BACK_TRANSLATION_TB
+                                .setText(translationJoiner.toString()).build();
+                            double backTranslationTextWidth = backTranslationText.getLayoutBounds().getWidth();
+                            double backTranslationTextHeight = backTranslationText.getLayoutBounds().getHeight();
+
+                            tooltipTextFlow.setMaxWidth(06.d * sceneManager.getStageWidthProperty().doubleValue());
+                            tooltipTextFlow.getChildren().add(backTranslationText);
+
+                            Bounds bounds = wordText.localToScene(wordText.getBoundsInLocal());
+                            double hoveredTextCenterX = 0.5d * (bounds.getMinX() + bounds.getMaxX());
+                            double shiftX = 0.5d * backTranslationTextWidth;
+                            tooltipGroup.setLayoutX(hoveredTextCenterX - shiftX);
+
+                            double hoveredTextCenterY = 0.5d * (bounds.getMinY() + bounds.getMaxY());
+                            double shiftY = backTranslationTextHeight +
+                                tooltipTextFlow.getPadding().getTop() +
+                                tooltipTextFlow.getPadding().getBottom();
+                            tooltipGroup.setLayoutY(hoveredTextCenterY - shiftY - TOOLTIP_Y_MARGIN);
+
+                            tooltipPane.setVisible(true);
+                        });
+                        wordText.setOnMouseExited(wordMouseEvent -> {
+                            wordText.setFill(STANDARD_COLOR);
+                            hideTooltipBar();
+                        });
+
+                        textList.add(wordText);
+                        textList.add(TRANSLATION_TB.setText(", ").build());
+                    }
+
+                    textList.get(textList.size() - 1).setText(".");
+                }
+            }
+        }
+
+        return textList;
     }
 
     private String capitalize(String str) {
