@@ -5,6 +5,7 @@ import javafx.stage.Window;
 import ru.nsu.fit.markelov.util.validation.IllegalInputException;
 
 import java.io.File;
+import java.util.prefs.Preferences;
 
 import static ru.nsu.fit.markelov.util.validation.IllegalInputException.requireNonNull;
 
@@ -15,12 +16,14 @@ import static ru.nsu.fit.markelov.util.validation.IllegalInputException.requireN
  */
 public class FileChooserManager {
 
+    private static final String LAST_VIDEO_DIRECTORY_PREFERENCES = "LastVideoDirectory";
+
     private final Window window;
 
     private final FileChooser videoFileChooser;
     private final FileChooser subtitlesFileChooser;
 
-    private File lastVideoDirectory;
+    private final Preferences preferences;
 
     /**
      * Creates new FileChooserManager with specified JavaFX window.
@@ -39,7 +42,7 @@ public class FileChooserManager {
         subtitlesFileChooser.getExtensionFilters().add(
             new FileChooser.ExtensionFilter("SRT", "*.srt"));
 
-        lastVideoDirectory = new File("F:\\Multimedia\\Series\\Westworld\\1\\"); // TODO -hardcode
+        preferences = Preferences.userRoot().node(getClass().getName());
     }
 
     /**
@@ -48,12 +51,12 @@ public class FileChooserManager {
      * @return chosen video file.
      */
     public File chooseVideoFile() { // TODO only video
-        validateLastVideoDirectory();
-        videoFileChooser.setInitialDirectory(lastVideoDirectory);
+        videoFileChooser.setInitialDirectory(new File(
+            preferences.get(LAST_VIDEO_DIRECTORY_PREFERENCES, System.getProperty("user.home"))));
 
         File file = videoFileChooser.showOpenDialog(window);
         if (file != null) {
-            lastVideoDirectory = new File(file.getParent());
+            preferences.put(LAST_VIDEO_DIRECTORY_PREFERENCES, file.getParent());
         }
 
         return file;
@@ -65,15 +68,9 @@ public class FileChooserManager {
      * @return chosen subtitles file.
      */
     public File chooseSubtitlesFile() {
-        validateLastVideoDirectory();
-        subtitlesFileChooser.setInitialDirectory(lastVideoDirectory);
+        subtitlesFileChooser.setInitialDirectory(new File(
+            preferences.get(LAST_VIDEO_DIRECTORY_PREFERENCES, System.getProperty("user.home"))));
 
         return subtitlesFileChooser.showOpenDialog(window);
-    }
-
-    private void validateLastVideoDirectory() {
-        if (!lastVideoDirectory.exists()) {
-            lastVideoDirectory = new File(System.getProperty("user.home"));
-        }
     }
 }
