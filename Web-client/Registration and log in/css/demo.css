@@ -67,9 +67,9 @@ a{
 	position: relative;
 	text-align: center;
 }
-.clr{
+/*.clr{
 	clear: both;
-}
+}*/
 .container > header{
 	padding: 20px 30px 10px 30px;
 	margin: 0px 20px 10px 20px;
