@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8">
+        <title>Video phrase list</title>
+        <link rel="shortcut icon" href="/images/icon.png" type="image/x-icon">
+        <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+        <link rel="stylesheet" href="reset.css">
+        <link rel="stylesheet" href="main.css">
+    </head>
+    <body>
+        <div>
+            <div class="header" th:text="${movieName}"></div>
+            <ol>
+                <li th:each="movieContext : ${movieContexts}" th:attr="data-id=${movieContext.context.id}">
+                    <p th:text="${movieContext.context.context}" th:attr="data-phrases-json=${movieContext.phrasesJson}"></p>
+                    <div class="button watch-button" th:attr="data-context-id=${movieContext.context.id}"></div>
+                    <div class="button edit-button" th:attr="data-context-id=${movieContext.context.id}"></div>
+                    <div class="button delete-button" th:attr="data-context-id=${movieContext.context.id}"></div>
+                </li>
+            </ol>
+        </div>
+
+        <script>
+            document.querySelectorAll('p').forEach(p => {
+                JSON.parse(p.getAttribute('data-phrases-json')).forEach(phrase => {
+                    p.innerHTML = p.innerHTML.replace(
+                        phrase.phrase,
+                        '<span data-tooltip="' + phrase.translation + '">' + phrase.phrase + '</span>'
+                    );
+                });
+            });
+
+            let tooltipElem;
+
+            document.onmouseover = function(event) {
+                let target = event.target;
+
+                let tooltipHtml = target.dataset.tooltip;
+                if (!tooltipHtml) return;
+
+                tooltipElem = document.createElement('div');
+                tooltipElem.className = 'tooltip';
+                tooltipElem.innerHTML = tooltipHtml;
+                document.body.append(tooltipElem);
+
+                let coords = target.getBoundingClientRect();
+
+                let left = coords.left + (target.offsetWidth - tooltipElem.offsetWidth) / 2;
+                if (left < 0) left = 0;
+
+                let top = coords.top - tooltipElem.offsetHeight - 5;
+                if (top < 0) {
+                    top = coords.top + target.offsetHeight + 5;
+                }
+
+                tooltipElem.style.left = left + 'px';
+                tooltipElem.style.top = top + 'px';
+            };
+
+            document.onmouseout = function(e) {
+                if (tooltipElem) {
+                    tooltipElem.remove();
+                    tooltipElem = null;
+                }
+            };
+        </script>
+    </body>
+</html>

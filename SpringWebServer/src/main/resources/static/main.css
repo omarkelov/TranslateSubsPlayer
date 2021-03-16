@@ -1,0 +1,70 @@
+.tooltip {
+position: fixed;
+padding: 10px 20px;
+border: 1px solid #b3c9ce;
+border-radius: 4px;
+text-align: center;
+font: italic 14px/1.3 sans-serif;
+color: #333;
+background: #fff;
+box-shadow: 3px 3px 3px rgba(0, 0, 0, .3);
+}
+
+span {
+color: red;
+}
+
+.header {
+font-size: 50px;
+text-align: center;
+}
+
+ol {
+font-size: 20px;
+padding: 20px 20px 10px 50px;
+}
+
+li {
+padding: 10px 10px 10px 10px;
+}
+.all {
+margin: 30px 30px 30px 30px;
+padding: 20px 20px 100px 20px;
+border: 2px solid black;
+}
+
+.test-button {
+float: right;
+cursor: pointer;
+margin: 0px 50px 20px 10px;
+}
+
+.watch-button {
+background: no-repeat center/100% url("1.jpg");
+border-radius: 4px;
+padding: 7px;
+display:none;
+}
+
+.edit-button {
+background: no-repeat center/100% url("2.jpg");
+border-radius: 4px;
+padding: 7px;
+display:none;
+}
+
+.delete-button {
+background: no-repeat center/100% url("3.jpg");
+border-radius: 4px;
+padding: 7px;
+display:none;
+}
+
+li:hover .button {
+display: inline-block;
+background: red;
+}
+
+p {
+display: inline-block;
+}
