@@ -9,7 +9,7 @@
         <link rel="stylesheet" href="main.css">
     </head>
     <body>
-        <div>
+        <div class="all">
             <div class="header" th:text="${movieName}"></div>
             <ol>
                 <li th:each="movieContext : ${movieContexts}" th:attr="data-id=${movieContext.context.id}">
@@ -19,6 +19,7 @@
                     <div class="button delete-button" th:attr="data-context-id=${movieContext.context.id}"></div>
                 </li>
             </ol>
+            <button class="test-button">Take a test</button>
         </div>
 
         <script>
