@@ -11,11 +11,15 @@
     <body>
         <div class="all">
             <div class="header" th:text="${movieName}"></div>
-            <ol>
+            <ol id="list">
                 <li th:each="movieContext : ${movieContexts}" th:attr="data-id=${movieContext.context.id}">
                     <p th:text="${movieContext.context.context}" th:attr="data-phrases-json=${movieContext.phrasesJson}"></p>
-                    <div class="button watch-button" th:attr="data-context-id=${movieContext.context.id}"></div>
-                    <div class="button edit-button" th:attr="data-context-id=${movieContext.context.id}"></div>
+                    <div class="button watch-button" onclick="toggle()" th:attr="data-context-id=${movieContext.context.id}"></div>
+                    <div class="trailer">
+                        <video src="sea.mp4" controls="true"></video>
+                        <img src="close.png" class="close" onclick="toggle()">
+                    </div>
+                    <div class="button edit-button" onclick="showMsg()" th:attr="data-context-id=${movieContext.context.id}"></div>
                     <div class="button delete-button" th:attr="data-context-id=${movieContext.context.id}"></div>
                 </li>
             </ol>
@@ -65,6 +69,26 @@
                     tooltipElem = null;
                 }
             };
+
+            let list = document.getElementById('list');
+
+            list.addEventListener('click', function(e){
+                if(e.target && e.target.nodeName == "DIV" && e.target.className == "button delete-button"){
+                    e.target.parentNode.remove();
+                }
+            });
+
+            function toggle(){
+                let trailer=document.querySelector(".trailer")
+                let video=document.querySelector("video")
+                trailer.classList.toggle("active");
+                video.pause();
+                video.currentTime = 0;
+            }
+
+            function showMsg() {
+                alert("Edit");
+            }
         </script>
     </body>
 </html>
