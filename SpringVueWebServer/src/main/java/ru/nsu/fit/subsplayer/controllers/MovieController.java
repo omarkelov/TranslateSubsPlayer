@@ -14,29 +14,25 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.nsu.fit.subsplayer.constants.Mappings;
 import ru.nsu.fit.subsplayer.entities.Context;
 import ru.nsu.fit.subsplayer.entities.Movie;
-import ru.nsu.fit.subsplayer.entities.Phrase;
-import ru.nsu.fit.subsplayer.repositories.ContextRepository;
 import ru.nsu.fit.subsplayer.repositories.MovieRepository;
-import ru.nsu.fit.subsplayer.repositories.PhraseRepository;
-import ru.nsu.fit.subsplayer.repositories.PhraseStatsRepository;
+import ru.nsu.fit.subsplayer.services.ContextService;
 import ru.nsu.fit.subsplayer.services.MovieService;
 
 import javax.transaction.Transactional;
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/", produces = "application/json")
 public class MovieController {
 
     @Autowired private MovieService movieService;
+    @Autowired private ContextService contextService;
 
     @Autowired private MovieRepository movieRepository;
-    @Autowired private ContextRepository contextRepository;
-    @Autowired private PhraseRepository phraseRepository;
-    @Autowired private PhraseStatsRepository phraseStatsRepository;
 
     @GetMapping(Mappings.MOVIES + "/{movieName}")
-    public String getMovie(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String movieName) {
+    public String getMovie(@AuthenticationPrincipal UserDetails userDetails,
+                           @PathVariable String movieName) {
+
         return new GsonBuilder()
             .excludeFieldsWithoutExposeAnnotation()
             .create()
@@ -46,16 +42,14 @@ public class MovieController {
     @DeleteMapping(Mappings.MOVIES + "/{movieName}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Transactional
-    public void deleteMovie(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String movieName) {
+    public void deleteMovie(@AuthenticationPrincipal UserDetails userDetails,
+                            @PathVariable String movieName) {
+
         Movie movie = movieService.queryMovie(userDetails, movieName);
 
         movieRepository.deleteByUserIdAndName(movie.getUserId(), movie.getName());
-        contextRepository.deleteByMovieId(movie.getId());
         for (Context context : movie.getContexts()) {
-            List<Phrase> phrases = phraseRepository.deleteByContextId(context.getId());
-            for (Phrase phrase : phrases) {
-                phraseStatsRepository.deleteByPhraseId(phrase.getId());
-            }
+            contextService.deleteContext(context);
         }
     }
 }

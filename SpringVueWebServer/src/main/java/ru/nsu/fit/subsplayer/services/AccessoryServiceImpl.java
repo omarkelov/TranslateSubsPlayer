@@ -11,12 +11,19 @@ import ru.nsu.fit.subsplayer.repositories.UserRepository;
 @Component
 public class AccessoryServiceImpl implements AccessoryService {
 
-    @Autowired
-    private UserRepository userRepository;
+    @Autowired private UserRepository userRepository;
+
+    @Override
+    public void checkContextAccess(UserDetails userDetails, long contextId) {
+        User user = userRepository.findByContextId(contextId);
+        if (user == null || !user.getUsername().equals(userDetails.getUsername())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Context (id " + contextId + ") not found");
+        }
+    }
 
     @Override
     public void checkPhraseAccess(UserDetails userDetails, long phraseId) {
-        User user = userRepository.findByPhraseId(phraseId); // todo move this part to new class
+        User user = userRepository.findByPhraseId(phraseId);
         if (user == null || !user.getUsername().equals(userDetails.getUsername())) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Phrase (id " + phraseId + ") not found");
         }
