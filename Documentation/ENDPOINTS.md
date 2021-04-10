@@ -1,26 +1,39 @@
-### Pages:
-* **GET** /login
-  * *returns* login page
-* **GET** /movies
-  * *returns* page with a list of the movies
-* **GET** /`<movieName>`
-  * *returns* page with a list of the contexts for this movie
-* **GET** /`<movieName>`/test
-  * *returns* testing page for this movie
-
 ### RESTful API:
-* **POST** /log.in?{"username":`<username>`,"password":`<password>`}
+* **POST** /registration?username=`<username>`&password=`<password>`
+  * registers user
+  * *status code* **204 No Content**
+* **POST** /login?username=`<username>`&password=`<password>`
   * logs user in
-  * *redirects* to the /movies page
-* **POST** /log.out
+  * *status code* **204 No Content**
+* **POST** /logout
   * logs user out
-  * *redirects* to the /login page
+  * *status code* **204 No Content**
 
-* **DELETE** /movie.delete?{"movieId":`<movieId>`}
-  * deletes this movie from the database
+* **GET** /movies
+  * *status code* **200 OK**
+  * *returns* a list of movies
 
-* **DELETE** /context.delete?{"movieId":`<movieId>`,"contextId":`<contextId>`}
-  * deletes this context from the database
+* **GET** /movies/`<movieName>`
+  * *status code* **200 OK**
+  * *returns* a list of contexts for this movie
+* **DELETE** /movies/`<movieName>`
+  * *status code* **204 No Content**
+  * *deletes* this movie from the database
 
-* **POST** /test?{"movieId":`<movieId>`,"contextId":`<contextId>`,"phraseId":`<phraseId>`,"correct":`<true/false>`}
+* **GET** /context?phraseId=`<phraseId>`
+  * *status code* **200 OK**
+  * *returns* a context associated with this phrase
+* **GET** /contexts/`<contextId>`
+  * *status code* **200 OK**
+  * *returns* this context
+* **DELETE** /contexts/`<contextId>`
+  * *status code* **204 No Content**
+  * *deletes* this context
+
+* **GET** /movies/`<movieName>`/test
+  * *status code* **200 OK**
+  * *returns* a list of phrase ids
+
+* **PATCH** /phrases/`<phraseId>`?correct=<true/false>`
+  * *status code* **204 No Content**
   * updates the database with this answer
