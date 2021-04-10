@@ -1,0 +1,37 @@
+{
+    "id": 11,
+    "context": "Once upon a time there was a lovely princess. But she had an enchantment upon her of a fearful sort... which could only be broken by love's first kiss. She was locked away in a castle... guarded by a terrible fire-breathing dragon. Many brave knights had attempted to free her from this deadful prison. But none prevailed. She waited in the dragon's keep... in the highest room of the tallest tower... for her true love and true love's first kiss. Like that's ever gonna happen.",
+    "link": "videos/2.mp4",
+    "phrases": [
+        {
+            "id": 12,
+            "phrase": "Once upon a time",
+            "translation": "Давным-давно",
+            "phraseStats": {
+                "successfulAttempts": 0,
+                "attempts": 0
+            }
+        },
+        {
+            "id": 14,
+            "phrase": "sort",
+            "type": "имя существительное",
+            "translation": "сорт | род",
+            "phraseStats": {
+                "successfulAttempts": 0,
+                "attempts": 0
+            }
+        },
+        {
+            "id": 16,
+            "phrase": "castle",
+            "correctedPhrase": "a castle",
+            "type": "имя существительное",
+            "translation": "замок | дворец",
+            "phraseStats": {
+                "successfulAttempts": 0,
+                "attempts": 0
+            }
+        }
+    ]
+}
