@@ -12,6 +12,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("""
             SELECT u
             FROM User u
+            INNER JOIN RawMovie rm
+                ON u.id = rm.userId
+            WHERE rm.id = :rawMovieId
+        """)
+    User findByRawMovieId(@Param("rawMovieId") Long rawMovieId);
+
+    @Query("""
+            SELECT u
+            FROM User u
             INNER JOIN Movie m
                 ON u.id = m.userId
             WHERE m.id = :movieId

@@ -14,6 +14,14 @@ public class AccessoryServiceImpl implements AccessoryService {
     @Autowired private UserRepository userRepository;
 
     @Override
+    public void checkRawMovieAccess(UserDetails userDetails, long rawMovieId) {
+        User user = userRepository.findByRawMovieId(rawMovieId);
+        if (user == null || !user.getUsername().equals(userDetails.getUsername())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Raw movie (id " + rawMovieId + ") not found");
+        }
+    }
+
+    @Override
     public void checkContextAccess(UserDetails userDetails, long contextId) {
         User user = userRepository.findByContextId(contextId);
         if (user == null || !user.getUsername().equals(userDetails.getUsername())) {
