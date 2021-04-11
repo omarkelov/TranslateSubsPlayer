@@ -8,4 +8,5 @@ public class Mappings {
     public static final String PHRASES = "/phrases";
 
     public static final String CONTEXT = "/context";
+    public static final String PING = "/ping";
 }
