@@ -31,6 +31,7 @@ import ru.nsu.fit.markelov.controllers.player.hotkeys.KeyEventInfo;
 import ru.nsu.fit.markelov.javafxutil.AlertBuilder;
 import ru.nsu.fit.markelov.managers.FileChooserManager;
 import ru.nsu.fit.markelov.managers.SceneManager;
+import ru.nsu.fit.markelov.util.HashSum;
 import ru.nsu.fit.markelov.util.validation.IllegalInputException;
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
@@ -210,11 +211,13 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
                     mediaPlayer.submit(() -> {
                         mediaPlayer.audio().setMute(!soundToggleButton.isSelected());
 
-                        long startTime = preferences.getLong(
-                            menuBarControl.getVideoFile().getAbsolutePath(), 0);
+                        String videoFilePathHash = HashSum.md5(menuBarControl.getVideoFile().getAbsolutePath());
+                        if (videoFilePathHash != null && videoFilePathHash.length() <= Preferences.MAX_KEY_LENGTH) {
+                            long startTime = preferences.getLong(videoFilePathHash, 0);
 
-                        if (startTime > 0 && startTime < mediaPlayer.status().length()) {
-                            mediaPlayer.controls().setTime(startTime);
+                            if (startTime > 0 && startTime < mediaPlayer.status().length()) {
+                                mediaPlayer.controls().setTime(startTime);
+                            }
                         }
                     });
                     Platform.runLater(this::initPlaying);
@@ -427,8 +430,10 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
 
     private void rememberCurrentPlayingTime() {
         if (menuBarControl.getVideoFile() != null) {
-            preferences.putLong(menuBarControl.getVideoFile().getAbsolutePath(),
-                embeddedMediaPlayer.status().time());
+            String videoFilePathHash = HashSum.md5(menuBarControl.getVideoFile().getAbsolutePath());
+            if (videoFilePathHash != null && videoFilePathHash.length() <= Preferences.MAX_KEY_LENGTH) {
+                preferences.putLong(videoFilePathHash, embeddedMediaPlayer.status().time());
+            }
         }
     }
 }
