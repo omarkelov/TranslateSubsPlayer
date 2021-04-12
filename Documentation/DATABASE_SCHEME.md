@@ -4,6 +4,19 @@
 | 1  | admin    | ******** |
 | 2  | Jonh_Doe | ******** |
 
+### raw_movies
+| id | user_id | hash_sum                           | video_file_path           | lines_json |
+|----|---------|------------------------------------|---------------------------|------------|
+| 1  | 2       | 67CB6C8895D6B3814290BEE329047501_0 | C:/Movies/Shrek.avi       | [{...}]    |
+| 2  | 2       | B7E95BBEF119737C6F950D23B87B40E5_8 | C:/Movies/Shrek 2.avi     | [{...}]    |
+
+### raw_phrases
+| id | raw_movie_id | handled | phrase_json |
+|----|--------------|---------|-------------|
+| 1  | 1            | 1       | {...}       |
+| 2  | 1            | NULL    | {...}       |
+| 3  | 1            | NULL    | {...}       |
+
 ### movies
 | id | user_id | name                |
 |----|---------|---------------------|
