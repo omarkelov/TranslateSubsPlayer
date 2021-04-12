@@ -82,7 +82,7 @@ public class RawMovieController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                 "'videoFilePath' parameter is not present");
         }
-        if (rawMovie.getLines() == null) {
+        if (rawMovie.getLinesJson() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                 "'lines' parameter is not present");
         }

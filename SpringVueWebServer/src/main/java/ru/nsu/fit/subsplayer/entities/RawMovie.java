@@ -45,18 +45,19 @@ public class RawMovie {
     private String videoFilePath;
 
     @Expose
-    @Column(name = "_lines", length = 256 * 1024)
-    private String lines;
+    @Column(length = 256 * 1024)
+    private String linesJson;
 
     @Expose
     @Transient
     private List<RawPhrase> phrases;
 
-    public RawMovie(Long userId, String hashSum, String videoFilePath, String lines) {
+    public RawMovie(Long userId, String hashSum, String videoFilePath, String linesJson, List<RawPhrase> phrases) {
         this.userId = userId;
         this.hashSum = hashSum;
         this.videoFilePath = videoFilePath;
-        this.lines = lines;
+        this.linesJson = linesJson;
+        this.phrases = phrases;
     }
 
     public RawMovie(OnlyIdAndVideoFileName onlyIdAndVideoFileName) {

@@ -39,7 +39,7 @@ public class RawPhraseController {
         } catch (JsonSyntaxException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
-        if (rawPhrase.getPhrase() == null) {
+        if (rawPhrase.getPhraseJson() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                 "'phrase' parameter is not present");
         }

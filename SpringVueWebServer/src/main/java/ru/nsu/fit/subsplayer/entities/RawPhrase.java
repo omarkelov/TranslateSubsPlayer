@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -26,8 +27,14 @@ public class RawPhrase {
     private Long rawMovieId;
 
     @Expose
-    private String phrase;
+    @Column(length = 8 * 1024)
+    private String phraseJson;
 
     @Expose
     private Boolean handled;
+
+    public RawPhrase(String phraseJson, Boolean handled) {
+        this.phraseJson = phraseJson;
+        this.handled = handled;
+    }
 }
