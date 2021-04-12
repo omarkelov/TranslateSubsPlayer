@@ -84,7 +84,7 @@ public class RawMovieController {
         }
         if (rawMovie.getLinesJson() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "'lines' parameter is not present");
+                "'linesJson' parameter is not present");
         }
 
         long userId = userRepository.findByUsername(userDetails.getUsername()).getId();

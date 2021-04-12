@@ -41,7 +41,7 @@ public class RawPhraseController {
         }
         if (rawPhrase.getPhraseJson() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "'phrase' parameter is not present");
+                    "'phraseJson' parameter is not present");
         }
 
         long userId = userRepository.findByUsername(userDetails.getUsername()).getId();
