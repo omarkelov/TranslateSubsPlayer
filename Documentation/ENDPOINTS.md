@@ -11,6 +11,29 @@
 
 ---
 
+* **GET** /raw-movies
+  * *status code* **200 OK** ([Response example](https://github.com/omarkelov/TranslateSubsPlayer/blob/master/Documentation/Response%20examples/get_raw_movies_example.json))
+  * *returns* a list of raw movies
+* **GET** /raw-movies/`<rawMovieId>`
+  * *status code* **200 OK** ([Response example](https://github.com/omarkelov/TranslateSubsPlayer/blob/master/Documentation/Response%20examples/get_raw_movie_example.json))
+  * *returns* a list of lines (subtitles) and raw phrases for this raw movie
+* **DELETE** /raw-movies/`<rawMovieId>`
+  * *status code* **204 No Content**
+  * *deletes* this raw movie from the database
+* **POST** /raw-movies
+  * body: {hashSum=`<hashSum>`&videoFilePath=`<videoFilePath>`&linesJson=`<linesJson>`}
+  * *status code* **204 No Content**
+  * creates raw movie
+* **HEAD** /raw-movie?hashSum=`<hashSum>`
+  * *status code* **204 No Content**
+  * checks raw movie existence by its hash sum
+* **POST** /raw-phrase?hashSum=`<hashSum>`
+  * body: {phraseJson=`<phraseJson>`}
+  * *status code* **204 No Content**
+  * creates raw phrase and binds it with raw movie by its hash sum
+
+---
+
 * **GET** /movies
   * *status code* **200 OK** ([Response example](https://github.com/omarkelov/TranslateSubsPlayer/blob/master/Documentation/Response%20examples/get_movies_example.json))
   * *returns* a list of movies
