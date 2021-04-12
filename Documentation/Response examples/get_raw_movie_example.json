@@ -1,0 +1,17 @@
+{
+    "id": 2,
+    "videoFilePath": "C:/Movies/Shrek",
+    "linesJson": "[{\"start\":47580,\"end\":52450,\"text\":\"Once upon a time there was a lovely princess\"},{\"start\":52520,\"end\":56290,\"text\":\"But she had an enchantment upon her of a fearful sort...\"},{\"start\":56350,\"end\":61220,\"text\":\"which could only be broken by love's first kiss.\"},{\"start\":61320,\"end\":63660,\"text\":\"She was locked away in a castle...\"},{\"start\":63760,\"end\":67960,\"text\":\"guarded by a terrible fire-breathing dragon.\"},{\"start\":68060,\"end\":72400,\"text\":\"Many brave knights had attempted to free her from this deadful prison.\"},{\"start\":72470,\"end\":75270,\"text\":\"but none prevailed.\"},{\"start\":75370,\"end\":77510,\"text\":\"She waited in the dragon's keep...\"},{\"start\":77570,\"end\":80510,\"text\":\"in the highest room of the tallest tower...\"},{\"start\":80580,\"end\":85150,\"text\":\"for her true love and true love's first kiss.\"},{\"start\":75210,\"end\":88180,\"text\":\"Like that's ever gonna happen\"}]",
+    "phrases": [
+        {
+            "phraseJson": "{\"lineId\":0,\"phrase\":\"Once upon a time\",\"translation\":{\"main\":\"Давным-давно\"}}",
+            "handled": true
+        },
+        {
+            "phraseJson": "{\"lineId\":1,\"phrase\":\"sort\",\"translation\":{\"main\":\"Сортировать\",\"groups\":[{\"partOfSpeech\":\"глагол\",\"variants\":[\"сортировать\",\"классифицировать\",\"разбирать\"]},{\"partOfSpeech\":\"имя существительное\",\"variants\":[\"сорт\",\"род\",\"разновидность\",\"образ\",\"разряд\",\"манера\",\"литеры\",\"характер\",\"способ\",\"качество\"]}]}}"
+        },
+        {
+            "phraseJson": "{\"lineId\":3,\"phrase\":\"castle\",\"translation\":{\"main\":\"замок\",\"groups\":[{\"partOfSpeech\":\"имя существительное\",\"variants\":[\"замок\",\"дворец\",\"ладья\",\"твердыня\",\"рокировка\",\"убежище\"]},{\"partOfSpeech\":\"глагол\",\"variants\":[\"рокировать\",\"рокироваться\"]}]}}"
+        }
+    ]
+}
