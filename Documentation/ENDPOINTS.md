@@ -1,4 +1,7 @@
 ### RESTful API:
+
+---
+
 * **POST** /registration?username=`<username>`&password=`<password>`
   * registers user
   * *status code* **204 No Content**
