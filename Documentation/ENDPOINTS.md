@@ -2,10 +2,12 @@
 
 ---
 
-* **POST** /registration?username=`<username>`&password=`<password>`
+* **POST** /registration
+  * body: username=`<username>`&password=`<password>`
   * registers user
   * *status code* **204 No Content**
-* **POST** /login?username=`<username>`&password=`<password>`
+* **POST** /login
+  * body: username=`<username>`&password=`<password>`
   * logs user in
   * *status code* **204 No Content**
 * **POST** /logout
