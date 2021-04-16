@@ -1,5 +1,6 @@
 package ru.nsu.fit.subsplayer.entities;
 
+import com.google.gson.JsonArray;
 import com.google.gson.annotations.Expose;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,9 +45,12 @@ public class RawMovie {
     @Column(length = 1024)
     private String videoFilePath;
 
-    @Expose
     @Column(length = 256 * 1024)
     private String linesJson;
+
+    @Expose
+    @Transient
+    JsonArray lines;
 
     @Expose
     @Transient

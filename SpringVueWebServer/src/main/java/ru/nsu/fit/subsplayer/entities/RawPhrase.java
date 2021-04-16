@@ -1,5 +1,6 @@
 package ru.nsu.fit.subsplayer.entities;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.Expose;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "raw_phrases")
@@ -26,9 +28,12 @@ public class RawPhrase {
 
     private Long rawMovieId;
 
-    @Expose
     @Column(length = 8 * 1024)
     private String phraseJson;
+
+    @Expose
+    @Transient
+    private JsonObject phrase;
 
     @Expose
     private Boolean handled;

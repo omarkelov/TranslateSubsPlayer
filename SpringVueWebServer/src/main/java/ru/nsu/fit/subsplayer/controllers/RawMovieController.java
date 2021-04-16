@@ -2,6 +2,8 @@ package ru.nsu.fit.subsplayer.controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import ru.nsu.fit.subsplayer.constants.Mappings;
 import ru.nsu.fit.subsplayer.entities.RawMovie;
+import ru.nsu.fit.subsplayer.entities.RawPhrase;
 import ru.nsu.fit.subsplayer.repositories.RawMovieRepository;
 import ru.nsu.fit.subsplayer.repositories.RawPhraseRepository;
 import ru.nsu.fit.subsplayer.repositories.UserRepository;
@@ -43,7 +46,11 @@ public class RawMovieController {
         accessoryService.checkRawMovieAccess(userDetails, rawMovieId);
 
         RawMovie rawMovie = rawMovieRepository.findById(rawMovieId).get();
+        rawMovie.setLines(new Gson().fromJson(rawMovie.getLinesJson(), JsonArray.class));
         rawMovie.setPhrases(rawPhraseRepository.findByRawMovieId(rawMovie.getId()));
+        for (RawPhrase rawPhrase : rawMovie.getPhrases()) {
+            rawPhrase.setPhrase(new Gson().fromJson(rawPhrase.getPhraseJson(), JsonObject.class));
+        }
 
         return new GsonBuilder()
             .excludeFieldsWithoutExposeAnnotation()
