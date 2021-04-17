@@ -28,7 +28,7 @@ li {
     padding: 10px 10px 10px 10px;
 }
 .all {
-    margin: 30px 30px 30px 30px;
+// margin: 30px 30px 30px 30px;
     padding: 20px 20px 100px 20px;
     border: 2px solid black;
 }
@@ -71,7 +71,6 @@ p {
     display: inline-block;
 }
 
-
 .trailer {
     position: fixed;
     top: 50%;
@@ -97,15 +96,74 @@ p {
 }
 .close {
     position: absolute;
-    top: 90px;
-    right: 300px;
+    right: 26px;
+    top: 18px;
     cursor: pointer;
     filter: invert(1);
-    max-width: 32px;
+    max-width: 30px;
 }
 @media (max-width: 991px)
 {
     .trailer video {
         max-width: 90%;
     }
+}
+
+div.image {
+    width: 20px;
+    height: 20px; /* Высота блока */
+    background: url("1.jpg") no-repeat center;
+}
+.action-button {
+    width: 20px;
+    height: 20px;
+    padding-top: 20px;
+}
+.ok {
+    margin-left: 670px;
+    padding-right: 20px;
+}
+
+.word-video {
+    font-size: 40px;
+    position: absolute;
+    top: 15%;
+    left: 50%;
+    margin-right: -45%;
+    transform: translate(-50%, -50%)
+}
+.header-test {
+    margin-top: 25px;
+    font-size: 30px;
+    text-align: center;
+}
+.word-video {
+    display: inline-block;
+}
+
+.context {
+    margin-top: 100px;
+    margin-left: 5%;
+    height: 200px;
+    width: 90%;
+    border: 2px solid #000;
+}
+
+.actions {
+    display: inline-block;
+}
+
+.text {
+    font: 17pt serif;
+}
+
+#show-context {
+    position: fixed;
+    top: 30%;
+    right: 46%;
+    color: grey;
+}
+
+.word-translation {
+    color: black;
 }
