@@ -9,6 +9,12 @@ import java.util.Map;
 
 @Controller
 public class MainController {
+
+    @GetMapping("/")
+    public String main(Map<String, Object> model) {
+        return "main";
+    }
+
     @GetMapping("/index")
     public String index(Map<String, Object> model, @AuthenticationPrincipal UserDetails user) {
         return "index";
