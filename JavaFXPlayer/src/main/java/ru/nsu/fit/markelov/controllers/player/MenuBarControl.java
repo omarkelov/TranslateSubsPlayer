@@ -18,7 +18,9 @@ import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.stream.Stream;
 
 import static ru.nsu.fit.markelov.util.CharsetConverter.convertToUtf8;
 
@@ -36,9 +38,11 @@ public class MenuBarControl {
     private final ControlBarControl controlBarControl;
 
     private final StackPane menuBarStackPane;
+    private final HBox menuBarHBox;
     private final HBox menuBarDaemonHBox;
     private final ToggleButton menuBarToggleButton;
-    private final MenuBar menuBar;
+    private final MenuBar menuBarLeft;
+    private final MenuBar menuBarRight;
     private final Menu audioMenu;
     private final Menu subtitlesMenu;
     private final Menu sourceLanguageMenu;
@@ -54,9 +58,9 @@ public class MenuBarControl {
 
     public MenuBarControl(MenuBarObserver menuBarObserver, FileChooserManager fileChooserManager,
                           EmbeddedMediaPlayer embeddedMediaPlayer, SubtitlesControl subtitlesControl,
-                          ControlBarControl controlBarControl, StackPane menuBarStackPane,
-                          HBox menuBarDaemonHBox, ToggleButton menuBarToggleButton, MenuBar menuBar,
-                          Menu audioMenu, Menu subtitlesMenu, Menu sourceLanguageMenu,
+                          ControlBarControl controlBarControl, StackPane menuBarStackPane, HBox menuBarHBox,
+                          HBox menuBarDaemonHBox, ToggleButton menuBarToggleButton, MenuBar menuBarLeft,
+                          MenuBar menuBarRight, Menu audioMenu, Menu subtitlesMenu, Menu sourceLanguageMenu,
                           Menu targetLanguageMenu, Menu helpMenu, MenuItem fileOpenItem,
                           MenuItem fileCloseItem, MenuItem helpHotkeysItem)
     {
@@ -65,9 +69,11 @@ public class MenuBarControl {
         this.subtitlesControl = subtitlesControl;
         this.controlBarControl = controlBarControl;
         this.menuBarStackPane = menuBarStackPane;
+        this.menuBarHBox = menuBarHBox;
         this.menuBarDaemonHBox = menuBarDaemonHBox;
         this.menuBarToggleButton = menuBarToggleButton;
-        this.menuBar = menuBar;
+        this.menuBarLeft = menuBarLeft;
+        this.menuBarRight = menuBarRight;
         this.audioMenu = audioMenu;
         this.subtitlesMenu = subtitlesMenu;
         this.sourceLanguageMenu = sourceLanguageMenu;
@@ -128,13 +134,14 @@ public class MenuBarControl {
     private void activateBindings() {
         menuBarStackPane.managedProperty().bind(menuBarStackPane.visibleProperty());
 
+        menuBarHBox.maxHeightProperty().bind(menuBarLeft.heightProperty());
+
         menuBarDaemonHBox.visibleProperty().bind(menuBarStackPane.visibleProperty().not());
         menuBarDaemonHBox.managedProperty().bind(menuBarStackPane.managedProperty().not());
-        menuBarDaemonHBox.prefHeightProperty().bind(menuBar.heightProperty());
+        menuBarDaemonHBox.prefHeightProperty().bind(menuBarLeft.heightProperty());
         menuBarDaemonHBox.setOnMouseEntered(mouseEvent -> menuBarStackPane.setVisible(true));
 
-        menuBar.disableProperty().bind(menuBarStackPane.visibleProperty().not());
-        menuBar.setOnMouseExited(mouseEvent -> {
+        menuBarHBox.setOnMouseExited(mouseEvent -> {
             if (menuBarToggleButton.isSelected()
                 || mouseEvent.getPickResult().getIntersectedNode() == menuBarToggleButton
                 || isAnyMenuShowing()
@@ -145,8 +152,10 @@ public class MenuBarControl {
             menuBarStackPane.setVisible(false);
         });
 
-        for (Menu menu : menuBar.getMenus()) {
-            menu.setOnHidden(event -> {
+        Stream
+            .of(menuBarLeft.getMenus(), menuBarRight.getMenus())
+            .flatMap(Collection::stream)
+            .forEach(menu -> menu.setOnHidden(event -> {
                 if (menuBarToggleButton.isSelected()) {
                     return;
                 }
@@ -158,12 +167,12 @@ public class MenuBarControl {
 
                     menuBarStackPane.setVisible(false);
                 });
-            });
-        }
+            }));
     }
 
     private boolean isAnyMenuShowing() {
-        return menuBar.getMenus().stream().anyMatch(Menu::isShowing);
+        return menuBarLeft.getMenus().stream().anyMatch(Menu::isShowing)
+            || menuBarRight.getMenus().stream().anyMatch(Menu::isShowing);
     }
 
     private void initAudioMenu() {

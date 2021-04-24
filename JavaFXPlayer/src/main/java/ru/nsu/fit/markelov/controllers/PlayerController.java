@@ -144,9 +144,11 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
     @FXML private Label entireTimeLabel;
 
     @FXML private StackPane menuBarStackPane;
+    @FXML private HBox menuBarHBox;
     @FXML private HBox menuBarDaemonHBox;
     @FXML private ToggleButton menuBarToggleButton;
-    @FXML private MenuBar menuBar;
+    @FXML private MenuBar menuBarLeft;
+    @FXML private MenuBar menuBarRight;
     @FXML private Menu audioMenu;
     @FXML private Menu subtitlesMenu;
     @FXML private Menu sourceLanguageMenu;
@@ -281,8 +283,8 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
             controlsToggleButton, soundToggleButton, expandButton, currentTimeLabel, entireTimeLabel);
 
         menuBarControl = new MenuBarControl(this, fileChooserManager, embeddedMediaPlayer,
-            subtitlesControl, controlBarControl, menuBarStackPane, menuBarDaemonHBox,
-            menuBarToggleButton, menuBar, audioMenu, subtitlesMenu, sourceLanguageMenu,
+            subtitlesControl, controlBarControl, menuBarStackPane, menuBarHBox, menuBarDaemonHBox,
+            menuBarToggleButton, menuBarLeft, menuBarRight, audioMenu, subtitlesMenu, sourceLanguageMenu,
             targetLanguageMenu, helpMenu, fileOpenItem, fileCloseItem, helpHotkeysItem);
     }
 
@@ -300,6 +302,7 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
     @Override
     public void runAfterSceneSet() {
         sceneManager.getScene().setOnKeyReleased(this::onKeyReleased);
+        sceneManager.getScene().setOnKeyPressed(this::onKeyPressed);
     }
 
     /**
@@ -399,6 +402,12 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
             } else if (keyEvent.getCode() == SKIP_TO_RIGHT_SUBTITLE_CODE) {
                 controlBarControl.onSkipRightPressed();
             }
+        }
+    }
+
+    private void onKeyPressed(KeyEvent keyEvent) {
+        if (keyEvent.isAltDown()) {
+            keyEvent.consume();
         }
     }
 

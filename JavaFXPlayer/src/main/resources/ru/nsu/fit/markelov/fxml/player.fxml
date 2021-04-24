@@ -13,6 +13,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
@@ -88,22 +89,31 @@
         </GridPane>
     </GridPane>
     <StackPane fx:id="menuBarStackPane" pickOnBounds="false">
-        <MenuBar fx:id="menuBar" StackPane.alignment="TOP_CENTER">
-            <Menu text="File">
-                <MenuItem fx:id="fileOpenItem" text="Open"/>
-                <MenuItem fx:id="fileCloseItem" text="Close"/>
-            </Menu>
-            <Menu fx:id="audioMenu" disable="true" text="Audio"/>
-            <Menu fx:id="subtitlesMenu" disable="true" text="Subtitles"/>
-            <Menu text="Translation">
-                <Menu fx:id="sourceLanguageMenu" text="Source language"/>
-                <Menu fx:id="targetLanguageMenu" text="Target language"/>
-            </Menu>
-            <Menu fx:id="helpMenu" text="Help">
-                <MenuItem fx:id="helpHotkeysItem" text="Hotkeys"/>
-                <MenuItem fx:id="helpAboutItem" text="About"/>
-            </Menu>
-        </MenuBar>
+        <HBox fx:id="menuBarHBox" StackPane.alignment="TOP_CENTER" pickOnBounds="false">
+            <MenuBar fx:id="menuBarLeft">
+                <Menu text="File">
+                    <MenuItem fx:id="fileOpenItem" text="Open"/>
+                    <MenuItem fx:id="fileCloseItem" text="Close"/>
+                </Menu>
+                <Menu fx:id="audioMenu" disable="true" text="Audio"/>
+                <Menu fx:id="subtitlesMenu" disable="true" text="Subtitles"/>
+                <Menu text="Translation">
+                    <Menu fx:id="sourceLanguageMenu" text="Source language"/>
+                    <Menu fx:id="targetLanguageMenu" text="Target language"/>
+                </Menu>
+            </MenuBar>
+            <Region HBox.hgrow="ALWAYS"/>
+            <MenuBar fx:id="menuBarRight" styleClass="menu-bar-right">
+                <Menu fx:id="userMenu" text="User">
+                    <MenuItem fx:id="userLoginItem" text="Login"/>
+                    <MenuItem fx:id="userWebsiteItem" text="Website"/>
+                </Menu>
+                <Menu fx:id="helpMenu" text="Help">
+                    <MenuItem fx:id="helpHotkeysItem" text="Hotkeys"/>
+                    <MenuItem fx:id="helpAboutItem" text="About"/>
+                </Menu>
+            </MenuBar>
+        </HBox>
         <VBox styleClass="menu-bar-button-box" pickOnBounds="false">
             <ToggleButton fx:id="menuBarToggleButton" selected="true" focusTraversable="false"
                           styleClass="pin-button"/>

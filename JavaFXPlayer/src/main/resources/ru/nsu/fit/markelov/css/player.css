@@ -14,6 +14,14 @@
     -fx-font-style: italic;
 }
 
+.menu-bar-right {
+    -fx-padding: 0 50 0 0;
+}
+
+#userMenu > .label {
+    -fx-graphic: url('../icons/user.png');
+}
+
 .menu-bar-button-box {
     -fx-alignment: top-right;
     -fx-padding: 8;
