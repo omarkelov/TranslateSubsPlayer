@@ -127,7 +127,7 @@ public class SubtitlesControl implements AutoCloseable {
 
         subtitlesTextFlow.setOnMousePressed(this::onSubtitlesTextFlowMousePressed);
         subtitlesTextFlow.setOnMouseDragged(this::onSubtitlesTextFlowMouseDragged);
-        subtitlesTextFlow.setOnMouseReleased(this::onSubtitlesTextFlowOnMouseReleased);
+        subtitlesTextFlow.setOnMouseReleased(this::onSubtitlesTextFlowMouseReleased);
     }
 
     public void setCurrentSubtitlesMenuItem(RadioMenuItem currentSubtitlesMenuItem) {
@@ -347,7 +347,7 @@ public class SubtitlesControl implements AutoCloseable {
         }
     }
 
-    private void onSubtitlesTextFlowOnMouseReleased(MouseEvent mouseEvent) {
+    private void onSubtitlesTextFlowMouseReleased(MouseEvent mouseEvent) {
         if (firstSelectedText == null) {
             return;
         }

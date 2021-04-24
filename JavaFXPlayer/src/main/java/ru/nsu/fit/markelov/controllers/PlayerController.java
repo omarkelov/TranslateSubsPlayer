@@ -1,5 +1,6 @@
 package ru.nsu.fit.markelov.controllers;
 
+import com.google.gson.Gson;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
@@ -31,6 +32,7 @@ import ru.nsu.fit.markelov.controllers.player.hotkeys.KeyEventInfo;
 import ru.nsu.fit.markelov.javafxutil.AlertBuilder;
 import ru.nsu.fit.markelov.managers.FileChooserManager;
 import ru.nsu.fit.markelov.managers.SceneManager;
+import ru.nsu.fit.markelov.subtitles.SubtitleLine;
 import ru.nsu.fit.markelov.util.HashSum;
 import ru.nsu.fit.markelov.util.validation.IllegalInputException;
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
