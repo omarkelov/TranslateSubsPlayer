@@ -7,7 +7,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.server.ResponseStatusException;
 import ru.nsu.fit.subsplayer.constants.Mappings;
 import ru.nsu.fit.subsplayer.controllers.rest.TestRestController;
 
@@ -27,7 +26,8 @@ public class TestController {
         try {
             model.put("username", userDetails.getUsername());
             model.put("test", testRestController.getTest(userDetails, movieName));
-        } catch (ResponseStatusException e) {
+        } catch (RuntimeException e) {
+            System.out.println("redirect:/ (" + e.getMessage() + ")");
             return "redirect:/";
         }
 

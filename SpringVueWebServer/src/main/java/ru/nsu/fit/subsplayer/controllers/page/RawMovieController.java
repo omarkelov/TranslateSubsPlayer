@@ -7,7 +7,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.server.ResponseStatusException;
 import ru.nsu.fit.subsplayer.constants.Mappings;
 import ru.nsu.fit.subsplayer.controllers.rest.RawMovieRestController;
 
@@ -26,7 +25,8 @@ public class RawMovieController {
         try {
             model.put("username", userDetails.getUsername());
             model.put("rawMovies", rawMovieRestController.getMovies(userDetails));
-        } catch (ResponseStatusException e) {
+        } catch (RuntimeException e) {
+            System.out.println("redirect:/ (" + e.getMessage() + ")");
             return "redirect:/";
         }
 
@@ -41,7 +41,8 @@ public class RawMovieController {
         try {
             model.put("username", userDetails.getUsername());
             model.put("rawMovie", rawMovieRestController.getRawMovie(userDetails, rawMovieId));
-        } catch (ResponseStatusException e) {
+        } catch (RuntimeException e) {
+            System.out.println("redirect:/ (" + e.getMessage() + ")");
             return "redirect:/";
         }
 
