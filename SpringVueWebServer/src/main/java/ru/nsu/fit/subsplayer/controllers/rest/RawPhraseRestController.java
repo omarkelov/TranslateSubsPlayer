@@ -1,4 +1,4 @@
-package ru.nsu.fit.subsplayer.controllers;
+package ru.nsu.fit.subsplayer.controllers.rest;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import ru.nsu.fit.subsplayer.constants.Mappings;
-import ru.nsu.fit.subsplayer.entities.RawPhrase;
-import ru.nsu.fit.subsplayer.repositories.RawMovieRepository;
-import ru.nsu.fit.subsplayer.repositories.RawPhraseRepository;
-import ru.nsu.fit.subsplayer.repositories.UserRepository;
+import ru.nsu.fit.subsplayer.database.entities.RawPhrase;
+import ru.nsu.fit.subsplayer.database.repositories.RawMovieRepository;
+import ru.nsu.fit.subsplayer.database.repositories.RawPhraseRepository;
+import ru.nsu.fit.subsplayer.database.repositories.UserRepository;
 
 @RestController
 @RequestMapping(value = "/", produces = "application/json")
-public class RawPhraseController {
+public class RawPhraseRestController {
 
     @Autowired private UserRepository userRepository;
     @Autowired private RawMovieRepository rawMovieRepository;
@@ -29,9 +29,9 @@ public class RawPhraseController {
 
     @PostMapping(Mappings.RAW_PHRASE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void createRawMovie(@AuthenticationPrincipal UserDetails userDetails,
-                               @RequestParam String hashSum,
-                               @RequestBody String body) {
+    public void createRawPhrase(@AuthenticationPrincipal UserDetails userDetails,
+                                @RequestParam String hashSum,
+                                @RequestBody String body) {
 
         RawPhrase rawPhrase;
         try {

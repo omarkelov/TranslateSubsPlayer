@@ -1,9 +1,9 @@
-package ru.nsu.fit.subsplayer.repositories;
+package ru.nsu.fit.subsplayer.database.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import ru.nsu.fit.subsplayer.entities.User;
+import ru.nsu.fit.subsplayer.database.entities.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 

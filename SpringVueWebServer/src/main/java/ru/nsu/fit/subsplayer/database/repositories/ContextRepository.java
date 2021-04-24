@@ -1,9 +1,9 @@
-package ru.nsu.fit.subsplayer.repositories;
+package ru.nsu.fit.subsplayer.database.repositories;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
-import ru.nsu.fit.subsplayer.entities.Context;
+import ru.nsu.fit.subsplayer.database.entities.Context;
 
 import java.util.List;
 

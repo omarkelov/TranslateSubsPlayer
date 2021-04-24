@@ -5,8 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
-import ru.nsu.fit.subsplayer.entities.User;
-import ru.nsu.fit.subsplayer.repositories.UserRepository;
+import ru.nsu.fit.subsplayer.database.entities.User;
+import ru.nsu.fit.subsplayer.database.repositories.UserRepository;
 
 @Component
 public class AccessoryServiceImpl implements AccessoryService {

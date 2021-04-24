@@ -1,7 +1,7 @@
 package ru.nsu.fit.subsplayer.services;
 
-import ru.nsu.fit.subsplayer.entities.Context;
-import ru.nsu.fit.subsplayer.entities.Phrase;
+import ru.nsu.fit.subsplayer.database.entities.Context;
+import ru.nsu.fit.subsplayer.database.entities.Phrase;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package ru.nsu.fit.subsplayer.controllers;
+package ru.nsu.fit.subsplayer.controllers.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.nsu.fit.subsplayer.constants.Mappings;
-import ru.nsu.fit.subsplayer.entities.PhraseStats;
-import ru.nsu.fit.subsplayer.repositories.PhraseStatsRepository;
+import ru.nsu.fit.subsplayer.database.entities.PhraseStats;
+import ru.nsu.fit.subsplayer.database.repositories.PhraseStatsRepository;
 import ru.nsu.fit.subsplayer.services.AccessoryService;
 
 @RestController
 @RequestMapping(value = "/", produces = "application/json")
-public class PhraseController {
+public class PhraseRestController {
 
     @Autowired private AccessoryService accessoryService;
 

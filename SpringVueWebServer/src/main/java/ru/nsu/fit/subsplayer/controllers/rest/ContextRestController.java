@@ -1,4 +1,4 @@
-package ru.nsu.fit.subsplayer.controllers;
+package ru.nsu.fit.subsplayer.controllers.rest;
 
 import com.google.gson.GsonBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.nsu.fit.subsplayer.constants.Mappings;
-import ru.nsu.fit.subsplayer.entities.Context;
-import ru.nsu.fit.subsplayer.repositories.ContextRepository;
+import ru.nsu.fit.subsplayer.database.entities.Context;
+import ru.nsu.fit.subsplayer.database.repositories.ContextRepository;
 import ru.nsu.fit.subsplayer.services.AccessoryService;
 import ru.nsu.fit.subsplayer.services.ContextService;
 
@@ -22,7 +22,7 @@ import javax.transaction.Transactional;
 
 @RestController
 @RequestMapping(value = "/", produces = "application/json")
-public class ContextController {
+public class ContextRestController {
 
     @Autowired private AccessoryService accessoryService;
     @Autowired private ContextService contextService;

@@ -2,11 +2,11 @@ package ru.nsu.fit.subsplayer.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.nsu.fit.subsplayer.entities.Context;
-import ru.nsu.fit.subsplayer.entities.Phrase;
-import ru.nsu.fit.subsplayer.repositories.ContextRepository;
-import ru.nsu.fit.subsplayer.repositories.PhraseRepository;
-import ru.nsu.fit.subsplayer.repositories.PhraseStatsRepository;
+import ru.nsu.fit.subsplayer.database.entities.Context;
+import ru.nsu.fit.subsplayer.database.entities.Phrase;
+import ru.nsu.fit.subsplayer.database.repositories.ContextRepository;
+import ru.nsu.fit.subsplayer.database.repositories.PhraseRepository;
+import ru.nsu.fit.subsplayer.database.repositories.PhraseStatsRepository;
 
 import javax.transaction.Transactional;
 import java.util.List;

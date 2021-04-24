@@ -6,11 +6,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 import ru.nsu.fit.subsplayer.constants.Mappings;
-import ru.nsu.fit.subsplayer.entities.Context;
-import ru.nsu.fit.subsplayer.entities.Movie;
-import ru.nsu.fit.subsplayer.repositories.ContextRepository;
-import ru.nsu.fit.subsplayer.repositories.MovieRepository;
-import ru.nsu.fit.subsplayer.repositories.UserRepository;
+import ru.nsu.fit.subsplayer.database.entities.Context;
+import ru.nsu.fit.subsplayer.database.entities.Movie;
+import ru.nsu.fit.subsplayer.database.repositories.ContextRepository;
+import ru.nsu.fit.subsplayer.database.repositories.MovieRepository;
+import ru.nsu.fit.subsplayer.database.repositories.UserRepository;
 
 import java.util.List;
 

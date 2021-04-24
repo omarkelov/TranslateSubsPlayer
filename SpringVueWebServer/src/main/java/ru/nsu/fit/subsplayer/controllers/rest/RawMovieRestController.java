@@ -1,4 +1,4 @@
-package ru.nsu.fit.subsplayer.controllers;
+package ru.nsu.fit.subsplayer.controllers.rest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -20,24 +20,36 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import ru.nsu.fit.subsplayer.constants.Mappings;
-import ru.nsu.fit.subsplayer.entities.RawMovie;
-import ru.nsu.fit.subsplayer.entities.RawPhrase;
-import ru.nsu.fit.subsplayer.repositories.RawMovieRepository;
-import ru.nsu.fit.subsplayer.repositories.RawPhraseRepository;
-import ru.nsu.fit.subsplayer.repositories.UserRepository;
+import ru.nsu.fit.subsplayer.database.entities.RawMovie;
+import ru.nsu.fit.subsplayer.database.entities.RawPhrase;
+import ru.nsu.fit.subsplayer.database.repositories.RawMovieRepository;
+import ru.nsu.fit.subsplayer.database.repositories.RawPhraseRepository;
+import ru.nsu.fit.subsplayer.database.repositories.UserRepository;
 import ru.nsu.fit.subsplayer.services.AccessoryService;
 
 import javax.transaction.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/", produces = "application/json")
-public class RawMovieController {
+public class RawMovieRestController {
 
     @Autowired private AccessoryService accessoryService;
 
     @Autowired private UserRepository userRepository;
     @Autowired private RawMovieRepository rawMovieRepository;
     @Autowired private RawPhraseRepository rawPhraseRepository;
+
+    @GetMapping(Mappings.RAW_MOVIES)
+    public String getMovies(@AuthenticationPrincipal UserDetails userDetails) {
+        long userId = userRepository.findByUsername(userDetails.getUsername()).getId();
+
+        List<RawMovie> rawMovies = rawMovieRepository.findByUserId(userId)
+            .stream().map(RawMovie::new).collect(Collectors.toList());
+
+        return new Gson().toJson(rawMovies);
+    }
 
     @GetMapping(Mappings.RAW_MOVIES + "/{rawMovieId}")
     public String getRawMovie(@AuthenticationPrincipal UserDetails userDetails,

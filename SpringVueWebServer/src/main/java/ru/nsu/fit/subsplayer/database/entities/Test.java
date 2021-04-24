@@ -1,4 +1,4 @@
-package ru.nsu.fit.subsplayer.entities;
+package ru.nsu.fit.subsplayer.database.entities;
 
 import lombok.RequiredArgsConstructor;
 

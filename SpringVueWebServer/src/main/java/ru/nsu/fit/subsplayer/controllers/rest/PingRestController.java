@@ -1,4 +1,4 @@
-package ru.nsu.fit.subsplayer.controllers;
+package ru.nsu.fit.subsplayer.controllers.rest;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,7 +11,7 @@ import ru.nsu.fit.subsplayer.constants.Mappings;
 
 @RestController
 @RequestMapping(value = "/", produces = "application/json")
-public class PingController {
+public class PingRestController {
 
     @GetMapping(Mappings.PING)
     @ResponseStatus(HttpStatus.NO_CONTENT)

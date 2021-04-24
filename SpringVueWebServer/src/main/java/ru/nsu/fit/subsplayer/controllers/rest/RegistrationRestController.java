@@ -1,29 +1,25 @@
-package ru.nsu.fit.subsplayer.controllers;
+package ru.nsu.fit.subsplayer.controllers.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import ru.nsu.fit.subsplayer.constants.Mappings;
-import ru.nsu.fit.subsplayer.entities.User;
-import ru.nsu.fit.subsplayer.entities.UserRoles;
-import ru.nsu.fit.subsplayer.repositories.UserRepository;
+import ru.nsu.fit.subsplayer.database.entities.User;
+import ru.nsu.fit.subsplayer.database.entities.UserRoles;
+import ru.nsu.fit.subsplayer.database.repositories.UserRepository;
 
 import java.util.Collections;
 import java.util.Map;
 
-@Controller
-public class RegistrationController {
+@RestController
+@RequestMapping(value = "/", produces = "application/json")
+public class RegistrationRestController {
 
     @Autowired private UserRepository userRepository;
 
-    @GetMapping(Mappings.REGISTRATION)
-    public String registration() {
-        return "registration";
-    }
-
     @PostMapping(Mappings.REGISTRATION)
-    public String registerUser(User user, Map<String, Object> model) {
+    public String registerUser(User user, Map<String, Object> model) { // todo
         User userFromDb = userRepository.findByUsername(user.getUsername());
 
         if (userFromDb != null) {

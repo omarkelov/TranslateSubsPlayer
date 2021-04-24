@@ -1,7 +1,7 @@
-package ru.nsu.fit.subsplayer.repositories;
+package ru.nsu.fit.subsplayer.database.repositories;
 
 import org.springframework.data.repository.CrudRepository;
-import ru.nsu.fit.subsplayer.entities.Phrase;
+import ru.nsu.fit.subsplayer.database.entities.Phrase;
 
 import java.util.List;
 

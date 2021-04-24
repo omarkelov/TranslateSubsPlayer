@@ -1,4 +1,4 @@
-package ru.nsu.fit.subsplayer.controllers;
+package ru.nsu.fit.subsplayer.controllers.rest;
 
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.nsu.fit.subsplayer.constants.Mappings;
-import ru.nsu.fit.subsplayer.entities.Context;
-import ru.nsu.fit.subsplayer.entities.Movie;
-import ru.nsu.fit.subsplayer.entities.Phrase;
-import ru.nsu.fit.subsplayer.entities.Test;
-import ru.nsu.fit.subsplayer.repositories.PhraseStatsRepository;
+import ru.nsu.fit.subsplayer.database.entities.Context;
+import ru.nsu.fit.subsplayer.database.entities.Movie;
+import ru.nsu.fit.subsplayer.database.entities.Phrase;
+import ru.nsu.fit.subsplayer.database.entities.Test;
+import ru.nsu.fit.subsplayer.database.repositories.PhraseStatsRepository;
 import ru.nsu.fit.subsplayer.services.MovieService;
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/", produces = "application/json")
-public class TestController {
+public class TestRestController {
 
     @Autowired private MovieService movieService;
 
