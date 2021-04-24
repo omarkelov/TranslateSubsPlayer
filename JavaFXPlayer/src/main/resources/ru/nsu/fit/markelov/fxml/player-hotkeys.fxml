@@ -8,7 +8,7 @@
           styleClass="root-grid-pane"
           pickOnBounds="false">
     <stylesheets>
-        <URL value="@../css/playerHotkeys.css"/>
+        <URL value="@../css/player-hotkeys.css"/>
     </stylesheets>
     <Text styleClass="bold" text="Hotkey" GridPane.halignment="CENTER">
         <GridPane.margin><Insets top="2" right="8" bottom="2" left="8" /></GridPane.margin>

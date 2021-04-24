@@ -15,8 +15,8 @@ import java.util.List;
  */
 public class HotkeysGridPaneLoader {
 
-    private static final String HOTKEYS_FXML_FILE_NAME = "playerHotkeys.fxml";
-    private static final String HOTKEYS_ROW_FXML_FILE_NAME = "playerHotkeysRow.fxml";
+    private static final String HOTKEYS_FXML_FILE_NAME = "player-hotkeys.fxml";
+    private static final String HOTKEYS_ROW_FXML_FILE_NAME = "player-hotkeys-row.fxml";
 
     private static final String COLORED_ROW_STYLE_CLASS = "colored-row";
 
