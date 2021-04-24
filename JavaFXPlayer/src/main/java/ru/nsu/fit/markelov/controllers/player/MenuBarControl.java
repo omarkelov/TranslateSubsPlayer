@@ -1,6 +1,7 @@
 package ru.nsu.fit.markelov.controllers.player;
 
 import javafx.application.Platform;
+import javafx.event.Event;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -153,21 +154,24 @@ public class MenuBarControl {
         });
 
         Stream
-            .of(menuBarLeft.getMenus(), menuBarRight.getMenus())
+            .of(menuBarLeft, menuBarRight)
+            .map(MenuBar::getMenus)
             .flatMap(Collection::stream)
-            .forEach(menu -> menu.setOnHidden(event -> {
-                if (menuBarToggleButton.isSelected()) {
-                    return;
-                }
+            .forEach(menu -> menu.setOnHidden(this::onMenuHidden));
+    }
 
-                Platform.runLater(() -> { // running later for giving the next menu some time to show up
-                    if (isAnyMenuShowing()) {
-                        return;
-                    }
+    private void onMenuHidden(Event event) {
+        if (menuBarToggleButton.isSelected()) {
+            return;
+        }
 
-                    menuBarStackPane.setVisible(false);
-                });
-            }));
+        Platform.runLater(() -> { // running later for giving the next menu some time to show up
+            if (isAnyMenuShowing()) {
+                return;
+            }
+
+            menuBarStackPane.setVisible(false);
+        });
     }
 
     private boolean isAnyMenuShowing() {
