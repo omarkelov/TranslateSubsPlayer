@@ -18,6 +18,7 @@ import ru.nsu.fit.markelov.javafxutil.TextBuilder;
 import ru.nsu.fit.markelov.managers.SceneManager;
 import ru.nsu.fit.markelov.subtitles.AdvancedSrtParser;
 import ru.nsu.fit.markelov.subtitles.JavaFxSubtitles;
+import ru.nsu.fit.markelov.subtitles.SubtitleLine;
 import ru.nsu.fit.markelov.translation.Translator;
 import ru.nsu.fit.markelov.translation.entities.TranslationGroup;
 import ru.nsu.fit.markelov.translation.entities.TranslationResult;
@@ -37,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import static ru.nsu.fit.markelov.Constants.BIG_BOLD_FONT;
 import static ru.nsu.fit.markelov.Constants.DISABLED_COLOR;
@@ -149,6 +151,9 @@ public class SubtitlesControl implements AutoCloseable {
             Map<Integer, CloseSubtitlesInfo> closeSubtitlesInfoMap = null;
 
             if (!spuList.isEmpty()) {
+                subtitlesObserver.onSubtitlesInitialized(
+                    spuList.stream().map(SubtitleLine::new).collect(Collectors.toList()));
+
                 subtitleUnits = new Spus();
                 closeSubtitlesInfoMap = new HashMap<>();
 

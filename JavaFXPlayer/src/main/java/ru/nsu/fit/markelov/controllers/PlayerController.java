@@ -322,6 +322,19 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
     }
 
     @Override
+    public void onSubtitlesInitialized(List<SubtitleLine> lines) {
+        String videoFilePath = menuBarControl.getVideoFile().getAbsolutePath();
+
+        new Thread(() -> {
+            String linesJson = new Gson().toJson(lines);
+            String linesHash = HashSum.md5(linesJson) + "_" + lines.size();
+
+            // todo check if hash already exists
+            // todo if no, send everything
+        }).start();
+    }
+
+    @Override
     public void onFileClicked() {
         chooseFileAndPlay();
     }
