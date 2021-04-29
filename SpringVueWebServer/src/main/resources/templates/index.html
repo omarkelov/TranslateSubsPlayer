@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8">
+        <title>Translate Subtitles Player</title>
+        <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+        <link rel="stylesheet" href="/css/main.css">
+        <script th:inline="javascript">
+            var serverUsername = /*[[${username}]]*/ null;
+            var serverMovies = /*[[${movies}]]*/ null;
+            var serverMovie = /*[[${movie}]]*/ null;
+            var serverTest = /*[[${test}]]*/ null;
+            var serverRawMovies = /*[[${rawMovies}]]*/ null;
+            var serverRawMovie = /*[[${rawMovie}]]*/ null;
+        </script>
+        <script src="https://unpkg.com/vue@next"></script>
+    </head>
+    <body>
+        <div id="vue-app">
+            <div id="main" v-if="username">
+                <nav id="navigation">
+                    <a href="/raw-movies/" @click.prevent="onRawMoviesClicked">Raw Movies</a>
+                    <br>
+                    <a href="/movies/" @click.prevent="onMoviesClicked">Movies</a>
+                    <br>
+                    <a href="/logout/" @click.prevent="onLogoutClicked">Logout ({{ username }})</a>
+                </nav>
+                <div id="content">
+                    <div id="movies-content" class="content" v-if="movies">
+                        <ul id="movie-list">
+                            <li v-for="movie in movies">
+                                <a v-bind:href="movie.href" @click.prevent="onMovieClicked">{{ movie.name }}</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="movie-content" class="content all" v-if="movie">
+                        <h1 class="header">{{ movie.name }}</h1>
+                        <component v-bind:is="computedContexts"></component>
+                        <a v-bind:href="'/movies/' + movie.name + '/test'" @click.prevent="onTestClicked">Test</a>
+                    </div>
+                    <div id="test-content" class="content" v-if="test">
+                        <h1 class="header-test">Test: "{{ test.name }}"</h1>
+                        <test-phrase-translation></test-phrase-translation>
+                        <div class="trailer">
+                            <video src="sea.mp4" controls="controls"></video>
+                            <img src="close.png" class="close" onclick="toggle()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="authentication" v-else>
+                <form>
+                    <input v-model="loginFormName" type="text" placeholder="Login" />
+                    <input v-model="loginFormPassword" type="password" placeholder="Password" />
+                    <button @click.prevent="onLoginClicked">Login</button>
+                </form>
+            </div>
+        </div>
+        <script src="/js/main.js"></script>
+    </body>
+</html>
