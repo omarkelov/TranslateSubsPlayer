@@ -40,10 +40,21 @@
                     </div>
                     <div id="test-content" class="content" v-if="test">
                         <h1 class="header-test">Test: "{{ test.name }}"</h1>
-                        <test-phrase-translation></test-phrase-translation>
+                        <div class="word-video">
+                            <span class="word-translation"> {{testPhraseTranslation}} </span>
+                            <img class="image" src="1.jpg" @click.prevent="toggle" alt="video">
+                        </div>
+                        <div class="context" @click.prevent="showHideContext('block_id')">
+                            <p class="text" id="show-context">Show context</p>
+                            <p class="text" id="block_id" style="display: none;"> {{testPhraseContext}} </p>
+                        </div>
+                        <div class="actions">
+                            <img class="action-button ok" src="ok.png" @click.prevent="knowWord" alt="ok">
+                            <img class="action-button not" src="close.png" @click.prevent="doNotKnowWord" alt="not">
+                        </div>
                         <div class="trailer">
                             <video src="sea.mp4" controls="controls"></video>
-                            <img src="close.png" class="close" onclick="toggle()">
+                            <img src="close.png" class="close" @click.prevent="toggle">
                         </div>
                     </div>
                 </div>

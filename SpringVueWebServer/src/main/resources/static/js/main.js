@@ -10,7 +10,14 @@ const app = Vue.createApp({
             phraseTest: null,
 
             loginFormName: '',
-            loginFormPassword: ''
+            loginFormPassword: '',
+
+            testPhraseTranslation: '',
+            testPhraseContext: '',
+            testData: null,
+            indexTest: null,
+            currentIndexCount: null,
+            tooltip: null
         }
     },
     beforeMount() {
@@ -42,17 +49,28 @@ const app = Vue.createApp({
                         `<span data-tooltip=${phrase.phrase}>` + phrase.phrase + `</span>`);
                 });
                 lis += `<li>` + contextHtml +
-                    `<div class="button watch-button" onclick="toggle()"></div>
+                    `<div class="button watch-button" @click.prevent="toggle"></div>
                     <div class="trailer">
                        <video src="sea.mp4" controls="controls"></video>
-                       <img src="close.png" class="close" onclick="toggle()" alt="close">
+                       <img src="close.png" class="close" @click.prevent="toggle" alt="close">
                     </div>
-                    <div class="button edit-button" onclick="showMsg()"></div>
+                    <div class="button edit-button" @click.prevent="showMsg"></div>
                     <div class="button delete-button" onclick="remove(this)"></div>` + `</li>`
             });
             return {
                 template: `<ol>` + lis + `</ol>`,
-                methods: {}
+                methods: {
+                    toggle() {
+                        let trailer = document.querySelector(".trailer")
+                        let video = document.querySelector("video")
+                        trailer.classList.toggle("active");
+                        video.pause();
+                        video.currentTime = 0;
+                    },
+                    showMsg() {
+                        alert("Edit");
+                    }
+                }
             }
         }
     },
@@ -130,6 +148,7 @@ const app = Vue.createApp({
             document.title = json.name + ' | Translate Subtitles Player';
             this.hideEverything();
             this.movie = json;
+            this.testData = json;
         },
         onTestClicked(event) {
             let testUrl = event.target.getAttribute('href');
@@ -142,20 +161,18 @@ const app = Vue.createApp({
             document.title = json.name + ' Test | Translate Subtitles Player';
             this.hideEverything();
             this.test = json;
-
-            // todo fetch first context
-        }
-    }
-});
-
-app.component('test-phrase-translation', {
-    data() {
-        return {
-            testPhraseTranslation: "phrase translation",
-            testPhraseContext: "phrase context"
-        }
-    },
-    methods: {
+            this.currentIndexCount = 0;
+            this.indexTest = this.test.phraseIds[this.currentIndexCount];
+            this.testData.contexts.forEach(context => {
+                for (let i = 0; i <context.phrases.length; i++){
+                    if (context.phrases[i].id === this.indexTest){
+                        this.testPhraseContext = context.context;
+                        this.testPhraseTranslation = context.phrases[i].translation;
+                    }
+                }
+                }
+            );
+        },
         showHideContext(element_id) {
             if (document.getElementById(element_id)) {
                 let obj = document.getElementById(element_id);
@@ -169,6 +186,14 @@ app.component('test-phrase-translation', {
                 }
             } else alert("Элемент с id: " + element_id + " не найден!");
         },
+        hideHint(element_id){
+            if (document.getElementById(element_id)) {
+                let obj = document.getElementById(element_id);
+                let cont = document.getElementById("show-context");
+                obj.style.display = "none";
+                cont.style.display = "block";
+            } else alert("Элемент с id: " + element_id + " не найден!");
+        },
         knowWord(event) {
             alert("Know this word");
             this.changePhrase();
@@ -179,25 +204,33 @@ app.component('test-phrase-translation', {
             this.changePhrase();
         },
         changePhrase() {
-            this.showHideContext('block_id');
-            this.testPhraseTranslation = "Next phrase";
-            this.testPhraseContext = "Next context";
+            this.hideHint('block_id');
+            this.currentIndexCount++;
+            if (this.currentIndexCount < this.test.phraseIds.length){
+                this.indexTest = this.test.phraseIds[this.currentIndexCount];
+                this.testData.contexts.forEach(context => {
+                        for (let i = 0; i <context.phrases.length; i++){
+                            if (context.phrases[i].id === this.indexTest){
+                                this.testPhraseContext = context.context;
+                                this.testPhraseTranslation = context.phrases[i].translation;
+                            }
+                        }
+                    }
+                );
+            } else {
+                alert("You've completed the test");
+            }
+        },
+        toggle() {
+            let trailer = document.querySelector(".trailer")
+            let video = document.querySelector("video")
+            trailer.classList.toggle("active");
+            video.pause();
+            video.currentTime = 0;
         }
-    },
-    template: `
-         <div class="word-video">
-             <span class="word-translation"> {{testPhraseTranslation}} </span>
-             <img class="image" src="1.jpg" onclick="toggle()" alt="video">
-         </div>
-         <div class="context" @click.prevent="showHideContext('block_id')">
-              <p class="text" id="show-context">Show context</p>
-              <p class="text" id="block_id" style="display: none;"> {{testPhraseContext}} </p>
-         </div>
-         <div class="actions">
-              <img class="action-button ok" src="ok.png" @click.prevent="knowWord" alt="ok">
-              <img class="action-button not" src="close.png" @click.prevent="doNotKnowWord" alt="not">
-         </div>`
-})
+    }
+});
+
 
 app.mount('#vue-app');
 
@@ -236,18 +269,7 @@ document.onmouseout = function (e) {
 
 };
 
-function toggle() {
-    let trailer = document.querySelector(".trailer")
-    let video = document.querySelector("video")
-    trailer.classList.toggle("active");
-    video.pause();
-    video.currentTime = 0;
-}
-
 function remove(el) {
     el.parentNode.remove();
 }
 
-function showMsg() {
-    alert("Edit");
-}
