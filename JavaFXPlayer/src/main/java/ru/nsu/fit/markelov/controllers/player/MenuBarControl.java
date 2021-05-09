@@ -13,6 +13,7 @@ import javafx.scene.layout.StackPane;
 import ru.nsu.fit.markelov.javafxutil.MenuItemBuilder;
 import ru.nsu.fit.markelov.managers.FileChooserManager;
 import ru.nsu.fit.markelov.translation.iso639.ISO639;
+import ru.nsu.fit.markelov.util.Closure;
 import uk.co.caprica.vlcj.player.base.TrackDescription;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
@@ -90,10 +91,10 @@ public class MenuBarControl {
 
         activateBindings();
 
-        fileOpenItem.setOnAction(actionEvent -> menuBarObserver.onFileClicked());
+        fileOpenItem.setOnAction(actionEvent -> pauseThenCallClosureThenUnpause(menuBarObserver::onFileClicked));
         fileCloseItem.setOnAction(actionEvent -> menuBarObserver.onClosedClicked());
-        userLoginItem.setOnAction(actionEvent -> menuBarObserver.onLoginClicked());
-        helpHotkeysItem.setOnAction(actionEvent -> menuBarObserver.onHotkeysClicked());
+        userLoginItem.setOnAction(actionEvent -> pauseThenCallClosureThenUnpause(menuBarObserver::onLoginClicked));
+        helpHotkeysItem.setOnAction(actionEvent -> pauseThenCallClosureThenUnpause(menuBarObserver::onHotkeysClicked));
 
         initLanguageMenu(true, "English"); // todo -hardcode
         initLanguageMenu(false, "Russian"); // todo -hardcode
@@ -232,28 +233,22 @@ public class MenuBarControl {
             .addStyleClass("italic")
             .buildStandard();
         subtitlesOpenItem.setOnAction(actionEvent -> {
-            boolean isPlaying = embeddedMediaPlayer.status().isPlaying();
-            if (isPlaying) {
-                controlBarControl.onPausePressed(true);
-            }
+            pauseThenCallClosureThenUnpause(() -> {
+                File file = fileChooserManager.chooseSubtitlesFile();
+                if (file != null) {
+                    RadioMenuItem radioMenuItem = new MenuItemBuilder()
+                        .setText(file.getName())
+                        .setToggleGroup(subtitlesToggleGroup)
+                        .setSelected(true)
+                        .buildRadio();
+                    radioMenuItem.setOnAction(fileActionEvent -> subtitlesControl.initSubtitles(
+                        file.getAbsolutePath(), radioMenuItem, (long) controlBarControl.getSliderValue()));
+                    subtitlesMenu.getItems().add(subtitlesMenu.getItems().size() - 1, radioMenuItem);
 
-            File file = fileChooserManager.chooseSubtitlesFile();
-            if (file != null) {
-                RadioMenuItem radioMenuItem = new MenuItemBuilder()
-                    .setText(file.getName())
-                    .setToggleGroup(subtitlesToggleGroup)
-                    .setSelected(true)
-                    .buildRadio();
-                radioMenuItem.setOnAction(fileActionEvent ->
-                    subtitlesControl.initSubtitles(file.getAbsolutePath(), radioMenuItem, (long) controlBarControl.getSliderValue()));
-                subtitlesMenu.getItems().add(subtitlesMenu.getItems().size() - 1, radioMenuItem);
-
-                subtitlesControl.initSubtitles(file.getAbsolutePath(), radioMenuItem, (long) controlBarControl.getSliderValue());
-            }
-
-            if (isPlaying) {
-                controlBarControl.onPausePressed(false);
-            }
+                    subtitlesControl.initSubtitles(
+                        file.getAbsolutePath(), radioMenuItem, (long) controlBarControl.getSliderValue());
+                }
+            });
         });
         subtitlesMenu.getItems().add(subtitlesOpenItem);
 
@@ -332,6 +327,19 @@ public class MenuBarControl {
             } else {
                 menu.getItems().add(languageRadioItem);
             }
+        }
+    }
+
+    private void pauseThenCallClosureThenUnpause(Closure closure) {
+        boolean isPlaying = embeddedMediaPlayer.status().isPlaying();
+        if (isPlaying) {
+            controlBarControl.onPausePressed(true);
+        }
+
+        closure.call();
+
+        if (isPlaying) {
+            controlBarControl.onPausePressed(false);
         }
     }
 }
