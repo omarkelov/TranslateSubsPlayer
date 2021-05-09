@@ -451,7 +451,7 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
     }
 
     private void showLoginDialog() {
-        LoginDialog.show(usernamePassword -> {
+        new LoginDialog(sceneManager.getWindowOwner()).show(usernamePassword -> {
             System.out.println(usernamePassword.getKey() + ":" + usernamePassword.getValue());
         });
     }

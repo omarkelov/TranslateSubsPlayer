@@ -14,6 +14,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.StageStyle;
+import javafx.stage.Window;
 import javafx.util.Pair;
 
 import java.util.function.Consumer;
@@ -26,7 +27,13 @@ public class LoginDialog {
     private static final Preferences PREFERENCES = Preferences.userRoot().node(LoginDialog.class.getName());
     private static final Color ERROR_COLOR = Color.MAROON;
 
-    public static void show(Consumer<Pair<String, String>> action) {
+    private final Window windowOwner;
+
+    public LoginDialog(Window windowOwner) {
+        this.windowOwner = windowOwner;
+    }
+
+    public void show(Consumer<Pair<String, String>> action) {
         show(
             new Label("Enter your login data"),
             new Pair<>(PREFERENCES.get(USERNAME_KEY, ""), PREFERENCES.get(PASSWORD_KEY, "")),
@@ -34,8 +41,8 @@ public class LoginDialog {
         );
     }
 
-    public static void show(String error, Pair<String, String> usernamePassword,
-                            Consumer<Pair<String, String>> action) {
+    public void show(String error, Pair<String, String> usernamePassword,
+                     Consumer<Pair<String, String>> action) {
 
         Label errorLabel = new Label(error);
         errorLabel.setTextFill(ERROR_COLOR);
@@ -43,10 +50,11 @@ public class LoginDialog {
         show(errorLabel, usernamePassword, action);
     }
 
-    private static void show(Label infoLabel, Pair<String, String> usernamePassword,
-                             Consumer<Pair<String, String>> action) {
+    private void show(Label infoLabel, Pair<String, String> usernamePassword,
+                      Consumer<Pair<String, String>> action) {
 
         Dialog<Pair<String, String>> dialog = new Dialog<>();
+        dialog.initOwner(windowOwner);
         dialog.setTitle("Login");
         dialog.initStyle(StageStyle.UTILITY);
 
