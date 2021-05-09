@@ -347,7 +347,7 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
 
     @Override
     public void onFileClicked() {
-        chooseFileAndPlay();
+        pauseThenCallClosureThenUnpause(this::chooseFileAndPlay);
     }
 
     @Override
@@ -357,28 +357,12 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
 
     @Override
     public void onLoginClicked() {
-        // todo pause video
-        LoginDialog.show(usernamePassword -> {
-            System.out.println(usernamePassword.getKey() + ":" + usernamePassword.getValue());
-        });
+        pauseThenCallClosureThenUnpause(this::showLoginDialog);
     }
 
     @Override
     public void onHotkeysClicked() {
-        try {
-            new AlertBuilder()
-                .setAlertType(Alert.AlertType.INFORMATION)
-                .setHeaderText("Player Hotkeys")
-                .setContent(HotkeysGridPaneLoader.loadGridPane(sceneManager, HOTKEYS))
-                .setOwner(sceneManager.getWindowOwner())
-                .build().showAndWait();
-        } catch (IOException e) {
-            new AlertBuilder()
-                .setHeaderText(LAYOUT_LOADING_ERROR_HEADER)
-                .setException(e)
-                .setOwner(sceneManager.getWindowOwner())
-                .build().showAndWait();
-        }
+        pauseThenCallClosureThenUnpause(this::showHotkeysDialog);
     }
 
     private void onKeyReleased(KeyEvent keyEvent) {
@@ -426,11 +410,6 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
     }
 
     private void chooseFileAndPlay() {
-        boolean isPlaying = embeddedMediaPlayer.status().isPlaying();
-        if (isPlaying) {
-            controlBarControl.onPausePressed(true);
-        }
-
         File file = fileChooserManager.chooseVideoFile();
         if (file != null) {
             disposePlaying();
@@ -442,10 +421,6 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
             embeddedMediaPlayer.media().play(file.getAbsolutePath());
 
             menuBarControl.setVideoFile(file);
-        }
-
-        if (isPlaying) {
-            controlBarControl.onPausePressed(false);
         }
     }
 
@@ -472,6 +447,29 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
             if (videoFilePathHash != null && videoFilePathHash.length() <= Preferences.MAX_KEY_LENGTH) {
                 preferences.putLong(videoFilePathHash, embeddedMediaPlayer.status().time());
             }
+        }
+    }
+
+    private void showLoginDialog() {
+        LoginDialog.show(usernamePassword -> {
+            System.out.println(usernamePassword.getKey() + ":" + usernamePassword.getValue());
+        });
+    }
+
+    private void showHotkeysDialog() {
+        try {
+            new AlertBuilder()
+                .setAlertType(Alert.AlertType.INFORMATION)
+                .setHeaderText("Player Hotkeys")
+                .setContent(HotkeysGridPaneLoader.loadGridPane(sceneManager, HOTKEYS))
+                .setOwner(sceneManager.getWindowOwner())
+                .build().showAndWait();
+        } catch (IOException e) {
+            new AlertBuilder()
+                .setHeaderText(LAYOUT_LOADING_ERROR_HEADER)
+                .setException(e)
+                .setOwner(sceneManager.getWindowOwner())
+                .build().showAndWait();
         }
     }
 
