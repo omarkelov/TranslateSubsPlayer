@@ -51,7 +51,8 @@ public class LoginDialog {
         dialog.initStyle(StageStyle.UTILITY);
 
         ButtonType loginButtonType = new ButtonType("Login", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL, loginButtonType);
+        ButtonType cancelButtonType = ButtonType.CANCEL;
+        dialog.getDialogPane().getButtonTypes().addAll(cancelButtonType, loginButtonType);
 
         GridPane grid = new GridPane();
         grid.setHgap(10);
@@ -67,6 +68,7 @@ public class LoginDialog {
         passwordField.setPromptText("Password");
 
         CheckBox rememberCheckBox = new CheckBox("Remember me");
+        rememberCheckBox.setSelected(!usernameField.getText().isBlank());
 
         grid.add(infoLabel, 0, 0, 2, 1);
         grid.add(new Label("Username:"), 0, 1);
@@ -101,6 +103,16 @@ public class LoginDialog {
             if (rememberCheckBox.isSelected()) {
                 PREFERENCES.put(USERNAME_KEY, usernameField.getText().trim());
                 PREFERENCES.put(PASSWORD_KEY, passwordField.getText().trim());
+            } else {
+                PREFERENCES.remove(USERNAME_KEY);
+                PREFERENCES.remove(PASSWORD_KEY);
+            }
+        });
+
+        dialog.getDialogPane().lookupButton(cancelButtonType).addEventFilter(ActionEvent.ACTION, actionEvent -> {
+            if (!rememberCheckBox.isSelected()) {
+                PREFERENCES.remove(USERNAME_KEY);
+                PREFERENCES.remove(PASSWORD_KEY);
             }
         });
 
