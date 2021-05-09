@@ -102,7 +102,7 @@
                     <Menu fx:id="targetLanguageMenu" text="Target language"/>
                 </Menu>
             </MenuBar>
-            <Region HBox.hgrow="ALWAYS"/>
+            <Region styleClass="menu-bar-region" HBox.hgrow="ALWAYS" prefHeight="${menuBarLeft.prefHeight}"/>
             <MenuBar fx:id="menuBarRight" styleClass="menu-bar-right">
                 <Menu fx:id="userMenu" text="User">
                     <MenuItem fx:id="userLoginItem" text="Login"/>

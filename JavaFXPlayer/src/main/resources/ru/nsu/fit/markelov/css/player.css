@@ -1,4 +1,4 @@
-.menu-bar, .context-menu {
+.menu-bar, .menu-bar-region, .context-menu {
     -fx-background-color: rgba(0, 0, 0, 0.75);
 }
 
