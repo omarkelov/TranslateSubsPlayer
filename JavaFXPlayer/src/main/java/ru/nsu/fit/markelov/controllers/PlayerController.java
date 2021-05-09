@@ -30,6 +30,7 @@ import ru.nsu.fit.markelov.controllers.player.VlcException;
 import ru.nsu.fit.markelov.controllers.player.hotkeys.HotkeysGridPaneLoader;
 import ru.nsu.fit.markelov.controllers.player.hotkeys.KeyEventInfo;
 import ru.nsu.fit.markelov.javafxutil.AlertBuilder;
+import ru.nsu.fit.markelov.javafxutil.LoginDialog;
 import ru.nsu.fit.markelov.managers.FileChooserManager;
 import ru.nsu.fit.markelov.managers.SceneManager;
 import ru.nsu.fit.markelov.subtitles.SubtitleLine;
@@ -153,9 +154,12 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
     @FXML private Menu subtitlesMenu;
     @FXML private Menu sourceLanguageMenu;
     @FXML private Menu targetLanguageMenu;
+    @FXML private Menu userMenu;
     @FXML private Menu helpMenu;
     @FXML private MenuItem fileOpenItem;
     @FXML private MenuItem fileCloseItem;
+    @FXML private MenuItem userLoginItem;
+    @FXML private MenuItem userWebsiteItem;
     @FXML private MenuItem helpHotkeysItem;
     @FXML private MenuItem helpAboutItem;
 
@@ -285,7 +289,8 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
         menuBarControl = new MenuBarControl(this, fileChooserManager, embeddedMediaPlayer,
             subtitlesControl, controlBarControl, menuBarStackPane, menuBarHBox, menuBarDaemonHBox,
             menuBarToggleButton, menuBarLeft, menuBarRight, audioMenu, subtitlesMenu, sourceLanguageMenu,
-            targetLanguageMenu, helpMenu, fileOpenItem, fileCloseItem, helpHotkeysItem);
+            targetLanguageMenu, userMenu, helpMenu, fileOpenItem, fileCloseItem, userLoginItem,
+            userWebsiteItem, helpHotkeysItem);
     }
 
     /**
@@ -347,6 +352,14 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
     @Override
     public void onClosedClicked() {
         disposePlaying();
+    }
+
+    @Override
+    public void onLoginClicked() {
+        // todo pause video
+        LoginDialog.show(usernamePassword -> {
+            System.out.println(usernamePassword.getKey() + ":" + usernamePassword.getValue());
+        });
     }
 
     @Override

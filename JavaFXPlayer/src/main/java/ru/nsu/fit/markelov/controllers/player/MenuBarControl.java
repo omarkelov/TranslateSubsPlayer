@@ -48,7 +48,10 @@ public class MenuBarControl {
     private final Menu subtitlesMenu;
     private final Menu sourceLanguageMenu;
     private final Menu targetLanguageMenu;
+    private final Menu userMenu;
     private final Menu helpMenu;
+    private final MenuItem userLoginItem;
+    private final MenuItem userWebsiteItem;
 
     private final ToggleGroup audioToggleGroup = new ToggleGroup();
     private final ToggleGroup subtitlesToggleGroup = new ToggleGroup();
@@ -62,8 +65,9 @@ public class MenuBarControl {
                           ControlBarControl controlBarControl, StackPane menuBarStackPane, HBox menuBarHBox,
                           HBox menuBarDaemonHBox, ToggleButton menuBarToggleButton, MenuBar menuBarLeft,
                           MenuBar menuBarRight, Menu audioMenu, Menu subtitlesMenu, Menu sourceLanguageMenu,
-                          Menu targetLanguageMenu, Menu helpMenu, MenuItem fileOpenItem,
-                          MenuItem fileCloseItem, MenuItem helpHotkeysItem)
+                          Menu targetLanguageMenu, Menu userMenu, Menu helpMenu, MenuItem fileOpenItem,
+                          MenuItem fileCloseItem, MenuItem userLoginItem, MenuItem userWebsiteItem,
+                          MenuItem helpHotkeysItem)
     {
         this.fileChooserManager = fileChooserManager;
         this.embeddedMediaPlayer = embeddedMediaPlayer;
@@ -79,12 +83,16 @@ public class MenuBarControl {
         this.subtitlesMenu = subtitlesMenu;
         this.sourceLanguageMenu = sourceLanguageMenu;
         this.targetLanguageMenu = targetLanguageMenu;
+        this.userMenu = userMenu;
         this.helpMenu = helpMenu;
+        this.userLoginItem = userLoginItem;
+        this.userWebsiteItem = userWebsiteItem;
 
         activateBindings();
 
         fileOpenItem.setOnAction(actionEvent -> menuBarObserver.onFileClicked());
         fileCloseItem.setOnAction(actionEvent -> menuBarObserver.onClosedClicked());
+        userLoginItem.setOnAction(actionEvent -> menuBarObserver.onLoginClicked());
         helpHotkeysItem.setOnAction(actionEvent -> menuBarObserver.onHotkeysClicked());
 
         initLanguageMenu(true, "English"); // todo -hardcode
