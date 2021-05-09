@@ -34,6 +34,7 @@ import ru.nsu.fit.markelov.javafxutil.LoginDialog;
 import ru.nsu.fit.markelov.managers.FileChooserManager;
 import ru.nsu.fit.markelov.managers.SceneManager;
 import ru.nsu.fit.markelov.subtitles.SubtitleLine;
+import ru.nsu.fit.markelov.util.Closure;
 import ru.nsu.fit.markelov.util.HashSum;
 import ru.nsu.fit.markelov.util.validation.IllegalInputException;
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
@@ -471,6 +472,19 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
             if (videoFilePathHash != null && videoFilePathHash.length() <= Preferences.MAX_KEY_LENGTH) {
                 preferences.putLong(videoFilePathHash, embeddedMediaPlayer.status().time());
             }
+        }
+    }
+
+    private void pauseThenCallClosureThenUnpause(Closure closure) {
+        boolean isPlaying = embeddedMediaPlayer.status().isPlaying();
+        if (isPlaying) {
+            controlBarControl.onPausePressed(true);
+        }
+
+        closure.call();
+
+        if (isPlaying) {
+            controlBarControl.onPausePressed(false);
         }
     }
 }
