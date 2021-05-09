@@ -5,6 +5,7 @@ import javafx.stage.Stage;
 import ru.nsu.fit.markelov.javafxutil.AlertBuilder;
 import ru.nsu.fit.markelov.managers.FileChooserManager;
 import ru.nsu.fit.markelov.managers.SceneManager;
+import ru.nsu.fit.markelov.user.UserManager;
 import ru.nsu.fit.markelov.util.validation.IllegalInputException;
 
 import static ru.nsu.fit.markelov.javafxutil.AlertBuilder.APPLICATION_LAUNCH_ERROR_HEADER;
@@ -37,7 +38,8 @@ public class PlayerApplication extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            sceneManager = new SceneManager(primaryStage, getHostServices(), new FileChooserManager(primaryStage));
+            sceneManager = new SceneManager(primaryStage, getHostServices(),
+                new FileChooserManager(primaryStage), new UserManager());
             sceneManager.switchToPlayer();
             primaryStage.show();
         } catch (IllegalInputException e) {

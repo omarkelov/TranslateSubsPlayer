@@ -16,6 +16,7 @@ import ru.nsu.fit.markelov.controllers.PlayerController;
 import ru.nsu.fit.markelov.controllers.player.VlcException;
 import ru.nsu.fit.markelov.javafxutil.AlertBuilder;
 import ru.nsu.fit.markelov.javafxutil.LinkText;
+import ru.nsu.fit.markelov.user.UserManager;
 import ru.nsu.fit.markelov.util.validation.IllegalInputException;
 
 import java.io.IOException;
@@ -42,6 +43,7 @@ public class SceneManager implements AutoCloseable {
     private final Stage stage;
     private final HostServices hostServices;
     private final FileChooserManager fileChooserManager;
+    private final UserManager userManager;
     private Controller controller;
 
     /**
@@ -52,10 +54,12 @@ public class SceneManager implements AutoCloseable {
      * @throws IllegalInputException if one of the input parameters is null.
      */
     public SceneManager(Stage stage, HostServices hostServices,
-                        FileChooserManager fileChooserManager) throws IllegalInputException {
+                        FileChooserManager fileChooserManager,
+                        UserManager userManager) throws IllegalInputException {
         this.stage = requireNonNull(stage);
         this.hostServices = requireNonNull(hostServices);
         this.fileChooserManager = requireNonNull(fileChooserManager);
+        this.userManager = requireNonNull(userManager);
 
         initStage();
     }
@@ -148,7 +152,7 @@ public class SceneManager implements AutoCloseable {
      */
     public void switchToPlayer() {
         try {
-            switchScene(new PlayerController(this, fileChooserManager));
+            switchScene(new PlayerController(this, fileChooserManager, userManager));
         } catch (IllegalInputException e) {
             new AlertBuilder()
                 .setHeaderText(SCENE_SWITCHING_ERROR_HEADER).setException(e).setOwner(stage)

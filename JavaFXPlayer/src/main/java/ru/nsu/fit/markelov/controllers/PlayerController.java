@@ -34,6 +34,7 @@ import ru.nsu.fit.markelov.javafxutil.LoginDialog;
 import ru.nsu.fit.markelov.managers.FileChooserManager;
 import ru.nsu.fit.markelov.managers.SceneManager;
 import ru.nsu.fit.markelov.subtitles.SubtitleLine;
+import ru.nsu.fit.markelov.user.UserManager;
 import ru.nsu.fit.markelov.util.HashSum;
 import ru.nsu.fit.markelov.util.validation.IllegalInputException;
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
@@ -165,6 +166,7 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
 
     private final SceneManager sceneManager;
     private final FileChooserManager fileChooserManager;
+    private final UserManager userManager;
 
     private final MediaPlayerFactory mediaPlayerFactory;
     private final EmbeddedMediaPlayer embeddedMediaPlayer;
@@ -184,11 +186,12 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
      * @param fileChooserManager file chooser manager.
      * @throws IllegalInputException if one of the input parameters is null.
      */
-    public PlayerController(SceneManager sceneManager, FileChooserManager fileChooserManager)
-        throws IllegalInputException, VlcException
+    public PlayerController(SceneManager sceneManager, FileChooserManager fileChooserManager,
+                            UserManager userManager) throws IllegalInputException, VlcException
     {
         this.sceneManager = requireNonNull(sceneManager);
         this.fileChooserManager = requireNonNull(fileChooserManager);
+        this.userManager = requireNonNull(userManager);
 
         try {
             mediaPlayerFactory = new MediaPlayerFactory();
@@ -450,9 +453,11 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
     }
 
     private void showLoginDialog() {
-        new LoginDialog(sceneManager.getWindowOwner()).show(usernamePassword -> {
+        new LoginDialog(sceneManager.getWindowOwner()).show(usernamePassword -> new Thread(() -> {
             System.out.println(usernamePassword.getKey() + ":" + usernamePassword.getValue());
-        });
+
+
+        }).start());
     }
 
     private void showHotkeysDialog() {
