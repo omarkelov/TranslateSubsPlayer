@@ -294,7 +294,7 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
             subtitlesControl, controlBarControl, menuBarStackPane, menuBarHBox, menuBarDaemonHBox,
             menuBarToggleButton, menuBarLeft, menuBarRight, audioMenu, subtitlesMenu, sourceLanguageMenu,
             targetLanguageMenu, userMenu, helpMenu, fileOpenItem, fileCloseItem, userLoginItem,
-            userWebsiteItem, helpHotkeysItem);
+            userWebsiteItem, helpHotkeysItem, userManager.getUsername());
     }
 
     /**

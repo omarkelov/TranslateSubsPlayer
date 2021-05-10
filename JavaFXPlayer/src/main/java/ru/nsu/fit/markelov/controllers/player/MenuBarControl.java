@@ -72,7 +72,7 @@ public class MenuBarControl {
                           MenuBar menuBarRight, Menu audioMenu, Menu subtitlesMenu, Menu sourceLanguageMenu,
                           Menu targetLanguageMenu, Menu userMenu, Menu helpMenu, MenuItem fileOpenItem,
                           MenuItem fileCloseItem, MenuItem userLoginItem, MenuItem userWebsiteItem,
-                          MenuItem helpHotkeysItem)
+                          MenuItem helpHotkeysItem, String username)
     {
         this.menuBarObserver = menuBarObserver;
         this.fileChooserManager = fileChooserManager;
@@ -103,7 +103,7 @@ public class MenuBarControl {
         initLanguageMenu(true, "English"); // todo -hardcode
         initLanguageMenu(false, "Russian"); // todo -hardcode
 
-        setLoggedIn(null);
+        setLoggedIn(username);
     }
 
     public void init() {
