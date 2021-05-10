@@ -123,7 +123,7 @@ public class RawMovieRestController {
 
         long userId = userRepository.findByUsername(userDetails.getUsername()).getId();
         if (!rawMovieRepository.existsByUserIdAndHashSum(userId, hashSum)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+            throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED,
                 "Subtitles (hash sum " + hashSum + ") not found");
         }
     }
