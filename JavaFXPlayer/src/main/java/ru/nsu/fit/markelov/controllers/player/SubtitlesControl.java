@@ -1,6 +1,7 @@
 package ru.nsu.fit.markelov.controllers.player;
 
 import com.google.common.base.Charsets;
+import com.google.gson.Gson;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Bounds;
@@ -25,6 +26,7 @@ import ru.nsu.fit.markelov.translation.entities.TranslationResult;
 import ru.nsu.fit.markelov.translation.entities.TranslationVariant;
 import ru.nsu.fit.markelov.translation.googlejson.GoogleJsonTranslator;
 import ru.nsu.fit.markelov.translation.googlescripts.GoogleScriptsTranslator;
+import ru.nsu.fit.markelov.util.HashSum;
 import uk.co.caprica.vlcj.subs.Spu;
 import uk.co.caprica.vlcj.subs.Spus;
 import uk.co.caprica.vlcj.subs.TextSpu;
@@ -70,6 +72,7 @@ public class SubtitlesControl implements AutoCloseable {
     }};
 
     private SpuHandler subtitlesHandler;
+    private String subtitlesHash;
     private RadioMenuItem currentSubtitlesMenuItem;
 
     private final SceneManager sceneManager;
@@ -151,8 +154,14 @@ public class SubtitlesControl implements AutoCloseable {
             Map<Integer, CloseSubtitlesInfo> closeSubtitlesInfoMap = null;
 
             if (!spuList.isEmpty()) {
-                subtitlesObserver.onSubtitlesInitialized(
-                    spuList.stream().map(SubtitleLine::new).collect(Collectors.toList()));
+                List<SubtitleLine> lines = spuList.stream()
+                    .map(SubtitleLine::new)
+                    .collect(Collectors.toList());
+
+                String linesJson = new Gson().toJson(lines);
+                subtitlesHash = HashSum.md5(linesJson) + lines.size();
+
+                subtitlesObserver.onSubtitlesInitialized(subtitlesHash, linesJson);
 
                 subtitleUnits = new Spus();
                 closeSubtitlesInfoMap = new HashMap<>();
@@ -258,6 +267,7 @@ public class SubtitlesControl implements AutoCloseable {
 
     public void disposeSubtitles() {
         subtitlesHandler = null;
+        subtitlesHash = null;
         closeSubtitlesInfoMap = null;
         currentSubtitleId = 0;
         translationResultMap.clear();

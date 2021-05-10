@@ -1,6 +1,5 @@
 package ru.nsu.fit.markelov.controllers;
 
-import com.google.gson.Gson;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
@@ -34,7 +33,6 @@ import ru.nsu.fit.markelov.javafxutil.AlertBuilder;
 import ru.nsu.fit.markelov.javafxutil.LoginDialog;
 import ru.nsu.fit.markelov.managers.FileChooserManager;
 import ru.nsu.fit.markelov.managers.SceneManager;
-import ru.nsu.fit.markelov.subtitles.SubtitleLine;
 import ru.nsu.fit.markelov.user.UserManager;
 import ru.nsu.fit.markelov.util.HashSum;
 import ru.nsu.fit.markelov.util.validation.IllegalInputException;
@@ -336,15 +334,17 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
     }
 
     @Override
-    public void onSubtitlesInitialized(List<SubtitleLine> lines) {
+    public void onSubtitlesInitialized(String hashSum, String linesJson) {
         String videoFilePath = menuBarControl.getVideoFile().getAbsolutePath();
 
         new Thread(() -> {
-            String linesJson = new Gson().toJson(lines);
-            String linesHash = HashSum.md5(linesJson) + "_" + lines.size();
+            Boolean movieExists = userManager.checkRawMovieExistence(hashSum);
 
-            // todo check if hash already exists
-            // todo if no, send everything
+            if (movieExists == null || movieExists) {
+                return;
+            }
+
+            userManager.createRawMovie(hashSum, videoFilePath, linesJson);
         }).start();
     }
 
