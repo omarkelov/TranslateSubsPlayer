@@ -30,10 +30,14 @@ public class MenuBarControl {
 
     private static final String DISABLED_SUBTITLES_MENU_ITEM_TEXT = "Disabled";
     private static final String OPEN_SUBTITLES_MENU_ITEM_TEXT = "Open .srt-file";
+    private static final String USER_MENU_ITEM_TEXT = "User";
+    private static final String LOGIN_MENU_ITEM_TEXT = "Login";
+    private static final String LOGOUT_MENU_ITEM_TEXT = "Logout";
 
     private static final Comparator<MenuItem> MENU_ITEM_COMPARATOR
         = Comparator.comparing(MenuItem::getText);
 
+    private final MenuBarObserver menuBarObserver;
     private final FileChooserManager fileChooserManager;
     private final EmbeddedMediaPlayer embeddedMediaPlayer;
     private final SubtitlesControl subtitlesControl;
@@ -70,6 +74,7 @@ public class MenuBarControl {
                           MenuItem fileCloseItem, MenuItem userLoginItem, MenuItem userWebsiteItem,
                           MenuItem helpHotkeysItem)
     {
+        this.menuBarObserver = menuBarObserver;
         this.fileChooserManager = fileChooserManager;
         this.embeddedMediaPlayer = embeddedMediaPlayer;
         this.subtitlesControl = subtitlesControl;
@@ -93,11 +98,12 @@ public class MenuBarControl {
 
         fileOpenItem.setOnAction(actionEvent -> pauseThenCallClosureThenUnpause(menuBarObserver::onFileClicked));
         fileCloseItem.setOnAction(actionEvent -> menuBarObserver.onClosedClicked());
-        userLoginItem.setOnAction(actionEvent -> pauseThenCallClosureThenUnpause(menuBarObserver::onLoginClicked));
         helpHotkeysItem.setOnAction(actionEvent -> pauseThenCallClosureThenUnpause(menuBarObserver::onHotkeysClicked));
 
         initLanguageMenu(true, "English"); // todo -hardcode
         initLanguageMenu(false, "Russian"); // todo -hardcode
+
+        setLoggedIn(null);
     }
 
     public void init() {
@@ -120,6 +126,18 @@ public class MenuBarControl {
 
     public void setVideoFile(File videoFile) {
         this.videoFile = videoFile;
+    }
+
+    public void setLoggedIn(String username) {
+        if (username != null) {
+            userMenu.setText(username);
+            userLoginItem.setText(LOGOUT_MENU_ITEM_TEXT);
+            userLoginItem.setOnAction(actionEvent -> menuBarObserver.onLogoutClicked());
+        } else {
+            userMenu.setText(USER_MENU_ITEM_TEXT);
+            userLoginItem.setText(LOGIN_MENU_ITEM_TEXT);
+            userLoginItem.setOnAction(actionEvent -> pauseThenCallClosureThenUnpause(menuBarObserver::onLoginClicked));
+        }
     }
 
     public void showHelpMenu() {

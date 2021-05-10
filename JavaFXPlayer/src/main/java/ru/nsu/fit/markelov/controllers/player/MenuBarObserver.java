@@ -4,5 +4,6 @@ public interface MenuBarObserver {
     void onFileClicked();
     void onClosedClicked();
     void onLoginClicked();
+    void onLogoutClicked();
     void onHotkeysClicked();
 }

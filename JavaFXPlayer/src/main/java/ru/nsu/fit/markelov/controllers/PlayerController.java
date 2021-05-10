@@ -21,6 +21,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.TextFlow;
+import javafx.util.Pair;
 import ru.nsu.fit.markelov.controllers.player.ControlBarControl;
 import ru.nsu.fit.markelov.controllers.player.MenuBarControl;
 import ru.nsu.fit.markelov.controllers.player.MenuBarObserver;
@@ -363,6 +364,11 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
     }
 
     @Override
+    public void onLogoutClicked() {
+        logout();
+    }
+
+    @Override
     public void onHotkeysClicked() {
         showHotkeysDialog();
     }
@@ -453,11 +459,32 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
     }
 
     private void showLoginDialog() {
-        new LoginDialog(sceneManager.getWindowOwner()).show(usernamePassword -> new Thread(() -> {
-            System.out.println(usernamePassword.getKey() + ":" + usernamePassword.getValue());
+        new LoginDialog(sceneManager.getWindowOwner()).show(this::login);
+    }
 
+    private void login(Pair<String, String> usernamePassword) {
+        new Thread(() -> {
+            String username = usernamePassword.getKey();
+            String password = usernamePassword.getValue();
 
-        }).start());
+            Boolean loggedIn = userManager.login(username, password);
+
+            Platform.runLater(() -> {
+                if (loggedIn != null && loggedIn) {
+                    menuBarControl.setLoggedIn(username);
+                    return;
+                }
+
+                new LoginDialog(sceneManager.getWindowOwner()).show(
+                    loggedIn == null ? "Check your internet connection and try again" : "Wrong password",
+                    usernamePassword, this::login);
+            });
+        }).start();
+    }
+
+    private void logout() {
+        menuBarControl.setLoggedIn(null);
+        new Thread(userManager::logout).start();
     }
 
     private void showHotkeysDialog() {
