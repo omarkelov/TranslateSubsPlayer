@@ -3,7 +3,7 @@ package ru.nsu.fit.markelov.user;
 import com.google.gson.Gson;
 import ru.nsu.fit.markelov.user.entities.Group;
 import ru.nsu.fit.markelov.user.entities.Phrase;
-import ru.nsu.fit.markelov.subtitles.RawMovie;
+import ru.nsu.fit.markelov.user.entities.RawMovie;
 import ru.nsu.fit.markelov.user.entities.RawPhraseJson;
 import ru.nsu.fit.markelov.user.entities.Translation;
 import ru.nsu.fit.markelov.translation.entities.TranslationGroup;

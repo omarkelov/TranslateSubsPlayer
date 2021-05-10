@@ -19,7 +19,7 @@ import ru.nsu.fit.markelov.javafxutil.TextBuilder;
 import ru.nsu.fit.markelov.managers.SceneManager;
 import ru.nsu.fit.markelov.subtitles.AdvancedSrtParser;
 import ru.nsu.fit.markelov.subtitles.JavaFxSubtitles;
-import ru.nsu.fit.markelov.subtitles.SubtitleLine;
+import ru.nsu.fit.markelov.user.entities.SubtitleLine;
 import ru.nsu.fit.markelov.translation.Translator;
 import ru.nsu.fit.markelov.translation.entities.TranslationGroup;
 import ru.nsu.fit.markelov.translation.entities.TranslationResult;

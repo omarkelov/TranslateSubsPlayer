@@ -1,4 +1,4 @@
-package ru.nsu.fit.markelov.subtitles;
+package ru.nsu.fit.markelov.user.entities;
 
 import uk.co.caprica.vlcj.subs.Spu;
 
