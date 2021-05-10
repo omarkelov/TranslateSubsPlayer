@@ -26,14 +26,14 @@
   * *status code* **204 No Content**
   * *deletes* this raw movie from the database
 * **POST** /raw-movies
-  * body: {hashSum=`<hashSum>`&videoFilePath=`<videoFilePath>`&linesJson=`<linesJson>`}
+  * body: {hashSum: `<hashSum>`, videoFilePath: `<videoFilePath>`, linesJson: `<linesJson>`}
   * *status code* **204 No Content**
   * creates raw movie
 * **HEAD** /raw-movie?hashSum=`<hashSum>`
   * *status code* **204 No Content**
   * checks raw movie existence by its hash sum
 * **POST** /raw-phrase?hashSum=`<hashSum>`
-  * body: {phraseJson=`<phraseJson>`}
+  * body: {phraseJson: `<phraseJson>`}
   * *status code* **204 No Content**
   * creates raw phrase and binds it with raw movie by its hash sum
 
