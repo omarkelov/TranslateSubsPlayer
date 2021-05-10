@@ -418,6 +418,7 @@ public class SubtitlesControl implements AutoCloseable {
         translationPane.setVisible(true);
 
         boolean finalContainsLineSeparator = containsLineSeparator;
+        int finalCurrentSubtitleId = currentSubtitleId;
         translationThread = new Thread(() -> {
             try {
                 String text = stringBuilder.toString().trim(); // todo!!! trim dots, etc.
@@ -440,6 +441,7 @@ public class SubtitlesControl implements AutoCloseable {
 
                 List<Text> textList = buildTranslationTextList(translationResult);
 
+                TranslationResult finalTranslationResult = translationResult;
                 Platform.runLater(() -> {
                     if (translationThread == null || translationThread.isInterrupted()) {
                         return;
@@ -450,6 +452,11 @@ public class SubtitlesControl implements AutoCloseable {
 
                     unbindTranslationNodes();
                     bindGroups(finalContainsLineSeparator);
+
+                    if (!finalTranslationResult.isEmpty()) {
+                        subtitlesObserver.onPhraseTranslated(subtitlesHash,
+                            finalCurrentSubtitleId - 1, text, finalTranslationResult);
+                    }
                 });
             } catch (InterruptedException ignored) {}
         });

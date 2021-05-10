@@ -33,6 +33,7 @@ import ru.nsu.fit.markelov.javafxutil.AlertBuilder;
 import ru.nsu.fit.markelov.javafxutil.LoginDialog;
 import ru.nsu.fit.markelov.managers.FileChooserManager;
 import ru.nsu.fit.markelov.managers.SceneManager;
+import ru.nsu.fit.markelov.translation.entities.TranslationResult;
 import ru.nsu.fit.markelov.user.UserManager;
 import ru.nsu.fit.markelov.util.HashSum;
 import ru.nsu.fit.markelov.util.validation.IllegalInputException;
@@ -346,6 +347,14 @@ public class PlayerController implements Controller, SubtitlesObserver, MenuBarO
 
             userManager.createRawMovie(hashSum, videoFilePath, linesJson);
         }).start();
+    }
+
+    @Override
+    public void onPhraseTranslated(String hashSum, int lineId, String phrase,
+                                   TranslationResult translationResult)
+    {
+        new Thread(() -> userManager.createRawPhrase(hashSum, lineId, phrase, translationResult))
+            .start();
     }
 
     @Override
