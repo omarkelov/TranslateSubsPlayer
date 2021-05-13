@@ -48,6 +48,9 @@
 * **DELETE** /movies/`<movieName>`
   * *status code* **204 No Content**
   * *deletes* this movie from the database
+* **PUT** /movies?name=`<name>`&lang=`<iso639Code>`
+  * *status code* **204 No Content**
+  * creates movie if it doesn't yet exist
 
 ---
 
