@@ -63,6 +63,10 @@
 * **DELETE** /contexts/`<contextId>`
   * *status code* **204 No Content**
   * *deletes* this context
+* **POST** /contexts?movieName=`<movieName>`
+  * *status code* **204 No Content**
+  * body: {context: `<context>`, phrases: [{phrase: `<phrase>`, translations: [`<translation1>`, `<translation2>`...]}]}
+  * creates context for this movie
 
 ---
 
