@@ -5,6 +5,7 @@
         <title>Translate Subtitles Player</title>
         <link rel="shortcut icon" href="/images/logo.png" type="image/png">
         <link rel="stylesheet" href="/css/main.css">
+        <link rel="stylesheet" href="/css/raw-movies.css">
         <script th:inline="javascript">
             var serverUsername = /*[[${username}]]*/ null;
             var serverMovies = /*[[${movies}]]*/ null;
@@ -26,6 +27,7 @@
                     <a href="/logout/" @click.prevent="onLogoutClicked">Logout ({{ username }})</a>
                 </nav>
                 <div id="content">
+
                     <div id="movies-content" class="content" v-if="movies">
                         <ul id="movie-list">
                             <li v-for="movie in movies">

@@ -14,10 +14,10 @@ const app = Vue.createApp({
 
             testPhraseTranslation: '',
             testPhraseContext: '',
+            testPhraseId: null,
             testData: null,
             indexTest: null,
-            currentIndexCount: null,
-            tooltip: null
+            currentIndexCount: null
         }
     },
     beforeMount() {
@@ -46,7 +46,7 @@ const app = Vue.createApp({
                 contextHtml = context.context;
                 context.phrases.forEach(phrase => {
                     contextHtml = contextHtml.replace(phrase.phrase,
-                        `<span data-tooltip=${phrase.phrase}>` + phrase.phrase + `</span>`);
+                        `<span @mouseover.prevent="showTooltip" @mouseout.prevent="hideTooltip" data-tooltip='${phrase.translation}'>` + phrase.phrase + `</span>`);
                 });
                 lis += `<li>` + contextHtml +
                     `<div class="button watch-button" @click.prevent="toggle"></div>
@@ -55,11 +55,59 @@ const app = Vue.createApp({
                        <img src="close.png" class="close" @click.prevent="toggle" alt="close">
                     </div>
                     <div class="button edit-button" @click.prevent="showMsg"></div>
-                    <div class="button delete-button" onclick="remove(this)"></div>` + `</li>`
+                    <div id="delBtn" class="button delete-button" data-contextId="${context.id}" @click.prevent="onDeleteContextClicked"></div>` + `</li>`
             });
             return {
+                data() {
+                    return {
+                        tooltipElem: null
+                    }
+                },
                 template: `<ol>` + lis + `</ol>`,
                 methods: {
+                    onDeleteContextClicked(event) {
+                        if (confirm('Are yoe sure you want to delete this context?')) {
+                            let target = event.target;
+                            let contextId = target.getAttribute("data-contextId");
+                            fetch('/contexts/' + contextId, {method: 'DELETE'}).then(response => {
+                                if (response.ok) {
+                                    target.parentNode.remove();
+                                } else {
+                                    alert('status ' + response.status);
+                                }
+                            });
+                        }
+                    },
+                    showTooltip(event) {
+                        let target = event.target;
+
+                        let tooltipHtml = target.dataset.tooltip;
+                        if (!tooltipHtml) return;
+
+                        this.tooltipElem = document.createElement('div');
+                        this.tooltipElem.className = 'tooltip';
+                        this.tooltipElem.innerHTML = tooltipHtml;
+                        document.body.append(this.tooltipElem);
+
+                        let coords = target.getBoundingClientRect();
+
+                        let left = coords.left + (target.offsetWidth - this.tooltipElem.offsetWidth) / 2;
+                        if (left < 0) left = 0;
+
+                        let top = coords.top - this.tooltipElem.offsetHeight - 5;
+                        if (top < 0) {
+                            top = coords.top + target.offsetHeight + 5;
+                        }
+
+                        this.tooltipElem.style.left = left + 'px';
+                        this.tooltipElem.style.top = top + 'px';
+                    },
+                    hideTooltip() {
+                        if (this.tooltipElem) {
+                            this.tooltipElem.remove();
+                            this.tooltipElem = null;
+                        }
+                    },
                     toggle() {
                         let trailer = document.querySelector(".trailer")
                         let video = document.querySelector("video")
@@ -168,6 +216,7 @@ const app = Vue.createApp({
                     if (context.phrases[i].id === this.indexTest){
                         this.testPhraseContext = context.context;
                         this.testPhraseTranslation = context.phrases[i].translation;
+                        this.testPhraseId = context.phrases[i].id;
                     }
                 }
                 }
@@ -196,11 +245,17 @@ const app = Vue.createApp({
         },
         knowWord(event) {
             alert("Know this word");
+            fetch('/phrases/' + this.testPhraseId + '?correct=true', {
+                method: 'PATCH'
+            });
             this.changePhrase();
 
         },
         doNotKnowWord(event) {
             alert("Don't know this word");
+            fetch('/phrases/' + this.testPhraseId + '?correct=false', {
+                method: 'PATCH'
+            });
             this.changePhrase();
         },
         changePhrase() {
@@ -213,6 +268,7 @@ const app = Vue.createApp({
                             if (context.phrases[i].id === this.indexTest){
                                 this.testPhraseContext = context.context;
                                 this.testPhraseTranslation = context.phrases[i].translation;
+                                this.testPhraseId = context.phrases[i].id;
                             }
                         }
                     }
@@ -233,43 +289,4 @@ const app = Vue.createApp({
 
 
 app.mount('#vue-app');
-
-let tooltipElem;
-document.onmouseover = function (event) {
-    let target = event.target;
-
-    let tooltipHtml = target.dataset.tooltip;
-    if (!tooltipHtml) return;
-
-    tooltipElem = document.createElement('div');
-    tooltipElem.className = 'tooltip';
-    tooltipElem.innerHTML = tooltipHtml;
-    document.body.append(tooltipElem);
-
-    let coords = target.getBoundingClientRect();
-
-    let left = coords.left + (target.offsetWidth - tooltipElem.offsetWidth) / 2;
-    if (left < 0) left = 0;
-
-    let top = coords.top - tooltipElem.offsetHeight - 5;
-    if (top < 0) {
-        top = coords.top + target.offsetHeight + 5;
-    }
-
-    tooltipElem.style.left = left + 'px';
-    tooltipElem.style.top = top + 'px';
-};
-
-document.onmouseout = function (e) {
-
-    if (tooltipElem) {
-        tooltipElem.remove();
-        tooltipElem = null;
-    }
-
-};
-
-function remove(el) {
-    el.parentNode.remove();
-}
 
