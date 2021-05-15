@@ -84,9 +84,11 @@ public class MovieRestController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
 
-        long userId = userRepository.findByUsername(userDetails.getUsername()).getId();
-        movie.setUserId(userId);
+        if (!movieService.movieExists(userDetails, movie.getName())) {
+            long userId = userRepository.findByUsername(userDetails.getUsername()).getId();
+            movie.setUserId(userId);
 
-        movieRepository.save(movie);
+            movieRepository.save(movie);
+        }
     }
 }

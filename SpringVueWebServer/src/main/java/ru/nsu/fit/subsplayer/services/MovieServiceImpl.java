@@ -55,4 +55,16 @@ public class MovieServiceImpl implements MovieService {
 
         return movie;
     }
+
+    @Override
+    public boolean movieExists(UserDetails userDetails, String movieName) {
+        long userId = userRepository.findByUsername(userDetails.getUsername()).getId();
+        List<Movie> movies = movieRepository.findByUserIdAndName(userId, movieName);
+
+        if (movies.size() > 1) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Multiple '" + movieName + "' records found");
+        }
+
+        return movies.size() == 1;
+    }
 }

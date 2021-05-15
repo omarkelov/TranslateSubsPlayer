@@ -10,4 +10,6 @@ public interface MovieService {
     List<Movie> queryMovies(UserDetails userDetails);
 
     Movie queryMovie(UserDetails userDetails, String movieName);
+
+    boolean movieExists(UserDetails userDetails, String movieName);
 }
