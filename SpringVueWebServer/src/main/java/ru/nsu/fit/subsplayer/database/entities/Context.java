@@ -30,8 +30,12 @@ public class Context {
     private Long movieId;
 
     @Expose
-    @Column(length = 1024)
+    @Column(length = 4096)
     private String context;
+
+    private Long startTime;
+
+    private Long endTime;
 
     @Expose
     private String link;
@@ -40,8 +44,10 @@ public class Context {
     @Transient
     private List<Phrase> phrases;
 
-    public Context(String context, String link, List<Phrase> phrases) {
+    public Context(String context, Long startTime, Long endTime, String link, List<Phrase> phrases) {
         this.context = context;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.link = link;
         this.phrases = phrases;
     }

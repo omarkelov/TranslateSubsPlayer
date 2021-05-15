@@ -10,4 +10,6 @@ public interface ContextService {
     List<Phrase> queryPhrases(long contextId);
 
     void deleteContext(Context context);
+
+    void saveContext(Context context);
 }
