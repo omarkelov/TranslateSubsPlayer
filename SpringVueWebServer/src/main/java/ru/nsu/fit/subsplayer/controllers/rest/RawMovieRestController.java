@@ -28,6 +28,7 @@ import ru.nsu.fit.subsplayer.database.repositories.UserRepository;
 import ru.nsu.fit.subsplayer.services.AccessoryService;
 
 import javax.transaction.Transactional;
+import java.io.InvalidObjectException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -90,20 +91,9 @@ public class RawMovieRestController {
         RawMovie rawMovie;
         try {
             rawMovie = new Gson().fromJson(body, RawMovie.class);
-        } catch (JsonSyntaxException e) {
+            rawMovie.validate();
+        } catch (JsonSyntaxException | InvalidObjectException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-        if (rawMovie.getHashSum() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "'hashSum' parameter is not present");
-        }
-        if (rawMovie.getVideoFilePath() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "'videoFilePath' parameter is not present");
-        }
-        if (rawMovie.getLinesJson() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "'linesJson' parameter is not present");
         }
 
         long userId = userRepository.findByUsername(userDetails.getUsername()).getId();
@@ -113,7 +103,7 @@ public class RawMovieRestController {
         }
 
         rawMovie.setUserId(userId);
-        rawMovieRepository.save(rawMovie);
+        rawMovieRepository.save(rawMovie); // todo check hash before saving
     }
 
     @GetMapping(Mappings.RAW_MOVIE)
