@@ -26,6 +26,7 @@ import ru.nsu.fit.subsplayer.services.ContextService;
 import ru.nsu.fit.subsplayer.services.MovieService;
 
 import javax.transaction.Transactional;
+import java.io.InvalidObjectException;
 
 @Component
 @RestController
@@ -78,20 +79,9 @@ public class MovieRestController {
         Movie movie;
         try {
             movie = new Gson().fromJson(body, Movie.class);
-        } catch (JsonSyntaxException e) {
+            movie.validate();
+        } catch (JsonSyntaxException | InvalidObjectException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-        if (movie.getName() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "'name' parameter is not present");
-        }
-        if (movie.getVideoFilePath() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "'videoFilePath' parameter is not present");
-        }
-        if (movie.getLang() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "'lang' parameter is not present");
         }
 
         long userId = userRepository.findByUsername(userDetails.getUsername()).getId();
