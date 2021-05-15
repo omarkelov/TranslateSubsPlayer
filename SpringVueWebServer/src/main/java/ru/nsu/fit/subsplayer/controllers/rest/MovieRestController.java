@@ -1,6 +1,8 @@
 package ru.nsu.fit.subsplayer.controllers.rest;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -9,13 +11,17 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import ru.nsu.fit.subsplayer.constants.Mappings;
 import ru.nsu.fit.subsplayer.database.entities.Context;
 import ru.nsu.fit.subsplayer.database.entities.Movie;
 import ru.nsu.fit.subsplayer.database.repositories.MovieRepository;
+import ru.nsu.fit.subsplayer.database.repositories.UserRepository;
 import ru.nsu.fit.subsplayer.services.ContextService;
 import ru.nsu.fit.subsplayer.services.MovieService;
 
@@ -26,6 +32,7 @@ import javax.transaction.Transactional;
 @RequestMapping(value = "/", produces = "application/json")
 public class MovieRestController {
 
+    @Autowired private UserRepository userRepository;
     @Autowired private MovieService movieService;
     @Autowired private ContextService contextService;
 
@@ -61,5 +68,35 @@ public class MovieRestController {
         for (Context context : movie.getContexts()) {
             contextService.deleteContext(context);
         }
+    }
+
+    @PutMapping(Mappings.MOVIES)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void createMovie(@AuthenticationPrincipal UserDetails userDetails,
+                            @RequestBody String body) {
+
+        Movie movie;
+        try {
+            movie = new Gson().fromJson(body, Movie.class);
+        } catch (JsonSyntaxException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+        if (movie.getName() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "'name' parameter is not present");
+        }
+        if (movie.getVideoFilePath() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "'videoFilePath' parameter is not present");
+        }
+        if (movie.getLang() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "'lang' parameter is not present");
+        }
+
+        long userId = userRepository.findByUsername(userDetails.getUsername()).getId();
+        movie.setUserId(userId);
+
+        movieRepository.save(movie);
     }
 }

@@ -66,6 +66,8 @@ public class FeedController {
                 add(new Movie(
                     userId,
                     "Shrek",
+                    "C://Cartoons/Shrek.avi",
+                    "en",
                     new ArrayList<>() {{
                         add(new Context(
                             "Once upon a time there was a lovely princess. But she had an enchantment upon her of a fearful sort...",
@@ -129,6 +131,8 @@ public class FeedController {
                 add(new Movie(
                     userId,
                     "Shrek 2",
+                    "C://Cartoons/Shrek 2.avi",
+                    "en",
                     new ArrayList<>() {{
                         add(new Context(
                             "Once upon a time there was a lovely princess. But she had an enchantment upon her of a fearful sort...",

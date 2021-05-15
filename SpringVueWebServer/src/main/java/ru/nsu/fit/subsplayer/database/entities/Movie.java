@@ -30,6 +30,11 @@ public class Movie {
     @Expose
     private String name;
 
+    private String videoFilePath;
+
+    @Expose
+    private String lang;
+
     @Expose
     @Transient
     private String href;
@@ -38,9 +43,11 @@ public class Movie {
     @Transient
     private List<Context> contexts;
 
-    public Movie(Long userId, String name, List<Context> contexts) {
+    public Movie(Long userId, String name, String videoFilePath, String lang, List<Context> contexts) {
         this.userId = userId;
         this.name = name;
+        this.videoFilePath = videoFilePath;
+        this.lang = lang;
         this.contexts = contexts;
     }
 }
