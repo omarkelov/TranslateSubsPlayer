@@ -19,6 +19,8 @@ import ru.nsu.fit.subsplayer.database.repositories.RawMovieRepository;
 import ru.nsu.fit.subsplayer.database.repositories.RawPhraseRepository;
 import ru.nsu.fit.subsplayer.database.repositories.UserRepository;
 
+import java.io.InvalidObjectException;
+
 @RestController
 @RequestMapping(value = "/", produces = "application/json")
 public class RawPhraseRestController {
@@ -36,12 +38,9 @@ public class RawPhraseRestController {
         RawPhrase rawPhrase;
         try {
             rawPhrase = new Gson().fromJson(body, RawPhrase.class);
-        } catch (JsonSyntaxException e) {
+            rawPhrase.validate();
+        } catch (JsonSyntaxException | InvalidObjectException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-        if (rawPhrase.getPhraseJson() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "'phraseJson' parameter is not present");
         }
 
         long userId = userRepository.findByUsername(userDetails.getUsername()).getId();

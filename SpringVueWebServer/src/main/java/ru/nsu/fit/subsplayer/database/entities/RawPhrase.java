@@ -13,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.io.InvalidObjectException;
 
 @Entity
 @Table(name = "raw_phrases")
@@ -41,5 +42,10 @@ public class RawPhrase {
     public RawPhrase(String phraseJson, Boolean handled) {
         this.phraseJson = phraseJson;
         this.handled = handled;
+    }
+
+    public void validate() throws InvalidObjectException {
+        if (phraseJson == null)
+            throw new InvalidObjectException("'phraseJson' parameter is not present");
     }
 }
