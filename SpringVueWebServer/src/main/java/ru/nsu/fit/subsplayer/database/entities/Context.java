@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.io.InvalidObjectException;
 import java.util.List;
 
 @Entity
@@ -50,5 +51,20 @@ public class Context {
         this.endTime = endTime;
         this.link = link;
         this.phrases = phrases;
+    }
+
+    public void validate() throws InvalidObjectException {
+        if (context == null)
+            throw new InvalidObjectException("'context' parameter is not present");
+        if (startTime == null)
+            throw new InvalidObjectException("'startTime' parameter is not present");
+        if (endTime == null)
+            throw new InvalidObjectException("'endTime' parameter is not present");
+        if (phrases == null)
+            throw new InvalidObjectException("'phrases' parameter is not present");
+
+        for (Phrase phrase : phrases) {
+            phrase.validate();
+        }
     }
 }

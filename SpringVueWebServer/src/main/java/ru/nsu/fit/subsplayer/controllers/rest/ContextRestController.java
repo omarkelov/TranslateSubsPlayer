@@ -25,6 +25,7 @@ import ru.nsu.fit.subsplayer.services.ContextService;
 import ru.nsu.fit.subsplayer.services.MovieService;
 
 import javax.transaction.Transactional;
+import java.io.InvalidObjectException;
 
 @RestController
 @RequestMapping(value = "/", produces = "application/json")
@@ -80,7 +81,6 @@ public class ContextRestController {
 
     @PostMapping(Mappings.CONTEXTS)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Transactional
     public void createContext(@AuthenticationPrincipal UserDetails userDetails,
                               @RequestParam String movieName,
                               @RequestBody String body) {
@@ -88,24 +88,9 @@ public class ContextRestController {
         Context context;
         try {
             context = new Gson().fromJson(body, Context.class);
-        } catch (JsonSyntaxException e) {
+            context.validate();
+        } catch (JsonSyntaxException | InvalidObjectException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-        if (context.getContext() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "'context' parameter is not present");
-        }
-        if (context.getStartTime() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "'startTime' parameter is not present");
-        }
-        if (context.getEndTime() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "'endTime' parameter is not present");
-        }
-        if (context.getPhrases() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "'phrases' parameter is not present");
         }
 
         long movieId = movieService.queryMovie(userDetails, movieName).getId();

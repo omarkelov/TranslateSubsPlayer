@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.io.InvalidObjectException;
 
 @Entity
 @Table(name = "phrases")
@@ -48,5 +49,12 @@ public class Phrase {
         this.correctedPhrase = correctedPhrase;
         this.type = type;
         this.translation = translation;
+    }
+
+    public void validate() throws InvalidObjectException {
+        if (phrase == null)
+            throw new InvalidObjectException("'phrase' parameter is not present");
+        if (translation == null)
+            throw new InvalidObjectException("'translation' parameter is not present");
     }
 }
