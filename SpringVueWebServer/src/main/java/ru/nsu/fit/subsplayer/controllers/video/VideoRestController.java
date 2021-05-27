@@ -1,4 +1,4 @@
-package ru.nsu.fit.subsplayer.controllers.rest;
+package ru.nsu.fit.subsplayer.controllers.video;
 
 import com.google.common.io.Files;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "/", produces = "application/json")
-public class FileRestController {
+public class VideoRestController {
 
     @Autowired private AccessoryService accessoryService;
     @Autowired private ContextRepository contextRepository;
