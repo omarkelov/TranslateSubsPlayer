@@ -16,7 +16,7 @@
         </script>
         <script src="https://unpkg.com/vue@next"></script>
     </head>
-    <body>
+    <body id="app">
         <div id="vue-app">
             <div id="main" v-if="username">
                 <nav id="navigation">
@@ -27,6 +27,44 @@
                     <a href="/logout/" @click.prevent="onLogoutClicked">Logout ({{ username }})</a>
                 </nav>
                 <div id="content">
+                    <div id="raw-movies-content" class="content" v-if="rawMovies">
+                        <ul>
+                            <li v-for="movie in rawMovies">
+                                <a v-bind:href="movie.href" @click.prevent="onRawMovieClicked">{{ movie.videoFilePath }}</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="raw-movie-content" v-if="rawMovie">
+                        <div class="left-part">
+                            <component class="text-all" v-bind:is="computedLines">{{text}}</component>
+                            <div class="phrase-nav">
+                                <div class="prev-phrase" @click.prevent="someF">Prev phrase</div>
+                                <div class="next-phrase" @click.prevent="someF">Next phrase</div>
+                            </div>
+                        </div>
+                        <div class="right-part">
+                            <div class="context-title">Context</div>
+                            <div class="context-raw">
+                                <div class="context-text">{{phrase_context}}</div>
+                            </div>
+                            <div class="options">
+                                <div class="opt-titles">
+                                    <div id="phrase-opt">Phrase</div>
+                                    <div id="translation-opt">Translation</div>
+                                    <div id="type-opt">Type</div>
+                                </div>
+                                <div class="phrase">
+                                    <p id="phrase-select">{{ phrase_clicked }}</p>
+                                    <p id="translation-select"><select name="selector-translation">
+                                        <option>{{phrase_main_translation}}</option>
+                                        <option v-for="tr in phrase_transl" v-bind:value="tr.variants[0]">{{tr.variants[0]}}</option>
+                                    </select></p>
+                                    <div id="type-select" name="selector-type" v-model="key">Part of speech</div>
+                                </div>
+                            </div>
+                            <div class="add-to-dict">Add to dictionary</div>
+                        </div>
+                    </div>
 
                     <div id="movies-content" class="content" v-if="movies">
                         <ul id="movie-list">
