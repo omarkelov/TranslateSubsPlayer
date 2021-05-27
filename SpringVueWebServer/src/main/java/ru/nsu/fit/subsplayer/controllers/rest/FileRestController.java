@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import ru.nsu.fit.subsplayer.constants.Mappings;
 import ru.nsu.fit.subsplayer.database.entities.Context;
 import ru.nsu.fit.subsplayer.database.repositories.ContextRepository;
 import ru.nsu.fit.subsplayer.services.AccessoryService;
@@ -28,7 +29,7 @@ public class FileRestController {
     @Autowired private ContextRepository contextRepository;
     @Autowired private FileStorageService fileStorageService;
 
-    @PostMapping("/video")
+    @PostMapping(Mappings.VIDEO)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void uploadVideo(@AuthenticationPrincipal UserDetails userDetails,
                             @RequestParam long contextId,
@@ -55,7 +56,7 @@ public class FileRestController {
 
         fileStorageService.storeFile(fileName, file);
 
-        context.setLink("/video/" + fileName);
+        context.setLink(Mappings.VIDEO + "/" + fileName);
         contextRepository.save(context);
     }
 }

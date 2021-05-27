@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
+import ru.nsu.fit.subsplayer.constants.Mappings;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -18,7 +19,7 @@ public class VideoController {
 
     @Autowired private VideoResourceHttpRequestHandler videoResourceHttpRequestHandler;
 
-    @GetMapping("/video/{videoFileName}")
+    @GetMapping(Mappings.VIDEO + "/{videoFileName}")
     public void getVideo(HttpServletRequest request, HttpServletResponse response,
                          @PathVariable String videoFileName) {
 

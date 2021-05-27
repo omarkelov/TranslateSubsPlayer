@@ -12,4 +12,5 @@ public class Mappings {
     public static final String RAW_PHRASE = "/raw-phrase";
     public static final String CONTEXT = "/context";
     public static final String PING = "/ping";
+    public static final String VIDEO = "/video";
 }
