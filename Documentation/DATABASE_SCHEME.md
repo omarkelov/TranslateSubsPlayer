@@ -26,11 +26,11 @@
 | 4  | 2       | House M.D. s01e20   |
 
 ### contexts
-| id | movie_id | context                                                                                                                      | link         |
-|----|----------|------------------------------------------------------------------------------------------------------------------------------|--------------|
-| 1  | 2        | Lorem superposés valise pourparlers rêver chiots rendez\-vous naissance Eiffel myrtille\.                                    | videos/1.mp4 |
-| 2  | 2        | Nous avoir parole la nous moussant\.                                                                                         | videos/2.mp4 |
-| 3  | 2        | Bourguignon penser câlin millésime peripherique annoncer enfants enfants vachement nuit formidable encombré épanoui chiots\. | videos/3.mp4 |
+| id | movie_id | context                                                                                      | start_time | end_time | link         |
+|----|----------|----------------------------------------------------------------------------------------------| ---------- |----------| ------------ |
+| 1  | 2        | Lorem superposés valise pourparlers rêver chiots rendez\-vous naissance Eiffel myrtille\.    | 0          | 1000     | videos/1.mp4 |
+| 2  | 2        | Nous avoir parole la nous moussant\.                                                         | 9999       | 11111    | videos/2.mp4 |
+| 3  | 2        | ...peripherique annoncer enfants enfants vachement nuit formidable encombré épanoui chiots\. | 30000      | 50000    | videos/3.mp4 |
 
 ### phrases
 | id | context_id | phrase         | corrected_phrase | type     | translation    |
