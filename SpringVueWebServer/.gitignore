@@ -3,6 +3,7 @@
 build/
 gradle/
 out/
+src/main/resources/video
 
 gradlew
 gradlew.bat
