@@ -12,7 +12,7 @@ import java.nio.file.StandardCopyOption;
 @Component
 public class FileStorageServiceImpl implements FileStorageService {
 
-    private static final Path FILE_STORAGE_LOCATION = Paths.get("src\\main\\resources\\video\\");
+    private static final Path FILE_STORAGE_LOCATION = Paths.get("src\\main\\resources\\static\\video\\");
 
     public FileStorageServiceImpl() {
         try {
