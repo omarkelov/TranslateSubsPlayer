@@ -11,7 +11,7 @@ public class VideoEditor {
 
     private static final File FFMPEG_DIRECTORY = new File("C:\\ffmpeg\\bin"); // todo -hardcode
 
-    public static String cutVideo(ContextVideoInfo contextVideoInfo) {
+    public static File cutVideo(ContextVideoInfo contextVideoInfo) {
         try {
             String newVideoFileName = UUID.randomUUID() + ".mp4";
 
@@ -40,7 +40,7 @@ public class VideoEditor {
                 return null;
             }
 
-            return FFMPEG_DIRECTORY + "\\" + newVideoFileName;
+            return new File(FFMPEG_DIRECTORY + "\\" + newVideoFileName);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             return null;

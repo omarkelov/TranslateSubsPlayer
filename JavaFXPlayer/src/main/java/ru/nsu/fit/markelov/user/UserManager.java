@@ -1,15 +1,24 @@
 package ru.nsu.fit.markelov.user;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.impl.client.HttpClientBuilder;
+import ru.nsu.fit.markelov.translation.entities.TranslationGroup;
+import ru.nsu.fit.markelov.translation.entities.TranslationResult;
+import ru.nsu.fit.markelov.translation.entities.TranslationVariant;
 import ru.nsu.fit.markelov.user.entities.Group;
 import ru.nsu.fit.markelov.user.entities.Phrase;
 import ru.nsu.fit.markelov.user.entities.RawMovie;
 import ru.nsu.fit.markelov.user.entities.RawPhraseJson;
 import ru.nsu.fit.markelov.user.entities.Translation;
-import ru.nsu.fit.markelov.translation.entities.TranslationGroup;
-import ru.nsu.fit.markelov.translation.entities.TranslationResult;
-import ru.nsu.fit.markelov.translation.entities.TranslationVariant;
+import ru.nsu.fit.markelov.video.ContextVideoInfo;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -18,6 +27,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,6 +44,8 @@ public class UserManager {
     private static final String RAW_MOVIE = "/raw-movie";
     private static final String RAW_MOVIES = "/raw-movies";
     private static final String RAW_PHRASE = "/raw-phrase";
+    private static final String VIDEO = "/video";
+    private static final String CONTEXT_VIDEO_INFO = "/context-video-info";
 
     private static final String SESSION_COOKIE_KEY = "JSESSIONID=";
 
@@ -262,6 +274,80 @@ public class UserManager {
 
             System.out.println("Phrase successfully sent");
         } catch (URISyntaxException | IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<ContextVideoInfo> getContextVideoInfoList() {
+        if (credentials.isEmpty()) {
+            return null;
+        }
+
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(new URI(SITE_URI + CONTEXT_VIDEO_INFO))
+                .GET()
+                .header("Cookie", credentials.getSessionCookie())
+                .timeout(Duration.of(15, SECONDS))
+                .build();
+
+            HttpResponse<String> response = HttpClient.newBuilder()
+                .build()
+                .send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response == null) {
+                System.err.println("Response is null");
+                return null;
+            }
+
+            if (response.statusCode() != 200) {
+                System.out.println("Bad status code: " + response.statusCode());
+                return null;
+            }
+
+            if (response.body() == null) {
+                System.out.println("Body is null");
+                return null;
+            }
+
+            List<ContextVideoInfo> contextVideoInfoList =
+                Arrays.asList(new Gson().fromJson(response.body(), ContextVideoInfo[].class));
+
+            for (ContextVideoInfo contextVideoInfo : contextVideoInfoList) {
+                contextVideoInfo.validate();
+            }
+
+            return contextVideoInfoList;
+        } catch (URISyntaxException | IOException | JsonSyntaxException | InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void uploadVideo(long contextId, File videoFile) {
+        if (credentials.isEmpty()) {
+            System.err.println("Credentials are empty");
+            return;
+        }
+
+        try {
+            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+            builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+            builder.addBinaryBody("file", videoFile, ContentType.DEFAULT_BINARY, videoFile.toString());
+            HttpEntity entity = builder.build();
+
+            HttpPost post = new HttpPost(SITE_URI + VIDEO + "?contextId=" + contextId);
+            post.setEntity(entity);
+            post.addHeader("Cookie", credentials.getSessionCookie());
+
+            org.apache.http.client.HttpClient client = HttpClientBuilder.create().build();
+            org.apache.http.HttpResponse response = client.execute(post);
+
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode != 204) {
+                System.out.println("Bad status code: " + statusCode);
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

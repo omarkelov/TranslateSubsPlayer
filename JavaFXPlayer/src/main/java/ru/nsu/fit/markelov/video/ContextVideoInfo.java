@@ -10,14 +10,6 @@ public class ContextVideoInfo {
     private Long startTime;
     private Long endTime;
 
-    public ContextVideoInfo(Long contextId, String videoFilePath, Integer audioChannel, Long startTime, Long endTime) {
-        this.contextId = contextId;
-        this.videoFilePath = videoFilePath;
-        this.audioChannel = audioChannel;
-        this.startTime = startTime;
-        this.endTime = endTime;
-    }
-
     public void validate() throws InvalidObjectException {
         if (contextId == null)
             throw new InvalidObjectException("'contextId' parameter is not present");

@@ -7,6 +7,7 @@ import ru.nsu.fit.markelov.managers.FileChooserManager;
 import ru.nsu.fit.markelov.managers.SceneManager;
 import ru.nsu.fit.markelov.user.UserManager;
 import ru.nsu.fit.markelov.util.validation.IllegalInputException;
+import ru.nsu.fit.markelov.video.VideoThread;
 
 import static ru.nsu.fit.markelov.javafxutil.AlertBuilder.APPLICATION_LAUNCH_ERROR_HEADER;
 
@@ -18,6 +19,7 @@ import static ru.nsu.fit.markelov.javafxutil.AlertBuilder.APPLICATION_LAUNCH_ERR
 public class PlayerApplication extends Application {
 
     private SceneManager sceneManager;
+    private VideoThread videoThread;
 
     /**
      * Launches JavaFX application.
@@ -38,8 +40,13 @@ public class PlayerApplication extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
+            UserManager userManager = new UserManager();
             sceneManager = new SceneManager(primaryStage, getHostServices(),
-                new FileChooserManager(primaryStage), new UserManager());
+                new FileChooserManager(primaryStage), userManager);
+
+            videoThread = new VideoThread(userManager);
+            videoThread.start();
+
             sceneManager.switchToPlayer();
             primaryStage.show();
         } catch (IllegalInputException e) {
@@ -58,6 +65,10 @@ public class PlayerApplication extends Application {
     public void stop() {
         if (sceneManager != null) {
             sceneManager.close();
+        }
+
+        if (videoThread != null) {
+            videoThread.interrupt();
         }
     }
 }
