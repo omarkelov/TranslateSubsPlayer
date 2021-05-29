@@ -9,17 +9,19 @@ public class VideoEditor {
     private static final boolean IS_WINDOWS =
         System.getProperty("os.name").toLowerCase().startsWith("windows");
 
-    private static final File FFMPEG_DIRECTORY = new File("C:\\ffmpeg\\bin\\"); // todo -hardcode
+    private static final File FFMPEG_DIRECTORY = new File("C:\\ffmpeg\\bin"); // todo -hardcode
 
-    public static String cutVideo(String videoFilePath, int audioChannel,
-                                  long startTime, long endTime) {
+    public static String cutVideo(ContextVideoInfo contextVideoInfo) {
         try {
             String newVideoFileName = UUID.randomUUID() + ".mp4";
 
             String command = String.format(
                 "ffmpeg -ss %dms -i \"%s\" -to %dms -c copy -map 0:v:0 -map 0:a:%d %s",
-                startTime, videoFilePath, endTime - startTime, audioChannel, newVideoFileName);
-            System.out.println(command);
+                contextVideoInfo.getStartTime(),
+                contextVideoInfo.getVideoFilePath(),
+                contextVideoInfo.getEndTime() - contextVideoInfo.getStartTime(),
+                contextVideoInfo.getAudioChannel(),
+                newVideoFileName);
 
             ProcessBuilder processBuilder = new ProcessBuilder();
             processBuilder.directory(FFMPEG_DIRECTORY);
@@ -38,7 +40,7 @@ public class VideoEditor {
                 return null;
             }
 
-            return FFMPEG_DIRECTORY + newVideoFileName;
+            return FFMPEG_DIRECTORY + "\\" + newVideoFileName;
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             return null;
