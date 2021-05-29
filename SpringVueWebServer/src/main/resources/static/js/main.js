@@ -22,13 +22,16 @@ const app = Vue.createApp({
             current_phrase_id: 0,
             text: '',
             phrase_clicked: null,
-            phrase_transl: [],
             phrase_main_translation: null,
             phrase_type: null,
             phrase_context: '',
             prev: '',
             key: '',
-            partOfSpeechOptions: []
+            partOfSpeechOptions: [],
+            startTime: null,
+            endTime: null,
+            allPhrases: [],
+            translateOptions: []
         }
     },
     beforeMount() {
@@ -135,8 +138,8 @@ const app = Vue.createApp({
         computedLines() {
             let lis = '';
             let lineHtml;
-            this.phrase_clicked = this.rawMovie.phrases[0].phrase.phrase;
-            this.phrase_main_translation = this.rawMovie.phrases[0].phrase.translation.main;
+            this.phrase_clicked = this.rawMovie.phrases[this.current_phrase_id].phrase.phrase;
+            this.phrase_main_translation = this.rawMovie.phrases[this.current_phrase_id].phrase.translation.main;
             for (let i = 0; i < this.rawMovie.lines.length; i++) {
                 lineHtml = this.rawMovie.lines[i].text;
                 for (let j = 0; j < this.rawMovie.phrases.length; j++) {
@@ -147,10 +150,30 @@ const app = Vue.createApp({
                 }
                 lis += `<div>` + lineHtml + ` ` + `</div>`;
             }
+
+            // make translation array
+            let transl;
+            if (this.rawMovie.phrases[1].phrase.translation.groups != null) {
+                this.rawMovie.phrases[1].phrase.translation.groups.forEach(group => {
+                    let typeP = group.partOfSpeech;
+                    let options = group.variants;
+                    transl = {
+                      type: typeP,
+                      options: options
+                    }
+                    this.translateOptions.push(transl);
+                })
+            } else {
+                transl = {
+                    type: 'phrase',
+                    options: [this.rawMovie.phrases[0].phrase.translation.main]
+                }
+                this.translateOptions.push(transl);
+            }
+
             return {
                 template: `<div>` + lis + `</div>`,
-                methods: {
-                }
+                methods: {}
             }
         }
     },
@@ -209,12 +232,12 @@ const app = Vue.createApp({
         },
         onRawMovieClicked(event) {
             let movieUrl = event.target.getAttribute('href');
-            fetch('/raw-movies/' , {method: 'GET'})
+            fetch('/raw-movies/', {method: 'GET'})
                 .then(response => response.json())
                 .then(json => this.showRawMovie(json));
         },
         showRawMovie(json) {
-            window.history.pushState({}, '', '/raw-movies/' + json.id);
+            window.history.pushState({}, '', '/raw-movies/' + raw_movieex.id);
             document.title = json.id + ' | Translate Subtitles Player';
             this.hideEverything();
             this.rawMovie = raw_movieex;
@@ -355,6 +378,25 @@ const app = Vue.createApp({
                 this.current_phrase_id = 0;
             }
             this.phrase_clicked = raw_movie.phrases[this.current_phrase_id].phrase.phrase;
+        },
+        addToAllPhrases() {
+            let newPhrase = {
+                phrase: this.phrase_clicked,
+                correctedPhrase: this.phrase_clicked,
+                translation: this.phrase_selected_transl
+            };
+            this.allPhrases.append(newPhrase);
+        },
+        addToDictionary() {
+            fetch('/contexts?movieName=New Movie', {
+                method: 'POST',
+                body: JSON.stringify({
+                    startTime: this.startTime,
+                    endTime: this.endTime,
+                    context: this.phrase_context,
+                    phrases: this.allPhrases
+                })
+            }).then(response => alert('status ' + response.status));
         }
     }
 });

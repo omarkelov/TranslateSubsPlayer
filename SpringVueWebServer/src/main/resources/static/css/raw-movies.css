@@ -79,10 +79,6 @@
     right: 45%;
 }
 
-#type-opt {
-    right: 20%;
-}
-
 .phrase p {
     display: inline-block;
     position: absolute;
@@ -102,10 +98,6 @@
     right: 45%;
 }
 
-#type-select {
-    right: 10%;
-}
-
 .text-all {
     margin: 20px;
     overflow-y:scroll;
@@ -116,6 +108,17 @@
     position: absolute;
     bottom: 10%;
     right: 7%;
+    height: 20px;
+    width: max-content;
+    border-radius: 10px;
+    border: 2px solid #000000;
+    padding: 3px 3px 3px 3px;
+}
+
+.create {
+    position: absolute;
+    bottom: 10%;
+    right: 27%;
     height: 20px;
     width: max-content;
     border-radius: 10px;

@@ -51,18 +51,18 @@
                                 <div class="opt-titles">
                                     <div id="phrase-opt">Phrase</div>
                                     <div id="translation-opt">Translation</div>
-                                    <div id="type-opt">Type</div>
                                 </div>
                                 <div class="phrase">
                                     <p id="phrase-select">{{ phrase_clicked }}</p>
                                     <p id="translation-select"><select name="selector-translation">
-                                        <option>{{phrase_main_translation}}</option>
-                                        <option v-for="tr in phrase_transl" v-bind:value="tr.variants[0]">{{tr.variants[0]}}</option>
+                                        <optgroup v-for="elem in translateOptions" label="elem.type">
+                                            <option v-for="opt in elem.options">{{opt}}</option>
+                                        </optgroup>
                                     </select></p>
-                                    <div id="type-select" name="selector-type" v-model="key">Part of speech</div>
                                 </div>
                             </div>
                             <div class="add-to-dict">Add to dictionary</div>
+                            <div class="create">Create</div>
                         </div>
                     </div>
 
