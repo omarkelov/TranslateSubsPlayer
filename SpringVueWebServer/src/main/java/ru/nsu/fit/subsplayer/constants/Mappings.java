@@ -13,4 +13,5 @@ public class Mappings {
     public static final String CONTEXT = "/context";
     public static final String PING = "/ping";
     public static final String VIDEO = "/video";
+    public static final String CONTEXT_VIDEO_INFO = "/context-video-info";
 }

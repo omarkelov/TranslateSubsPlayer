@@ -21,4 +21,15 @@ public interface ContextRepository extends CrudRepository<Context, Long> {
             WHERE p.id = :phraseId
         """)
     Context findByPhraseId(@Param("phraseId") Long phraseId);
+
+    @Query("""
+            SELECT c
+            FROM Context c
+            INNER JOIN Movie m
+                ON c.movieId = m.id
+            INNER JOIN User u
+                ON m.userId = u.id
+            WHERE u.id = :userId AND c.link IS NULL
+        """)
+    List<Context> findWithNoLink(@Param("userId") long userId);
 }
