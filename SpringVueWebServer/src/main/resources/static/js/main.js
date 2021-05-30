@@ -44,18 +44,27 @@ const app = Vue.createApp({
     },
     computed: {
         computedSubtitles() {
+            let rawMovie = this.rawMovie;
             let subtitles = '';
-            this.rawMovie.lines.forEach(line => {
+            for (let i = 0; i < this.rawMovie.lines.length; i++) {
+                let line = this.rawMovie.lines[i];
+                subtitle = line.text;
+                this.rawMovie.phrases.forEach(phrase => {
+                    if (phrase.phrase.lineId == i) { // todo optimize by making this cycle first?
+                        subtitle = subtitle.replace(phrase.phrase.phrase, '<span class="translated-phrase">' + phrase.phrase.phrase + '</span>');
+                    }
+                });
                 subtitles +=
                     '<div class="subtitle">' +
                         '<p class="subtitle-time"><span>' + line.start + '</span> --> <span>' + line.end + '</span></p>' +
-                        '<p class="subtitle-text" data-start-time="' + line.start + '" data-end-time="' + line.end + '" @mousedown="onSubtitlesTextMouseDown(' + line.start + ')" @mouseup="onSubtitlesTextMouseUp(' + line.end + ')">' + line.text + '</p>' +
+                        '<p class="subtitle-text" data-start-time="' + line.start + '" data-end-time="' + line.end + '" @mousedown="onSubtitlesTextMouseDown(' + line.start + ', ' + line.end + ')" @mouseup="onSubtitlesTextMouseUp(' + line.start + ', ' + line.end + ')">' + subtitle + '</p>' +
                     '</div>';
-            });
+            }
             return {
                 data() {
                     return {
-                        startTime: null
+                        startTime: null,
+                        endTime: null
                     }
                 },
                 methods: {
@@ -68,20 +77,45 @@ const app = Vue.createApp({
                         }
                         return '';
                     },
-                    onSubtitlesTextMouseDown(startTime) {
+                    onSubtitlesTextMouseDown(startTime, endTime) {
                         if (event.which != 1) {
                             return;
                         }
                         this.startTime = startTime;
+                        this.endTime = endTime;
                     },
-                    onSubtitlesTextMouseUp(endTime) {
+                    onSubtitlesTextMouseUp(startTime, endTime) {
                         if (event.which != 1) {
                             return;
                         }
                         let rawMovieContext = document.getElementById('raw-movie-context');
-                        rawMovieContext.value = this.getSelectedText().replace(/[\r\n]+/g, ' ');
+                        let selectedText = this.getSelectedText();
+                        if (!selectedText) {
+                            return;
+                        }
+                        let rawMoviePhrases = document.getElementById('raw-movie-phrases-body');
+                        rawMoviePhrases.innerHTML =
+                            '<tr>' +
+                                '<th><label>Phrase</label></th>' +
+                                '<th><label>Corrected Phrase</label></th>' +
+                                '<th><label>Translation</label></th>' +
+                            '</tr>';
+                        let plainSelectedText = selectedText;
+                        rawMovie.phrases.forEach(phrase => {
+                            if (plainSelectedText.includes(phrase.phrase.phrase)) {
+                                rawMoviePhrases.innerHTML +=
+                                    '<tr>' +
+                                        '<td><input type="text" value="' + phrase.phrase.phrase + '" readonly></input></td>' +
+                                        '<td><input type="text" value="' + phrase.phrase.phrase + '"></input></td>' +
+                                        '<td><input type="text"></input></td>' +
+                                    '</tr>';
+                            }
+                            selectedText = selectedText.replace(phrase.phrase.phrase, '<span class="translated-phrase">' + phrase.phrase.phrase + '</span>');
+                        });
+                        rawMovieContext.innerHTML = selectedText.replace(/[\r\n]+/g, ' ');
                         rawMovieContext.dispatchEvent(new Event('input'));
-//                        alert(this.startTime + ' --> ' + endTime);
+                        rawMovieContext.setAttribute('data-start-time', Math.min(this.startTime, this.endTime, startTime, endTime));
+                        rawMovieContext.setAttribute('data-end-time', Math.max(this.startTime, this.endTime, startTime, endTime));
                     }
                 },
                 template: '<div id="raw-movie-subtitles" class="raw-movie-subtitles" style="height: ' + this.getRawMovieBoxHeight() + 'px">' + subtitles + '</div>'
@@ -305,6 +339,11 @@ const app = Vue.createApp({
                     cont.style.display = "block";
                 }
             } else alert("Элемент с id: " + element_id + " не найден!");
+        },
+        addToDictionary() {
+            let rawMovieContext = document.getElementById('raw-movie-context');
+            alert(rawMovieContext.getAttribute('data-start-time'));
+            alert(rawMovieContext.getAttribute('data-end-time'));
         },
         hideHint(element_id){
             if (document.getElementById(element_id)) {

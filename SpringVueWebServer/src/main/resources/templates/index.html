@@ -45,9 +45,10 @@
                         </div>
                         <div class="raw-movie-half">
                             <h6>Context</h6>
-                            <textarea id="raw-movie-context" class="raw-movie-context" @input="resizeRawMovieContext">Select some subtitles from the left section</textarea>
+                            <div id="raw-movie-context" class="raw-movie-context" contenteditable="true" @input="resizeRawMovieContext">Select some subtitles from the left section</div>
                             <h6>Phrases</h6>
-                            <div class="raw-movie-phrases"></div>
+                            <table class="raw-movie-phrases"><tbody id="raw-movie-phrases-body"></tbody></table>
+                            <button class="add-to-dictionary-button" @click.prevent="addToDictionary">Add to dictionary</button>
                         </div>
                     </div>
                     <div id="movies-content" class="content" v-if="movies">

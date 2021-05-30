@@ -33,6 +33,10 @@
     min-height: 100px;
 }
 
+.translated-phrase {
+    background: green;
+}
+
 .raw-movie-subtitles {
 
 }
@@ -51,4 +55,19 @@
     resize: none;
     max-height: 250px;
     font: 18px Trebuchet MS, sans-serif;
+}
+
+.raw-movie-phrases {
+    box-sizing: border-box;
+    margin: 10px;
+    width: calc(100% - 20px);
+}
+
+.raw-movie-phrases input {
+    width: 98%;
+}
+
+.add-to-dictionary-button {
+    display: block;
+    margin: 10px auto;
 }
