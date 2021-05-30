@@ -4,8 +4,9 @@
         <meta charset="utf-8">
         <title>Translate Subtitles Player</title>
         <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+        <link rel="stylesheet" href="/css/reset.css">
         <link rel="stylesheet" href="/css/main.css">
-        <link rel="stylesheet" href="/css/raw-movies.css">
+        <link rel="stylesheet" href="/css/raw-movie.css">
         <script th:inline="javascript">
             var serverUsername = /*[[${username}]]*/ null;
             var serverMovies = /*[[${movies}]]*/ null;
@@ -18,16 +19,37 @@
     </head>
     <body>
         <div id="vue-app">
-            <div id="main" v-if="username">
-                <nav id="navigation">
+            <div id="main" class="shell" v-if="username">
+                <nav id="navigation" class="nav-bar">
                     <a href="/raw-movies/" @click.prevent="onRawMoviesClicked">Raw Movies</a>
-                    <br>
                     <a href="/movies/" @click.prevent="onMoviesClicked">Movies</a>
-                    <br>
                     <a href="/logout/" @click.prevent="onLogoutClicked">Logout ({{ username }})</a>
                 </nav>
                 <div id="content">
-
+                    <div id="raw-movies-content" class="content" v-if="rawMovies">
+                        <ul id="raw-movie-list">
+                            <li v-for="rawMovie in rawMovies">
+                                <a v-bind:href="'raw-movies/' + rawMovie.id" @click.prevent="onRawMovieClicked">{{ rawMovie.videoFilePath }}</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="raw-movie-content" class="content" v-if="rawMovie">
+                        <div class="raw-movie-dictionary">
+                            <label>Dictionary:</label>
+                            <input type="search" list="dictionary-data-list" placeholder="Select a dictionary or create a new one"/>
+                            <datalist id="dictionary-data-list"></datalist>
+                        </div>
+                        <div class="raw-movie-half">
+                            <h6>Subtitles</h6>
+                            <component v-bind:is="computedSubtitles"></component>
+                        </div>
+                        <div class="raw-movie-half">
+                            <h6>Context</h6>
+                            <textarea id="raw-movie-context" class="raw-movie-context" @input="resizeRawMovieContext">Select some subtitles from the left section</textarea>
+                            <h6>Phrases</h6>
+                            <div class="raw-movie-phrases"></div>
+                        </div>
+                    </div>
                     <div id="movies-content" class="content" v-if="movies">
                         <ul id="movie-list">
                             <li v-for="movie in movies">
@@ -35,7 +57,7 @@
                             </li>
                         </ul>
                     </div>
-                    <div id="movie-content" class="content all" v-if="movie">
+                    <div id="movie-content" class="content" v-if="movie">
                         <h1 class="header">{{ movie.name }}</h1>
                         <component v-bind:is="computedContexts"></component>
                         <a v-bind:href="'/movies/' + movie.name + '/test'" @click.prevent="onTestClicked">Test</a>

@@ -1,0 +1,20 @@
+body {
+    font: 18px Trebuchet MS, sans-serif;
+    background: #d9c39c;
+}
+
+.shell {
+    position: relative;
+    overflow: hidden;
+    max-width: 1400px;
+    width: 80%;
+    margin: 20px auto;
+}
+
+.nav-bar > a {
+    margin: 0 10px;
+}
+
+.nav-bar > a:last-of-type {
+    float: right;
+}

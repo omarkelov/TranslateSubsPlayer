@@ -39,7 +39,54 @@ const app = Vue.createApp({
             this.showLogin();
         }
     },
+    created() {
+        window.addEventListener("resize", this.onWindowResize);
+    },
     computed: {
+        computedSubtitles() {
+            let subtitles = '';
+            this.rawMovie.lines.forEach(line => {
+                subtitles +=
+                    '<div class="subtitle">' +
+                        '<p class="subtitle-time"><span>' + line.start + '</span> --> <span>' + line.end + '</span></p>' +
+                        '<p class="subtitle-text" data-start-time="' + line.start + '" data-end-time="' + line.end + '" @mousedown="onSubtitlesTextMouseDown(' + line.start + ')" @mouseup="onSubtitlesTextMouseUp(' + line.end + ')">' + line.text + '</p>' +
+                    '</div>';
+            });
+            return {
+                data() {
+                    return {
+                        startTime: null
+                    }
+                },
+                methods: {
+                    getSelectedText() {
+                        if (window.getSelection) {
+                            return window.getSelection().toString();
+                        }
+                        if (document.selection && document.selection.type != 'Control') {
+                            return document.selection.createRange().text;
+                        }
+                        return '';
+                    },
+                    onSubtitlesTextMouseDown(startTime) {
+                        if (event.which != 1) {
+                            return;
+                        }
+                        this.startTime = startTime;
+                    },
+                    onSubtitlesTextMouseUp(endTime) {
+                        if (event.which != 1) {
+                            return;
+                        }
+                        let rawMovieContext = document.getElementById('raw-movie-context');
+                        rawMovieContext.value = this.getSelectedText().replace(/[\r\n]+/g, ' ');
+                        rawMovieContext.dispatchEvent(new Event('input'));
+//                        alert(this.startTime + ' --> ' + endTime);
+                    }
+                },
+                template: '<div id="raw-movie-subtitles" class="raw-movie-subtitles" style="height: ' + this.getRawMovieBoxHeight() + 'px">' + subtitles + '</div>'
+            }
+        },
         computedContexts() {
             let lis = '';
             this.movie.contexts.forEach(context => {
@@ -110,6 +157,24 @@ const app = Vue.createApp({
         }
     },
     methods: {
+        onWindowResize(e) {
+            let rawMovieSubtitles = document.getElementById('raw-movie-subtitles');
+            if (rawMovieSubtitles) {
+                rawMovieSubtitles.setAttribute('style', 'height: ' + this.getRawMovieBoxHeight() + 'px');
+            }
+            let rawMovieContext = document.getElementById('raw-movie-context');
+            if (rawMovieContext) {
+                rawMovieContext.setAttribute('style', 'height: ' + this.getRawMovieBoxHeight() + 'px');
+            }
+        },
+        getRawMovieBoxHeight() {
+            return window.innerHeight - 175;
+        },
+        resizeRawMovieContext() {
+            let rawMovieContext = document.getElementById('raw-movie-context');
+            rawMovieContext.style.height = '100px';
+            rawMovieContext.style.height = (rawMovieContext.scrollHeight + 10) + 'px';
+        },
         onLoginClicked() {
             fetch('/login', {
                 method: 'POST',
@@ -145,21 +210,41 @@ const app = Vue.createApp({
             document.title = 'Login | Translate Subtitles Player';
         },
         hideEverything() {
+            this.rawMovies = null;
+            this.rawMovie = null;
             this.movies = null;
             this.movie = null;
             this.test = null;
         },
         onRawMoviesClicked(event) {
-            // todo
+            fetch('/raw-movies/', {method: 'GET'})
+                .then(response => response.json())
+                .then(json => this.showRawMovies(json));
         },
         showRawMovies(json) {
-            // todo
+            window.history.pushState({}, '', '/raw-movies');
+            document.title = 'Raw Movies | Translate Subtitles Player';
+            this.hideEverything();
+            this.rawMovies = json;
         },
         onRawMovieClicked(event) {
-            // todo
+            let rawMovieUrl = event.target.getAttribute('href');
+                fetch(rawMovieUrl, {method: 'GET'})
+                    .then(response => response.json())
+                    .then(json => this.showRawMovie(json));
         },
         showRawMovie(json) {
-            // todo
+            window.history.pushState({}, '', '/raw-movies/' + json.id);
+            document.title = json.videoFilePath + ' | Translate Subtitles Player';
+            this.hideEverything();
+            this.rawMovie = json;
+            fetch('/movies/', {method: 'GET'})
+                .then(response => response.json())
+                .then(json => {
+                    let options = '';
+                    json.forEach(movie => options += '<option value="' + movie.name + '"/>');
+                    document.getElementById('dictionary-data-list').innerHTML = options;
+                });
         },
         onMoviesClicked() {
             fetch('/movies/', {method: 'GET'})
@@ -183,7 +268,7 @@ const app = Vue.createApp({
             document.title = json.name + ' | Translate Subtitles Player';
             this.hideEverything();
             this.movie = json;
-            this.testData = json;
+            this.testData = json; // todo!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         },
         onTestClicked(event) {
             let testUrl = event.target.getAttribute('href');
