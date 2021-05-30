@@ -19,7 +19,7 @@
     background: rgba(255, 255, 0, 0.2);
 }
 
-.raw-movie-half > h6 {
+.raw-movie-half h6 {
     text-align: center;
 }
 
@@ -63,8 +63,25 @@
     width: calc(100% - 20px);
 }
 
+.raw-movie-phrases td {
+    vertical-align:middle;
+}
+
 .raw-movie-phrases input {
     width: 98%;
+}
+
+.raw-movie-phrases select {
+    padding: 2.5px 0;
+    width: 100%;
+}
+
+.raw-movie-phrases-delete-row {
+    margin: auto;
+    width: 16px;
+    height: 16px;
+    background: url('../images/delete-cross.png');
+    cursor: pointer;
 }
 
 .add-to-dictionary-button {

@@ -36,7 +36,7 @@
                     <div id="raw-movie-content" class="content" v-if="rawMovie">
                         <div class="raw-movie-dictionary">
                             <label>Dictionary:</label>
-                            <input type="search" list="dictionary-data-list" placeholder="Select a dictionary or create a new one"/>
+                            <input id="dictionary" type="search" list="dictionary-data-list" placeholder="Select a dictionary or create a new one"/>
                             <datalist id="dictionary-data-list"></datalist>
                         </div>
                         <div class="raw-movie-half">
@@ -44,11 +44,15 @@
                             <component v-bind:is="computedSubtitles"></component>
                         </div>
                         <div class="raw-movie-half">
-                            <h6>Context</h6>
-                            <div id="raw-movie-context" class="raw-movie-context" contenteditable="true" @input="resizeRawMovieContext">Select some subtitles from the left section</div>
-                            <h6>Phrases</h6>
-                            <table class="raw-movie-phrases"><tbody id="raw-movie-phrases-body"></tbody></table>
-                            <button class="add-to-dictionary-button" @click.prevent="addToDictionary">Add to dictionary</button>
+                            <div>
+                                <h6>Context</h6>
+                                <div id="raw-movie-context" class="raw-movie-context" contenteditable="true" @input="resizeRawMovieContext">Select some subtitles from the left section</div>
+                            </div>
+                            <div id="raw-movie-phrases-shell" style="display: none;">
+                                <h6>Phrases</h6>
+                                <table class="raw-movie-phrases"><tbody id="raw-movie-phrases-body"></tbody></table>
+                                <button class="add-to-dictionary-button" @click.prevent="addToDictionary">Add to dictionary</button>
+                            </div>
                         </div>
                     </div>
                     <div id="movies-content" class="content" v-if="movies">

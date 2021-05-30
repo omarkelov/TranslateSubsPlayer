@@ -46,10 +46,10 @@ const app = Vue.createApp({
         computedSubtitles() {
             let rawMovie = this.rawMovie;
             let subtitles = '';
-            for (let i = 0; i < this.rawMovie.lines.length; i++) {
-                let line = this.rawMovie.lines[i];
+            for (let i = 0; i < rawMovie.lines.length; i++) {
+                let line = rawMovie.lines[i];
                 subtitle = line.text;
-                this.rawMovie.phrases.forEach(phrase => {
+                rawMovie.phrases.forEach(phrase => {
                     if (phrase.phrase.lineId == i) { // todo optimize by making this cycle first?
                         subtitle = subtitle.replace(phrase.phrase.phrase, '<span class="translated-phrase">' + phrase.phrase.phrase + '</span>');
                     }
@@ -77,6 +77,17 @@ const app = Vue.createApp({
                         }
                         return '';
                     },
+                    clearSelection() {
+                        if (window.getSelection) {
+                            if (window.getSelection().empty) {
+                                window.getSelection().empty();
+                            } else if (window.getSelection().removeAllRanges) {
+                                window.getSelection().removeAllRanges();
+                            }
+                        } else if (document.selection) {
+                            document.selection.empty();
+                        }
+                    },
                     onSubtitlesTextMouseDown(startTime, endTime) {
                         if (event.which != 1) {
                             return;
@@ -90,6 +101,7 @@ const app = Vue.createApp({
                         }
                         let rawMovieContext = document.getElementById('raw-movie-context');
                         let selectedText = this.getSelectedText();
+                        //this.clearSelection();
                         if (!selectedText) {
                             return;
                         }
@@ -101,21 +113,50 @@ const app = Vue.createApp({
                                 '<th><label>Translation</label></th>' +
                             '</tr>';
                         let plainSelectedText = selectedText;
+                        let phrasesPresent = false;
                         rawMovie.phrases.forEach(phrase => {
                             if (plainSelectedText.includes(phrase.phrase.phrase)) {
+                                phrasesPresent = true;
+                                let translation;
+                                if (!phrase.phrase.translation.groups || phrase.phrase.translation.groups.length == 0) {
+                                    translation = '<input type="text" value="' + phrase.phrase.translation.main + '"></input>';
+                                } else {
+                                    let optgroups = '<optgroup label="main"><option>' + phrase.phrase.translation.main + '</option></optgroup>';
+                                    phrase.phrase.translation.groups.forEach(group => {
+                                        if (!group.variants || group.variants.length == 0) {
+                                            return;
+                                        }
+                                        let options = '';
+                                        group.variants.forEach(variant => options += '<option>' + variant + '</option>');
+                                        optgroups +=
+                                            '<optgroup label="' + group.partOfSpeech + '">' + options + '</optgroup>';
+                                    });
+                                    translation = '<select type="text">' + optgroups + '</select>';
+                                }
                                 rawMoviePhrases.innerHTML +=
                                     '<tr>' +
                                         '<td><input type="text" value="' + phrase.phrase.phrase + '" readonly></input></td>' +
                                         '<td><input type="text" value="' + phrase.phrase.phrase + '"></input></td>' +
-                                        '<td><input type="text"></input></td>' +
+                                        '<td>' + translation + '</td>' +
+                                        '<td><div class="raw-movie-phrases-delete-row"' +
+                                                  'onclick="this.parentElement.parentElement.remove();' +
+                                                           'if (document.getElementById(\'raw-movie-phrases-body\').rows.length < 2) {' +
+                                                               'document.getElementById(\'raw-movie-phrases-shell\').style.display = \'none\';' +
+                                                               'document.getElementById(\'raw-movie-context\').innerHTML = \'Select some subtitles from the left section\';' +
+                                                           '}"></div></td>' +
                                     '</tr>';
                             }
                             selectedText = selectedText.replace(phrase.phrase.phrase, '<span class="translated-phrase">' + phrase.phrase.phrase + '</span>');
                         });
+                        if (!phrasesPresent) {
+                            rawMovieContext.innerHTML = 'You should select subtitles with translated phrases';
+                            return;
+                        }
                         rawMovieContext.innerHTML = selectedText.replace(/[\r\n]+/g, ' ');
                         rawMovieContext.dispatchEvent(new Event('input'));
                         rawMovieContext.setAttribute('data-start-time', Math.min(this.startTime, this.endTime, startTime, endTime));
                         rawMovieContext.setAttribute('data-end-time', Math.max(this.startTime, this.endTime, startTime, endTime));
+                        document.getElementById('raw-movie-phrases-shell').style.display = 'block';
                     }
                 },
                 template: '<div id="raw-movie-subtitles" class="raw-movie-subtitles" style="height: ' + this.getRawMovieBoxHeight() + 'px">' + subtitles + '</div>'
@@ -341,9 +382,65 @@ const app = Vue.createApp({
             } else alert("Элемент с id: " + element_id + " не найден!");
         },
         addToDictionary() {
-            let rawMovieContext = document.getElementById('raw-movie-context');
-            alert(rawMovieContext.getAttribute('data-start-time'));
-            alert(rawMovieContext.getAttribute('data-end-time'));
+            let dictionarySelect = document.getElementById('dictionary');
+            if (!dictionarySelect.value) {
+                alert('You must provide dictionary name');
+                return;
+            }
+            let movie = {
+                name: dictionarySelect.value,
+                videoFilePath: this.rawMovie.videoFilePath,
+                lang: 'en'
+            };
+            fetch('/movies', {
+                method: 'PUT',
+                body: JSON.stringify(movie)
+            }).then(response => {
+                if (response.status != 204) {
+                    alert('Could not create a dictionary: status code is ' + response.status);
+                    return;
+                }
+                let rawMovieContext = document.getElementById('raw-movie-context');
+                let context = {
+                    startTime: rawMovieContext.getAttribute('data-start-time'),
+                    endTime: rawMovieContext.getAttribute('data-end-time'),
+                    context: document.getElementById('raw-movie-context').innerHTML.replace(/(<([^>]+)>)/ig, ''),
+                    phrases: []
+                };
+                let table = document.getElementById('raw-movie-phrases-body');
+                for (let i = 1, row; row = table.rows[i]; i++) {
+                    let type = null;
+                    let translation = null;
+                    let translationNode = row.cells[2].firstChild;
+                    if (translationNode.tagName == 'INPUT') {
+                        translation = translationNode.value;
+                    } else {
+                        translation = translationNode.options[translationNode.selectedIndex].text;
+                        type = translationNode.querySelector('option:checked').parentElement.label;
+                        if (type == 'main') {
+                            type = null;
+                        }
+                    }
+                    context.phrases.push({
+                        phrase: row.cells[0].firstChild.value,
+                        correctedPhrase: row.cells[1].firstChild.value,
+                        type: type,
+                        translation: translation
+                    });
+                }
+                fetch('/contexts?movieName=' + movie.name, {
+                    method: 'POST',
+                    body: JSON.stringify(context)
+                }).then(response => {
+                    if (response.status != 204) {
+                        alert('Could not create a context: status code is ' + response.status);
+                        return;
+                    }
+                    document.getElementById('raw-movie-context').innerHTML = 'Select some subtitles from the left section';
+                    document.getElementById('raw-movie-phrases-shell').style.display = 'none';
+                    alert('The context is successfully created');
+                });
+            });
         },
         hideHint(element_id){
             if (document.getElementById(element_id)) {
