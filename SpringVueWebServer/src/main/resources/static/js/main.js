@@ -7,17 +7,11 @@ const app = Vue.createApp({
             movies: null,
             movie: null,
             test: null,
-            phraseTest: null,
 
             loginFormName: '',
             loginFormPassword: '',
 
-            testPhraseTranslation: '',
-            testPhraseContext: '',
-            testData: null,
-            indexTest: null,
-            currentIndexCount: null,
-            tooltip: null
+            tooltip: null // todo
         }
     },
     beforeMount() {
@@ -343,7 +337,6 @@ const app = Vue.createApp({
             document.title = json.name + ' | Translate Subtitles Player';
             this.hideEverything();
             this.movie = json;
-            this.testData = json; // todo!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         },
         onTestClicked(event) {
             let testUrl = event.target.getAttribute('href');
@@ -356,19 +349,45 @@ const app = Vue.createApp({
             document.title = json.name + ' Test | Translate Subtitles Player';
             this.hideEverything();
             this.test = json;
-            this.currentIndexCount = 0;
-            this.indexTest = this.test.phraseIds[this.currentIndexCount];
-            this.testData.contexts.forEach(context => {
-                for (let i = 0; i <context.phrases.length; i++){
-                    if (context.phrases[i].id === this.indexTest){
-                        this.testPhraseContext = context.context;
-                        this.testPhraseTranslation = context.phrases[i].translation;
-                    }
-                }
-                }
-            );
+            this.test['phraseIndex'] = 0;
+            this.test['phraseTested'] = null;
+            this.showNextTestPhrase();
         },
-        showHideContext(element_id) {
+        showNextTestPhrase() {
+            if (this.test.phraseIndex >= this.test.phraseIds.length) {
+                alert("You've completed the test");
+                return;
+            }
+            fetch('/context?phraseId=' + this.test.phraseIds[this.test.phraseIndex], {method: 'GET'})
+                .then(response => response.json())
+                .then(json => {
+                    this.test['context'] = json;
+                    json.phrases.forEach(phrase => {
+                        if (phrase.id == this.test.phraseIds[this.test.phraseIndex]) {
+                            this.test['phrase'] = phrase;
+                        }
+                    });
+                    this.test.phraseIndex++;
+                    this.test.userTranslation = ''
+                    this.test.phraseTested = false;
+                });
+        },
+        onForgetTranslationButtonClicked() {
+            this.onTranslationButtonClicked(false);
+        },
+        onSubmitTranslationButtonClicked() {
+            let isCorrect = this.test.userTranslation == this.test.phrase.phrase || this.test.userTranslation == this.test.phrase.correctedPhrase;
+            alert('You are ' + (isCorrect ? 'correct' : 'wrong'));
+            this.onTranslationButtonClicked(isCorrect);
+        },
+        onTranslationButtonClicked(isCorrect) {
+            this.test.phraseTested = true;
+            fetch('/phrases/' + this.test.phrase.id + '?correct=' + isCorrect, {method: 'PATCH'}); // todo check
+        },
+        onNextPhraseButtonClicked() {
+            this.showNextTestPhrase();
+        },
+        showHideContext(element_id) { // todo
             if (document.getElementById(element_id)) {
                 let obj = document.getElementById(element_id);
                 let cont = document.getElementById("show-context");
@@ -442,7 +461,7 @@ const app = Vue.createApp({
                 });
             });
         },
-        hideHint(element_id){
+        hideHint(element_id){ // todo
             if (document.getElementById(element_id)) {
                 let obj = document.getElementById(element_id);
                 let cont = document.getElementById("show-context");
@@ -450,34 +469,7 @@ const app = Vue.createApp({
                 cont.style.display = "block";
             } else alert("Элемент с id: " + element_id + " не найден!");
         },
-        knowWord(event) {
-            alert("Know this word");
-            this.changePhrase();
-
-        },
-        doNotKnowWord(event) {
-            alert("Don't know this word");
-            this.changePhrase();
-        },
-        changePhrase() {
-            this.hideHint('block_id');
-            this.currentIndexCount++;
-            if (this.currentIndexCount < this.test.phraseIds.length){
-                this.indexTest = this.test.phraseIds[this.currentIndexCount];
-                this.testData.contexts.forEach(context => {
-                        for (let i = 0; i <context.phrases.length; i++){
-                            if (context.phrases[i].id === this.indexTest){
-                                this.testPhraseContext = context.context;
-                                this.testPhraseTranslation = context.phrases[i].translation;
-                            }
-                        }
-                    }
-                );
-            } else {
-                alert("You've completed the test");
-            }
-        },
-        toggle() {
+        toggle() { // todo
             let trailer = document.querySelector(".trailer")
             let video = document.querySelector("video")
             trailer.classList.toggle("active");

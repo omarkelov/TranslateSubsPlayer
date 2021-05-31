@@ -7,6 +7,7 @@
         <link rel="stylesheet" href="/css/reset.css">
         <link rel="stylesheet" href="/css/main.css">
         <link rel="stylesheet" href="/css/raw-movie.css">
+        <link rel="stylesheet" href="/css/test.css">
         <script th:inline="javascript">
             var serverUsername = /*[[${username}]]*/ null;
             var serverMovies = /*[[${movies}]]*/ null;
@@ -68,22 +69,16 @@
                         <a v-bind:href="'/movies/' + movie.name + '/test'" @click.prevent="onTestClicked">Test</a>
                     </div>
                     <div id="test-content" class="content" v-if="test">
-                        <h1 class="header-test">Test: "{{ test.name }}"</h1>
-                        <div class="word-video">
-                            <span class="word-translation"> {{testPhraseTranslation}} </span>
-                            <img class="image" src="1.jpg" @click.prevent="toggle" alt="video">
+                        <h1 class="test-header">Test: "{{ test.name }}"</h1>
+                        <div v-if="test.phrase">
+                            <p>Enter the translation of "{{ test.phrase.translation }}"</p>
+                            <input type="text" v-model="test.userTranslation" :disabled="test.phraseTested">
+                            <button @click.prevent="onSubmitTranslationButtonClicked" :disabled="test.phraseTested">Submit</button>
+                            <button @click.prevent="onForgetTranslationButtonClicked" :disabled="test.phraseTested">View the answer</button>
                         </div>
-                        <div class="context" @click.prevent="showHideContext('block_id')">
-                            <p class="text" id="show-context">Show context</p>
-                            <p class="text" id="block_id" style="display: none;"> {{testPhraseContext}} </p>
-                        </div>
-                        <div class="actions">
-                            <img class="action-button ok" src="ok.png" @click.prevent="knowWord" alt="ok">
-                            <img class="action-button not" src="close.png" @click.prevent="doNotKnowWord" alt="not">
-                        </div>
-                        <div class="trailer">
-                            <video src="sea.mp4" controls="controls"></video>
-                            <img src="close.png" class="close" @click.prevent="toggle">
+                        <div v-if="test.phraseTested">
+                            <span>Context</span>
+                            <button id="test-next-phrase-button" @click.prevent="onNextPhraseButtonClicked">Next phrase</button>
                         </div>
                     </div>
                 </div>
