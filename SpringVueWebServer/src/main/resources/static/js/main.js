@@ -321,6 +321,20 @@ const app = Vue.createApp({
             this.hideEverything();
             this.rawMovies = json;
         },
+        removeRawMovie() {
+            if (confirm('Are you sure you want to delete this raw movie?')) {
+                let target = event.target;
+                let rawMovieId = target.getAttribute("data-raw-movie-id");
+                fetch('/raw-movies/' + rawMovieId, {method: 'DELETE'})
+                    .then(response => {
+                        if (response.status == 204) {
+                            target.parentNode.parentNode.remove();
+                        } else {
+                            alert('Cannot remove the raw movie: status code is ' + response.status);
+                        }
+                    });
+            }
+        },
         onRawMovieClicked(event) {
             let rawMovieUrl = event.target.getAttribute('href');
                 fetch(rawMovieUrl, {method: 'GET'})
@@ -379,8 +393,8 @@ const app = Vue.createApp({
                     '</span>');
             });
             let contextButtons = actionsAllowed ?
-                '<div class="context-buttons"><div class="context-video-button" @click="watchContextVideo(\'' + context.link + '\')"></div><div class="context-remove-button" data-context-id="' + context.id + '" @click="removeContext"></div></div>' :
-                '<div class="context-video-button" @click="watchContextVideo(\'' + context.link + '\')"></div>';
+                '<div class="context-buttons"><div class="video-button" @click="watchContextVideo(\'' + context.link + '\')"></div><div class="remove-button" data-context-id="' + context.id + '" @click="removeContext"></div></div>' :
+                '<div class="video-button" @click="watchContextVideo(\'' + context.link + '\')"></div>';
             return '<span>' + contextHtml + '</span>' + contextButtons;
         },
         onTestClicked(event) {

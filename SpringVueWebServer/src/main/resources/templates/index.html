@@ -7,6 +7,7 @@
         <link rel="stylesheet" href="/css/reset.css">
         <link rel="stylesheet" href="/css/main.css">
         <link rel="stylesheet" href="/css/tooltip.css">
+        <link rel="stylesheet" href="/css/raw-movies.css">
         <link rel="stylesheet" href="/css/raw-movie.css">
         <link rel="stylesheet" href="/css/movie.css">
         <link rel="stylesheet" href="/css/test.css">
@@ -31,8 +32,11 @@
                 <div id="content">
                     <div id="raw-movies-content" class="content" v-if="rawMovies">
                         <ul id="raw-movie-list">
-                            <li v-for="rawMovie in rawMovies">
+                            <li class="raw-movie" v-for="rawMovie in rawMovies">
                                 <a v-bind:href="'raw-movies/' + rawMovie.id" @click.prevent="onRawMovieClicked">{{ rawMovie.videoFilePath }}</a>
+                                <div class="context-buttons">
+                                    <div class="remove-button" v-bind:data-raw-movie-id="rawMovie.id" @click="removeRawMovie"></div>
+                                </div>
                             </li>
                         </ul>
                     </div>
