@@ -365,6 +365,20 @@ const app = Vue.createApp({
             this.hideEverything();
             this.movies = json;
         },
+        removeMovie() {
+            if (confirm('Are you sure you want to delete this movie?')) {
+                let target = event.target;
+                let movieName = target.getAttribute("data-movie-name");
+                fetch('/movies/' + movieName, {method: 'DELETE'})
+                    .then(response => {
+                        if (response.status == 204) {
+                            target.parentNode.parentNode.remove();
+                        } else {
+                            alert('Cannot remove the movie: status code is ' + response.status);
+                        }
+                    });
+            }
+        },
         onMovieClicked(event) {
             let movieUrl = event.target.getAttribute('href');
             fetch(movieUrl, {method: 'GET'})
@@ -393,7 +407,7 @@ const app = Vue.createApp({
                     '</span>');
             });
             let contextButtons = actionsAllowed ?
-                '<div class="context-buttons"><div class="video-button" @click="watchContextVideo(\'' + context.link + '\')"></div><div class="remove-button" data-context-id="' + context.id + '" @click="removeContext"></div></div>' :
+                '<div class="action-buttons"><div class="video-button" @click="watchContextVideo(\'' + context.link + '\')"></div><div class="remove-button" data-context-id="' + context.id + '" @click="removeContext"></div></div>' :
                 '<div class="video-button" @click="watchContextVideo(\'' + context.link + '\')"></div>';
             return '<span>' + contextHtml + '</span>' + contextButtons;
         },
