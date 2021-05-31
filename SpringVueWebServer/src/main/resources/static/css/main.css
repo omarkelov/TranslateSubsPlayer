@@ -18,3 +18,58 @@ body {
 .nav-bar > a:last-of-type {
     float: right;
 }
+
+.translated-phrase {
+    background: green;
+}
+
+.context-buttons {
+    display: none;
+}
+
+.context-video-button, .context-remove-button {
+    display: inline-block;
+    margin: 0 3px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.context-video-button {
+    background: url(../images/video.png);
+}
+
+.context-remove-button {
+    background: url(../images/delete-cross.png);
+}
+
+.player {
+    display: table-cell;
+    text-align: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    overflow: auto;
+    background: rgba(0, 0, 0, 0.75);
+}
+
+.player video {
+    margin-top: 20px;
+    height: calc(100% - 40px);
+}
+
+.close-player-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 48px;
+    height: 48px;
+    background: url('../images/player-close.png');
+    cursor: pointer;
+}
+
+.close-player-button:hover {
+    background: url('../images/player-close-hover.png');
+}

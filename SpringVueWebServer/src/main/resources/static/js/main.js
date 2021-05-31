@@ -11,7 +11,8 @@ const app = Vue.createApp({
             loginFormName: '',
             loginFormPassword: '',
 
-            tooltipElem: null
+            tooltipElem: null,
+            contextVideoLink: null
         }
     },
     beforeMount() {
@@ -35,6 +36,11 @@ const app = Vue.createApp({
     },
     created() {
         window.addEventListener("resize", this.onWindowResize);
+    },
+    updated() {
+        if (this.contextVideoLink) {
+            document.getElementById('player-video').play();
+        }
     },
     computed: {
         computedSubtitles() {
@@ -159,14 +165,18 @@ const app = Vue.createApp({
         computedTestContext() {
             let showTooltipFunction = this.showTooltip;
             let hideTooltipFunction = this.hideTooltip;
+            let showVideoFunction = this.showVideo;
             return {
-                template: '<div>' + this.generateContextHtml(this.test.context, false) + '</div>',
+                template: '<div class="test-context">' + this.generateContextHtml(this.test.context, false) + '</div>',
                 methods: {
                     showTooltip() {
                         showTooltipFunction(event.target);
                     },
                     hideTooltip() {
                         hideTooltipFunction();
+                    },
+                    watchContextVideo(contextVideoLink) {
+                        showVideoFunction(contextVideoLink);
                     }
                 }
             }
@@ -174,10 +184,11 @@ const app = Vue.createApp({
         computedContexts() {
             let lis = '';
             this.movie.contexts.forEach(context => {
-                lis += '<li>' + this.generateContextHtml(context, true) + '</li>'
+                lis += '<li class="movie-context">' + this.generateContextHtml(context, true) + '</li>'
             });
             let showTooltipFunction = this.showTooltip;
             let hideTooltipFunction = this.hideTooltip;
+            let showVideoFunction = this.showVideo;
             return {
                 template: '<ol>' + lis + '</ol>',
                 methods: {
@@ -186,15 +197,40 @@ const app = Vue.createApp({
                     },
                     hideTooltip() {
                         hideTooltipFunction();
+                    },
+                    watchContextVideo(contextVideoLink) {
+                        showVideoFunction(contextVideoLink);
+                    },
+                    removeContext() {
+                        if (confirm('Are you sure you want to delete this context?')) {
+                            let target = event.target;
+                            let contextId = target.getAttribute("data-context-id");
+                            fetch('/contexts/' + contextId, {method: 'DELETE'})
+                                .then(response => {
+                                    if (response.status == 204) {
+                                        target.parentNode.parentNode.remove();
+                                    } else {
+                                        alert('Cannot remove the context: status code is ' + response.status);
+                                    }
+                                });
+                        }
                     }
                 }
             }
         }
     },
     methods: {
+        showVideo(contextVideoLink) {
+            this.contextVideoLink = contextVideoLink;
+        },
+        hideVideo() {
+            this.contextVideoLink = null;
+        },
         showTooltip(target) {
-            let tooltipHtml = target.querySelector('.tooltip-text').innerHTML; // todo add more
-            if (!tooltipHtml) return;
+            let tooltipHtml = target.querySelector('.tooltip-text').innerHTML;
+            if (!tooltipHtml) {
+                return;
+            }
             this.tooltipElem = document.createElement('div');
             this.tooltipElem.className = 'tooltip';
             this.tooltipElem.innerHTML = tooltipHtml;
@@ -330,12 +366,22 @@ const app = Vue.createApp({
         generateContextHtml(context, actionsAllowed) {
             contextHtml = context.context;
             context.phrases.forEach(phrase => {
+                let tooltipAttempts = '';
+                if (phrase.phraseStats && phrase.phraseStats.attempts && phrase.phraseStats.attempts > 0) {
+                    tooltipAttempts = ' (' + phrase.phraseStats.successfulAttempts + ' / ' + phrase.phraseStats.attempts + ')';
+                }
                 contextHtml = contextHtml.replace(phrase.phrase,
                     '<span class="translated-phrase" @mouseover.prevent="showTooltip" @mouseout.prevent="hideTooltip">' + phrase.phrase +
-                        '<span class="tooltip-text">' + phrase.translation + '</span>' +
+                        '<span class="tooltip-text">' +
+                            '<span class="tooltip-translation">' + phrase.translation + '</span>' +
+                            '<span class="tooltip-translation">' + tooltipAttempts + '</span>' +
+                        '</span>' +
                     '</span>');
             });
-            return '<span>' + contextHtml + '</span>';
+            let contextButtons = actionsAllowed ?
+                '<div class="context-buttons"><div class="context-video-button" @click="watchContextVideo(\'' + context.link + '\')"></div><div class="context-remove-button" data-context-id="' + context.id + '" @click="removeContext"></div></div>' :
+                '<div class="context-video-button" @click="watchContextVideo(\'' + context.link + '\')"></div>';
+            return '<span>' + contextHtml + '</span>' + contextButtons;
         },
         onTestClicked(event) {
             let testUrl = event.target.getAttribute('href');
@@ -381,7 +427,7 @@ const app = Vue.createApp({
         },
         onTranslationButtonClicked(isCorrect) {
             this.test.phraseTested = true;
-            fetch('/phrases/' + this.test.phrase.id + '?correct=' + isCorrect, {method: 'PATCH'}); // todo check
+            fetch('/phrases/' + this.test.phrase.id + '?correct=' + isCorrect, {method: 'PATCH'});
         },
         onNextPhraseButtonClicked() {
             this.showNextTestPhrase();
@@ -446,13 +492,6 @@ const app = Vue.createApp({
                     alert('The context is successfully created');
                 });
             });
-        },
-        toggle() { // todo
-            let trailer = document.querySelector(".trailer")
-            let video = document.querySelector("video")
-            trailer.classList.toggle("active");
-            video.pause();
-            video.currentTime = 0;
         }
     }
 });

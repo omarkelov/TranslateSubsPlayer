@@ -8,6 +8,7 @@
         <link rel="stylesheet" href="/css/main.css">
         <link rel="stylesheet" href="/css/tooltip.css">
         <link rel="stylesheet" href="/css/raw-movie.css">
+        <link rel="stylesheet" href="/css/movie.css">
         <link rel="stylesheet" href="/css/test.css">
         <script th:inline="javascript">
             var serverUsername = /*[[${username}]]*/ null;
@@ -90,6 +91,10 @@
                     <input v-model="loginFormPassword" type="password" placeholder="Password" />
                     <button @click.prevent="onLoginClicked">Login</button>
                 </form>
+            </div>
+            <div class="player" v-if="contextVideoLink">
+                <video id="player-video" src="{{ contextVideoLink }}" controls="controls"></video>
+                <div class="close-player-button" @click="hideVideo"></div>
             </div>
         </div>
         <script src="/js/main.js"></script>
