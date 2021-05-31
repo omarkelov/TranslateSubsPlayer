@@ -6,6 +6,7 @@
         <link rel="shortcut icon" href="/images/logo.png" type="image/png">
         <link rel="stylesheet" href="/css/reset.css">
         <link rel="stylesheet" href="/css/main.css">
+        <link rel="stylesheet" href="/css/tooltip.css">
         <link rel="stylesheet" href="/css/raw-movie.css">
         <link rel="stylesheet" href="/css/test.css">
         <script th:inline="javascript">
@@ -77,7 +78,7 @@
                             <button @click.prevent="onForgetTranslationButtonClicked" :disabled="test.phraseTested">View the answer</button>
                         </div>
                         <div v-if="test.phraseTested">
-                            <span>Context</span>
+                            <component v-bind:is="computedTestContext"></component>
                             <button id="test-next-phrase-button" @click.prevent="onNextPhraseButtonClicked">Next phrase</button>
                         </div>
                     </div>

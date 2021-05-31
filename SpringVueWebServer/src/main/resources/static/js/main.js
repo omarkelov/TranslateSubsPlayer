@@ -11,7 +11,7 @@ const app = Vue.createApp({
             loginFormName: '',
             loginFormPassword: '',
 
-            tooltip: null // todo
+            tooltipElem: null
         }
     },
     beforeMount() {
@@ -156,76 +156,65 @@ const app = Vue.createApp({
                 template: '<div id="raw-movie-subtitles" class="raw-movie-subtitles" style="height: ' + this.getRawMovieBoxHeight() + 'px">' + subtitles + '</div>'
             }
         },
+        computedTestContext() {
+            let showTooltipFunction = this.showTooltip;
+            let hideTooltipFunction = this.hideTooltip;
+            return {
+                template: '<div>' + this.generateContextHtml(this.test.context, false) + '</div>',
+                methods: {
+                    showTooltip() {
+                        showTooltipFunction(event.target);
+                    },
+                    hideTooltip() {
+                        hideTooltipFunction();
+                    }
+                }
+            }
+        },
         computedContexts() {
             let lis = '';
             this.movie.contexts.forEach(context => {
-                contextHtml = context.context;
-                context.phrases.forEach(phrase => {
-                    contextHtml = contextHtml.replace(phrase.phrase,
-                        `<span @mouseover.prevent="showTooltip" @mouseout.prevent="hideTooltip" data-tooltip='${phrase.translation}'>` + phrase.phrase + `</span>`);
-                });
-                lis += `<li>` + contextHtml +
-                    `<div class="button watch-button" @click.prevent="toggle"></div>
-                    <div class="trailer">
-                       <video src="sea.mp4" controls="controls"></video>
-                       <img src="close.png" class="close" @click.prevent="toggle" alt="close">
-                    </div>
-                    <div class="button edit-button" @click.prevent="showMsg"></div>
-                    <div class="button delete-button" onclick="remove(this)"></div>` + `</li>`
+                lis += '<li>' + this.generateContextHtml(context, true) + '</li>'
             });
+            let showTooltipFunction = this.showTooltip;
+            let hideTooltipFunction = this.hideTooltip;
             return {
-                data() {
-                    return {
-                        tooltipElem: null
-                    }
-                },
-                template: `<ol>` + lis + `</ol>`,
+                template: '<ol>' + lis + '</ol>',
                 methods: {
-                    showTooltip(e) {
-                        let target = event.target;
-
-                        let tooltipHtml = target.dataset.tooltip;
-                        if (!tooltipHtml) return;
-
-                        this.tooltipElem = document.createElement('div');
-                        this.tooltipElem.className = 'tooltip';
-                        this.tooltipElem.innerHTML = tooltipHtml;
-                        document.body.append(this.tooltipElem);
-
-                        let coords = target.getBoundingClientRect();
-
-                        let left = coords.left + (target.offsetWidth - this.tooltipElem.offsetWidth) / 2;
-                        if (left < 0) left = 0;
-
-                        let top = coords.top - this.tooltipElem.offsetHeight - 5;
-                        if (top < 0) {
-                            top = coords.top + target.offsetHeight + 5;
-                        }
-
-                        this.tooltipElem.style.left = left + 'px';
-                        this.tooltipElem.style.top = top + 'px';
+                    showTooltip() {
+                        showTooltipFunction(event.target);
                     },
                     hideTooltip() {
-                        if (this.tooltipElem) {
-                            this.tooltipElem.remove();
-                            this.tooltipElem = null;
-                        }
-                    },
-                    toggle() {
-                        let trailer = document.querySelector(".trailer")
-                        let video = document.querySelector("video")
-                        trailer.classList.toggle("active");
-                        video.pause();
-                        video.currentTime = 0;
-                    },
-                    showMsg() {
-                        alert("Edit");
+                        hideTooltipFunction();
                     }
                 }
             }
         }
     },
     methods: {
+        showTooltip(target) {
+            let tooltipHtml = target.querySelector('.tooltip-text').innerHTML; // todo add more
+            if (!tooltipHtml) return;
+            this.tooltipElem = document.createElement('div');
+            this.tooltipElem.className = 'tooltip';
+            this.tooltipElem.innerHTML = tooltipHtml;
+            document.body.append(this.tooltipElem);
+            let coords = target.getBoundingClientRect();
+            let left = coords.left + (target.offsetWidth - this.tooltipElem.offsetWidth) / 2;
+            if (left < 0) left = 0;
+            let top = coords.top - this.tooltipElem.offsetHeight - 5;
+            if (top < 0) {
+                top = coords.top + target.offsetHeight + 5;
+            }
+            this.tooltipElem.style.left = left + 'px';
+            this.tooltipElem.style.top = top + 'px';
+        },
+        hideTooltip() {
+            if (this.tooltipElem) {
+                this.tooltipElem.remove();
+                this.tooltipElem = null;
+            }
+        },
         onWindowResize(e) {
             let rawMovieSubtitles = document.getElementById('raw-movie-subtitles');
             if (rawMovieSubtitles) {
@@ -338,6 +327,16 @@ const app = Vue.createApp({
             this.hideEverything();
             this.movie = json;
         },
+        generateContextHtml(context, actionsAllowed) {
+            contextHtml = context.context;
+            context.phrases.forEach(phrase => {
+                contextHtml = contextHtml.replace(phrase.phrase,
+                    '<span class="translated-phrase" @mouseover.prevent="showTooltip" @mouseout.prevent="hideTooltip">' + phrase.phrase +
+                        '<span class="tooltip-text">' + phrase.translation + '</span>' +
+                    '</span>');
+            });
+            return '<span>' + contextHtml + '</span>';
+        },
         onTestClicked(event) {
             let testUrl = event.target.getAttribute('href');
             fetch(testUrl, {method: 'GET'})
@@ -386,19 +385,6 @@ const app = Vue.createApp({
         },
         onNextPhraseButtonClicked() {
             this.showNextTestPhrase();
-        },
-        showHideContext(element_id) { // todo
-            if (document.getElementById(element_id)) {
-                let obj = document.getElementById(element_id);
-                let cont = document.getElementById("show-context");
-                if (obj.style.display !== "block") {
-                    obj.style.display = "block";
-                    cont.style.display = "none";
-                } else {
-                    obj.style.display = "none";
-                    cont.style.display = "block";
-                }
-            } else alert("Элемент с id: " + element_id + " не найден!");
         },
         addToDictionary() {
             let dictionarySelect = document.getElementById('dictionary');
@@ -461,14 +447,6 @@ const app = Vue.createApp({
                 });
             });
         },
-        hideHint(element_id){ // todo
-            if (document.getElementById(element_id)) {
-                let obj = document.getElementById(element_id);
-                let cont = document.getElementById("show-context");
-                obj.style.display = "none";
-                cont.style.display = "block";
-            } else alert("Элемент с id: " + element_id + " не найден!");
-        },
         toggle() { // todo
             let trailer = document.querySelector(".trailer")
             let video = document.querySelector("video")
@@ -480,7 +458,3 @@ const app = Vue.createApp({
 });
 
 app.mount('#vue-app');
-
-function remove(el) {
-    el.parentNode.remove();
-}
