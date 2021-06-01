@@ -112,7 +112,7 @@
                 </form>
             </div>
             <div class="player" v-if="contextVideoLink">
-                <video id="player-video" src="{{ contextVideoLink }}" controls="controls"></video>
+                <video id="player-video" v-bind:src="contextVideoLink" controls="controls"></video>
                 <div class="close-player-button" @click="hideVideo"></div>
             </div>
         </div>
