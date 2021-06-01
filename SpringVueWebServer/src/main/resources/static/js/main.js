@@ -1,3 +1,7 @@
+String.prototype.myUnify = function() {
+    return this.trim().replace(/\s\s+/g, ' ').toLowerCase();
+};
+
 const app = Vue.createApp({
     data() {
         return {
@@ -56,7 +60,7 @@ const app = Vue.createApp({
                 });
                 subtitles +=
                     '<div class="subtitle">' +
-                        '<p class="subtitle-time"><span>' + line.start + '</span> --> <span>' + line.end + '</span></p>' +
+                        '<p class="subtitle-time"><span><span>' + line.start + '</span> --> <span>' + line.end + '</span></span></p>' +
                         '<p class="subtitle-text" data-start-time="' + line.start + '" data-end-time="' + line.end + '" @mousedown="onSubtitlesTextMouseDown(' + line.start + ', ' + line.end + ')" @mouseup="onSubtitlesTextMouseUp(' + line.start + ', ' + line.end + ')">' + subtitle + '</p>' +
                     '</div>';
             }
@@ -322,13 +326,13 @@ const app = Vue.createApp({
             this.rawMovies = json;
         },
         removeRawMovie() {
-            if (confirm('Are you sure you want to delete this raw movie?')) {
+            if (confirm('Are you sure you want to delete this movie?')) {
                 let target = event.target;
                 let rawMovieId = target.getAttribute("data-raw-movie-id");
                 fetch('/raw-movies/' + rawMovieId, {method: 'DELETE'})
                     .then(response => {
                         if (response.status == 204) {
-                            target.parentNode.parentNode.remove();
+                            target.parentNode.remove();
                         } else {
                             alert('Cannot remove the raw movie: status code is ' + response.status);
                         }
@@ -361,18 +365,18 @@ const app = Vue.createApp({
         },
         showMovies(json) {
             window.history.pushState({}, '', '/movies');
-            document.title = 'Movies | Translate Subtitles Player';
+            document.title = 'Dictionaries | Translate Subtitles Player';
             this.hideEverything();
             this.movies = json;
         },
         removeMovie() {
-            if (confirm('Are you sure you want to delete this movie?')) {
+            if (confirm('Are you sure you want to delete this dictionary?')) {
                 let target = event.target;
                 let movieName = target.getAttribute("data-movie-name");
                 fetch('/movies/' + movieName, {method: 'DELETE'})
                     .then(response => {
                         if (response.status == 204) {
-                            target.parentNode.parentNode.remove();
+                            target.parentNode.remove();
                         } else {
                             alert('Cannot remove the movie: status code is ' + response.status);
                         }
@@ -449,7 +453,11 @@ const app = Vue.createApp({
             this.onTranslationButtonClicked(false);
         },
         onSubmitTranslationButtonClicked() {
-            let isCorrect = this.test.userTranslation == this.test.phrase.phrase || this.test.userTranslation == this.test.phrase.correctedPhrase;
+            let isCorrect =
+                this.test.userTranslation.myUnify() == this.test.phrase.phrase.myUnify() || (
+                    this.test.phrase.correctedPhrase !== undefined &&
+                    this.test.userTranslation.myUnify() == this.test.phrase.correctedPhrase.myUnify()
+                );
             alert('You are ' + (isCorrect ? 'correct' : 'wrong'));
             this.onTranslationButtonClicked(isCorrect);
         },
