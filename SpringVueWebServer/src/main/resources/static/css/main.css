@@ -1,6 +1,17 @@
 body {
     font: 18px Trebuchet MS, sans-serif;
-    background: #d9c39c;
+    background: #111111;
+    color: #b8b7b4;
+}
+
+input {
+    background: #f0ece9;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+input:disabled {
+    background: #b8b7b4;
 }
 
 .shell {
@@ -11,20 +22,81 @@ body {
     margin: 20px auto;
 }
 
-.nav-bar > a {
-    margin: 0 10px;
-}
-
-.nav-bar > a:last-of-type {
-    float: right;
-}
-
 .translated-phrase {
-    background: green;
+    padding: 0 3px;
+    border-radius: 3px;
+    background: #fa891e;
+    color: black;
+}
+
+.movie-content .translated-phrase, .test-content .translated-phrase {
+    cursor: pointer;
+}
+
+.button {
+    display: inline-block;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 999px;
+    font-weight: 900;
+    color: black;
+}
+
+.button:disabled {
+    background: #b8b7b4 !important;
 }
 
 .action-buttons {
     display: none;
+}
+
+.nav-bar a, .nav-bar a:visited {
+    font-weight: 900;
+    color: #b8b7b4;
+}
+
+.nav-bar a:hover {
+    color: #f0ece9;
+}
+
+.nav-bar a {
+    display: inline-block;
+    margin: 0 10px;
+    padding: 2px 5px;
+    border: 1px solid black;
+}
+
+.nav-bar a:last-of-type {
+    float: right;
+}
+
+.link-item {
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+.link-item > a, .link-item > a:visited {
+    color: #b8b7b4;
+}
+
+.link-item > a:hover {
+    color: #f0ece9;
+}
+
+.link-item .remove-button {
+    visibility: hidden;
+}
+
+.link-item:hover .remove-button {
+    visibility: visible;
+}
+
+.content-header {
+    text-align: center;
+    margin: 20px;
+    font-size: 30px;
+    font-weight: 900;
+    color: #f0ece9;
 }
 
 .video-button, .remove-button {

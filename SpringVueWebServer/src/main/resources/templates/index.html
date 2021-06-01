@@ -6,10 +6,9 @@
         <link rel="shortcut icon" href="/images/logo.png" type="image/png">
         <link rel="stylesheet" href="/css/reset.css">
         <link rel="stylesheet" href="/css/main.css">
+        <link rel="stylesheet" href="/css/login.css">
         <link rel="stylesheet" href="/css/tooltip.css">
-        <link rel="stylesheet" href="/css/raw-movies.css">
         <link rel="stylesheet" href="/css/raw-movie.css">
-        <link rel="stylesheet" href="/css/movies.css">
         <link rel="stylesheet" href="/css/movie.css">
         <link rel="stylesheet" href="/css/test.css">
         <script th:inline="javascript">
@@ -26,22 +25,21 @@
         <div id="vue-app">
             <div id="main" class="shell" v-if="username">
                 <nav id="navigation" class="nav-bar">
-                    <a href="/raw-movies/" @click.prevent="onRawMoviesClicked">Raw Movies</a>
-                    <a href="/movies/" @click.prevent="onMoviesClicked">Movies</a>
+                    <a href="/raw-movies/" @click.prevent="onRawMoviesClicked">Movies</a>
+                    <a href="/movies/" @click.prevent="onMoviesClicked">Dictionaries</a>
                     <a href="/logout/" @click.prevent="onLogoutClicked">Logout ({{ username }})</a>
                 </nav>
                 <div id="content">
                     <div id="raw-movies-content" class="content" v-if="rawMovies">
+                        <h1 class="content-header">Movies</h1>
                         <ul id="raw-movie-list">
-                            <li class="raw-movie" v-for="rawMovie in rawMovies">
+                            <li class="link-item raw-movie" v-for="rawMovie in rawMovies">
                                 <a v-bind:href="'raw-movies/' + rawMovie.id" @click.prevent="onRawMovieClicked">{{ rawMovie.videoFilePath }}</a>
-                                <div class="action-buttons">
-                                    <div class="remove-button" v-bind:data-raw-movie-id="rawMovie.id" @click="removeRawMovie"></div>
-                                </div>
+                                <div class="remove-button" v-bind:data-raw-movie-id="rawMovie.id" @click="removeRawMovie"></div>
                             </li>
                         </ul>
                     </div>
-                    <div id="raw-movie-content" class="content" v-if="rawMovie">
+                    <div id="raw-movie-content" class="content raw-movie-content" v-if="rawMovie">
                         <div class="raw-movie-dictionary">
                             <label>Dictionary:</label>
                             <input id="dictionary" type="search" list="dictionary-data-list" placeholder="Select a dictionary or create a new one"/>
@@ -59,45 +57,58 @@
                             <div id="raw-movie-phrases-shell" style="display: none;">
                                 <h6>Phrases</h6>
                                 <table class="raw-movie-phrases"><tbody id="raw-movie-phrases-body"></tbody></table>
-                                <button class="add-to-dictionary-button" @click.prevent="addToDictionary">Add to dictionary</button>
+                                <button class="button add-to-dictionary-button" @click.prevent="addToDictionary">Add to dictionary</button>
                             </div>
                         </div>
                     </div>
                     <div id="movies-content" class="content" v-if="movies">
+                        <h1 class="content-header">Dictionaries</h1>
                         <ul id="movie-list">
-                            <li class="movie" v-for="movie in movies">
+                            <li class="link-item movie" v-for="movie in movies">
                                 <a v-bind:href="movie.href" @click.prevent="onMovieClicked">{{ movie.name }}</a>
-                                <div class="action-buttons">
-                                    <div class="remove-button" v-bind:data-movie-name="movie.name" @click="removeMovie"></div>
-                                </div>
+                                <div class="remove-button" v-bind:data-movie-name="movie.name" @click="removeMovie"></div>
                             </li>
                         </ul>
                     </div>
-                    <div id="movie-content" class="content" v-if="movie">
-                        <h1 class="header">{{ movie.name }}</h1>
+                    <div id="movie-content" class="content movie-content" v-if="movie">
+                        <h1 class="content-header">{{ movie.name }}</h1>
                         <component v-bind:is="computedContexts"></component>
-                        <a v-bind:href="'/movies/' + movie.name + '/test'" @click.prevent="onTestClicked">Test</a>
-                    </div>
-                    <div id="test-content" class="content" v-if="test">
-                        <h1 class="test-header">Test: "{{ test.name }}"</h1>
-                        <div v-if="test.phrase">
-                            <p>Enter the translation of "{{ test.phrase.translation }}"</p>
-                            <input type="text" v-model="test.userTranslation" :disabled="test.phraseTested">
-                            <button @click.prevent="onSubmitTranslationButtonClicked" :disabled="test.phraseTested">Submit</button>
-                            <button @click.prevent="onForgetTranslationButtonClicked" :disabled="test.phraseTested">View the answer</button>
+                        <div class="movie-test-link-shell">
+                            <a class="button-link movie-test-link" v-bind:href="'/movies/' + movie.name + '/test'" @click.prevent="onTestClicked">Test</a>
                         </div>
-                        <div v-if="test.phraseTested">
+                    </div>
+                    <div id="test-content" class="content test-content" v-if="test">
+                        <h1 class="content-header">Test: "{{ test.name }}"</h1>
+                        <div class="test-phrase-shell" v-if="test.phrase">
+                            <p>Enter the translation of the phrase:</p>
+                            <p class="content-header test-phrase">{{ test.phrase.translation }}</p>
+                            <div class="test-input-shell">
+                                <input ref="testInput" type="text" class="test-input" v-model="test.userTranslation" :disabled="test.phraseTested">
+                                <button class="button test-submit-button" @click.prevent="onSubmitTranslationButtonClicked" :disabled="test.phraseTested">Submit</button>
+                            </div>
+                            <button class="button test-answer-button" @click.prevent="onForgetTranslationButtonClicked" :disabled="test.phraseTested">View the answer</button>
+                        </div>
+                        <div class="test-context-shell" v-if="test.phraseTested">
                             <component v-bind:is="computedTestContext"></component>
-                            <button id="test-next-phrase-button" @click.prevent="onNextPhraseButtonClicked">Next phrase</button>
+                            <button class="button test-next-phrase-button" id="test-next-phrase-button" @click.prevent="onNextPhraseButtonClicked">Next phrase</button>
                         </div>
                     </div>
                 </div>
             </div>
-            <div id="authentication" v-else>
+            <div id="authentication" class="login" v-else>
+                <img src="images/logo-big.png" alt="Translate Subs Player">
                 <form>
-                    <input v-model="loginFormName" type="text" placeholder="Login" />
-                    <input v-model="loginFormPassword" type="password" placeholder="Password" />
-                    <button @click.prevent="onLoginClicked">Login</button>
+                    <section>
+                        <label>Login:</label>
+                        <br>
+                        <input v-model="loginFormName" type="text" placeholder="Login" />
+                    </section>
+                    <section>
+                        <label>Password:</label>
+                        <br>
+                        <input v-model="loginFormPassword" type="password" placeholder="Password" />
+                    </section>
+                    <button class="button login-button" @click.prevent="onLoginClicked">Login</button>
                 </form>
             </div>
             <div class="player" v-if="contextVideoLink">

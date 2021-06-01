@@ -1,3 +1,25 @@
+.movie-context {
+    margin-bottom: 20px;
+}
+
 .movie-context:hover .action-buttons {
     display: inline-block;
+}
+
+.movie-test-link-shell {
+    text-align: center;
+}
+
+.movie-test-link, .movie-test-link:visited {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: #fc4e6f;
+    font-weight: 900;
+    color: black;
+    text-decoration: none;
+}
+
+.movie-test-link:hover {
+    background: #f93358;
 }

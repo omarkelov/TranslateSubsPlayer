@@ -1,5 +1,61 @@
-.test-header {
+.test-content {
     text-align: center;
-    margin-top: 25px;
-    font-size: 30px;
+}
+
+.test-phrase-shell {
+    margin-top: 40px;
+}
+
+.test-context-shell {
+    margin-top: 20px;
+}
+
+.test-input-shell {
+    position: relative;
+}
+
+.test-input-shell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.test-input {
+    margin: 10px 0;
+    padding: 0 85px 0 20px;
+    border: none;
+    width: 60%;
+    font-size: 40px;
+    border-radius: 999px;
+}
+
+.test-submit-button {
+    margin-left: -75px;
+    height: 38px;
+    background: #00fdad;
+}
+
+.test-submit-button:hover {
+    background: #00fd89;
+}
+
+.test-answer-button {
+    background: #fc4e6f;
+}
+
+.test-answer-button:hover {
+    background: #f93358;
+}
+
+.test-context {
+    margin-bottom: 20px;
+    color: #f0ece9;
+}
+
+.test-next-phrase-button {
+    background: #fc4e6f;
+}
+
+.test-next-phrase-button:hover {
+    background: #f93358;
 }

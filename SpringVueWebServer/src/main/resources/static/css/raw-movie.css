@@ -1,3 +1,11 @@
+.raw-movie-content h6, .raw-movie-dictionary > label {
+    font-weight: 900;
+}
+
+.raw-movie-content input, .raw-movie-content select {
+    border: 1px solid rgba(0, 0, 0, 0.5);
+}
+
 .raw-movie-dictionary {
     text-align: center;
     margin: 10px;
@@ -16,7 +24,6 @@
     float: left;
     width: 50%;
     padding: 10px 0;
-    background: rgba(255, 255, 0, 0.2);
 }
 
 .raw-movie-half h6 {
@@ -27,14 +34,10 @@
     box-sizing: border-box;
     overflow: auto;
     margin: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     padding: 10px;
     width: calc(100% - 20px);
     min-height: 100px;
-}
-
-.raw-movie-subtitles {
-
 }
 
 .subtitle {
@@ -45,6 +48,12 @@
     user-select: none;
     margin-left: 10px;
     font-size: 10px;
+}
+
+.subtitle-time > span {
+    padding: 0 3px;
+    border-radius: 3px;
+    background: rgba(0, 255, 255, 0.15);
 }
 
 .raw-movie-context {
@@ -59,6 +68,10 @@
     width: calc(100% - 20px);
 }
 
+.raw-movie-phrases th {
+    font-size: 15px;
+}
+
 .raw-movie-phrases td {
     vertical-align:middle;
 }
@@ -68,7 +81,6 @@
 }
 
 .raw-movie-phrases select {
-    padding: 2.5px 0;
     width: 100%;
 }
 
@@ -83,4 +95,9 @@
 .add-to-dictionary-button {
     display: block;
     margin: 10px auto;
+    background: #fc4e6f;
+}
+
+.add-to-dictionary-button:hover {
+    background: #f93358;
 }

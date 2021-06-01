@@ -317,7 +317,7 @@ const app = Vue.createApp({
         },
         showRawMovies(json) {
             window.history.pushState({}, '', '/raw-movies');
-            document.title = 'Raw Movies | Translate Subtitles Player';
+            document.title = 'Movies | Translate Subtitles Player';
             this.hideEverything();
             this.rawMovies = json;
         },
