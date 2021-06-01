@@ -396,20 +396,31 @@ const app = Vue.createApp({
             this.movie = json;
         },
         generateContextHtml(context, actionsAllowed) {
-            contextHtml = context.context;
-            context.phrases.forEach(phrase => {
-                let tooltipAttempts = '';
-                if (phrase.phraseStats && phrase.phraseStats.attempts && phrase.phraseStats.attempts > 0) {
-                    tooltipAttempts = ' (' + phrase.phraseStats.successfulAttempts + ' / ' + phrase.phraseStats.attempts + ')';
-                }
-                contextHtml = contextHtml.replace(phrase.phrase,
-                    '<span class="translated-phrase" @mouseover.prevent="showTooltip" @mouseout.prevent="hideTooltip">' + phrase.phrase +
-                        '<span class="tooltip-text">' +
-                            '<span class="tooltip-translation">' + phrase.translation + '</span>' +
-                            '<span class="tooltip-translation">' + tooltipAttempts + '</span>' +
-                        '</span>' +
-                    '</span>');
-            });
+            let pattern = '';
+            for (let i = 0; i < context.phrases.length; i++) {
+                if (i > 0) pattern += '|';
+                pattern += context.phrases[i].phrase;
+            }
+            let groups = context.context.split(new RegExp('(' + pattern + ')', 'gi'));
+            for (let i = 0; i < groups.length; i++) {
+                context.phrases.forEach(phrase => {
+                    if (groups[i] == phrase.phrase) {
+                        let tooltipAttempts = '';
+                        if (phrase.phraseStats && phrase.phraseStats.attempts && phrase.phraseStats.attempts > 0) {
+                            tooltipAttempts = ' (' + phrase.phraseStats.successfulAttempts + ' / ' + phrase.phraseStats.attempts + ')';
+                        }
+                        groups[i] =
+                         '<span class="translated-phrase" @mouseover.prevent="showTooltip" @mouseout.prevent="hideTooltip">' + phrase.phrase +
+                             '<span class="tooltip-text">' +
+                                 '<span class="tooltip-translation">' + phrase.translation + '</span>' +
+                                 '<span class="tooltip-translation">' + tooltipAttempts + '</span>' +
+                             '</span>' +
+                         '</span>'
+                    }
+                });
+            }
+            contextHtml = '';
+            groups.forEach(group => contextHtml += group);
             let contextButtons = actionsAllowed ?
                 '<div class="action-buttons"><div class="video-button" @click="watchContextVideo(\'' + context.link + '\')"></div><div class="remove-button" data-context-id="' + context.id + '" @click="removeContext"></div></div>' :
                 '<div class="video-button" @click="watchContextVideo(\'' + context.link + '\')"></div>';
