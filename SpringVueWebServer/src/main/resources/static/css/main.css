@@ -1,180 +1,147 @@
-.content {
-    font-family: sans-serif;
-    border: 1px solid #eee;
-    border-radius: 2px;
-    padding: 20px 30px;
-    margin-top: 1em;
-    margin-bottom: 40px;
-    overflow-x: auto;
+body {
+    font: 18px Trebuchet MS, sans-serif;
+    background: #111111;
+    color: #b8b7b4;
 }
 
-.tooltip {
-    position: fixed;
-    padding: 10px 20px;
-    border: 1px solid #b3c9ce;
-    border-radius: 4px;
-    text-align: center;
-    font: italic 14px/1.3 sans-serif;
-    color: #333;
-    background: #fff;
-    box-shadow: 3px 3px 3px rgba(0, 0, 0, .3);
+input {
+    background: #f0ece9;
+    box-shadow: none;
+    -webkit-box-shadow: none;
 }
 
-span {
-    color: red;
+input:disabled {
+    background: #b8b7b4;
 }
 
-.header {
-    font-size: 50px;
-    text-align: center;
-}
-
-ol {
-    font-size: 20px;
-    padding: 20px 20px 10px 50px;
-}
-
-li {
-    padding: 10px 10px 10px 10px;
-}
-.all {
-// margin: 30px 30px 30px 30px;
-    padding: 20px 20px 100px 20px;
-    border: 2px solid black;
-}
-
-.test-button {
-    float: right;
-    cursor: pointer;
-    margin: 0px 50px 20px 10px;
-}
-
-.watch-button {
-    background-image: url("1.jpg");
-    background-size: 100% 100%;
-    border-radius: 4px;
-    padding: 7px;
-    display:none;
-}
-
-.edit-button {
-    background-image: url("2.jpg");
-    background-size: 100% 100%;
-    border-radius: 4px;
-    padding: 7px;
-    display:none;
-}
-
-.delete-button {
-    background-image: url("3.jpg");
-    background-size: 100% 100%;
-    border-radius: 4px;
-    padding: 7px;
-    display:none;
-}
-
-li:hover .button {
-    display: inline-block;
-}
-
-p {
-    display: inline-block;
-}
-
-.trailer {
-    position: fixed;
-    top: 50%;
-    transform: translate(-5.5%, -50%);
-    z-index: 10000;
-    background: rgba(0,0,0,0.35);
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    visibility: hidden;
-    opacity: 0;
-}
-.trailer.active {
-    visibility: visible;
-    opacity: 1;
-}
-.trailer video {
+.shell {
     position: relative;
-    max-width: 900px;
-    outline: none;
+    overflow: hidden;
+    max-width: 1400px;
+    width: 80%;
+    margin: 20px auto;
 }
-.close {
-    position: absolute;
-    right: 26px;
-    top: 18px;
+
+.translated-phrase {
+    padding: 0 3px;
+    border-radius: 3px;
+    background: #fa891e;
+    color: black;
+}
+
+.movie-content .translated-phrase, .test-content .translated-phrase {
     cursor: pointer;
-    filter: invert(1);
-    max-width: 30px;
-}
-@media (max-width: 991px)
-{
-    .trailer video {
-        max-width: 90%;
-    }
 }
 
-div.image {
-    width: 20px;
-    height: 20px; /* Высота блока */
-    background: url("1.jpg") no-repeat center;
-}
-.action-button {
-    width: 20px;
-    height: 20px;
-    padding-top: 20px;
-}
-.ok {
-    margin-left: 670px;
-    padding-right: 20px;
+.button {
+    display: inline-block;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 999px;
+    font-weight: 900;
+    color: black;
 }
 
-.word-video {
-    font-size: 40px;
-    position: absolute;
-    top: 15%;
-    left: 50%;
-    margin-right: -45%;
-    transform: translate(-50%, -50%)
+.button:disabled {
+    background: #b8b7b4 !important;
 }
-.header-test {
-    margin-top: 25px;
-    font-size: 30px;
+
+.action-buttons {
+    display: none;
+}
+
+.nav-bar a, .nav-bar a:visited {
+    font-weight: 900;
+    color: #b8b7b4;
+}
+
+.nav-bar a:hover {
+    color: #f0ece9;
+}
+
+.nav-bar a {
+    display: inline-block;
+    margin: 0 10px;
+    padding: 2px 5px;
+    border: 1px solid black;
+}
+
+.nav-bar a:last-of-type {
+    float: right;
+}
+
+.link-item {
+    margin-bottom: 5px;
     text-align: center;
 }
-.word-video {
-    top: 30%;
+
+.link-item > a, .link-item > a:visited {
+    color: #b8b7b4;
+}
+
+.link-item > a:hover {
+    color: #f0ece9;
+}
+
+.link-item .remove-button {
+    visibility: hidden;
+}
+
+.link-item:hover .remove-button {
+    visibility: visible;
+}
+
+.content-header {
+    text-align: center;
+    margin: 20px;
+    font-size: 30px;
+    font-weight: 900;
+    color: #f0ece9;
+}
+
+.video-button, .remove-button {
     display: inline-block;
+    margin: 0 3px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
 }
 
-.context {
-    margin-top: 100px;
-    margin-left: 5%;
-    height: 200px;
-    width: 90%;
-    border: 2px solid #000;
+.video-button {
+    background: url(../images/video.png);
 }
 
-.actions {
-    display: inline-block;
+.remove-button {
+    background: url(../images/delete-cross.png);
 }
 
-.text {
-    font: 17pt serif;
-}
-
-#show-context {
+.player {
+    display: table-cell;
+    text-align: center;
     position: fixed;
-    top: 40%;
-    right: 46%;
-    color: grey;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    overflow: auto;
+    background: rgba(0, 0, 0, 0.75);
 }
 
-.word-translation {
-    color: black;
+.player video {
+    margin-top: 20px;
+    height: calc(100% - 40px);
+}
+
+.close-player-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 48px;
+    height: 48px;
+    background: url('../images/player-close.png');
+    cursor: pointer;
+}
+
+.close-player-button:hover {
+    background: url('../images/player-close-hover.png');
 }
